@@ -1,5 +1,6 @@
 import { ServiceAccount } from "./serviceAccount";
 import { BuildStatus } from "./buildStatus";
+import { Branch } from "./branch";
 
 export class Project {
     name: string;
