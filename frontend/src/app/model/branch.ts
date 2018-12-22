@@ -4,10 +4,9 @@ import { Build } from "./build";
 import { Deployment } from "./deployment";
 
 export class Branch {
-    buildTool: string;
-    deploymentTarget: string[];
+    deploymentType: string;
     respPerson: string;
-    dependencies: number[];
+    dependencies: string[];
     readmeURL: string;
     branchURL: string;
     buildSuccessURL: string;
@@ -15,6 +14,4 @@ export class Branch {
     tags: string[];
     status: BuildStatus;
     lastCommit: Commit;
-    builds: Build[];
-    deployments: Deployment[];
 }
