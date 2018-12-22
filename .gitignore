@@ -39,6 +39,9 @@ dependency-reduced-pom.xml
 deploy/
 build.xml
 
+# VS Code
+.vscode/
+
 # Mac filesystem
 .DS_Store/
 .DS_Store
