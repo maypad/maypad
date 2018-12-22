@@ -1,4 +1,4 @@
-package de.fraunhofer.iosb.maypadbackend;
+package de.fraunhofer.iosb.maypad;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
