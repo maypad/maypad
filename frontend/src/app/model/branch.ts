@@ -1,7 +1,7 @@
-import { BuildStatus } from "./buildStatus";
-import { Commit } from "./commit";
-import { Build } from "./build";
-import { Deployment } from "./deployment";
+import { BuildStatus } from './buildStatus';
+import { Commit } from './commit';
+import { Build } from './build';
+import { Deployment } from './deployment';
 
 export class Branch {
     deploymentType: string;

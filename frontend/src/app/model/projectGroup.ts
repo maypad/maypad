@@ -1,5 +1,5 @@
-import { Project } from "./project";
-import { BuildStatus } from "./buildStatus";
+import { Project } from './project';
+import { BuildStatus } from './buildStatus';
 
 export class Projectgroup {
     name: string;
