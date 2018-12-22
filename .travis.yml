@@ -12,6 +12,10 @@ addons:
     packages:
       - google-chrome-stable
 
+cache:
+  directories:
+     - ./frontend/node_modules
+
 branches:
   only:
   - master
@@ -25,4 +29,5 @@ script:
   - ./mvnw test -B
   - cd ../frontend
   - npm install
-  - ng test --watch=false --browsers=ChromeHeadless
+  - ng test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+  - ng e2e -- --protractor-config=e2e/protractor-ci.conf.js
