@@ -6,11 +6,11 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent implements OnInit {
-
+  current: string;
   constructor() { }
 
   ngOnInit() {
-    console.log('Hi');
+    this.current = "404 Test";
   }
 
 }
