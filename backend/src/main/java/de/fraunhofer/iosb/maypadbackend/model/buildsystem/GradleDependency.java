@@ -2,6 +2,7 @@ package de.fraunhofer.iosb.maypadbackend.model.buildsystem;
 
 import lombok.Data;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 
 /**
@@ -14,7 +15,9 @@ import javax.persistence.Entity;
 @Entity
 public class GradleDependency extends Dependency {
 
+    @Column(name = "dependeny_name")
     private String name;
+    @Column(name = "dependeny_group")
     private String group;
 
 }

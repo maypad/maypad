@@ -3,7 +3,10 @@ package de.fraunhofer.iosb.maypadbackend.model.deployment;
 import de.fraunhofer.iosb.maypadbackend.model.webhook.ExternalWebhook;
 import lombok.Data;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToOne;
 
 /**
  * Deployment where a webhook should be called.
@@ -13,8 +16,9 @@ import javax.persistence.Entity;
  */
 @Data
 @Entity
-public class WebhookDeployment {
+public class WebhookDeployment extends DeploymentType {
 
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private ExternalWebhook deploymentWebhook;
 
 }

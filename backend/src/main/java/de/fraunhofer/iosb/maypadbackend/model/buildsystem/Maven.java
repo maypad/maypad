@@ -4,7 +4,9 @@ import de.fraunhofer.iosb.maypadbackend.services.reporefresh.BuildSystemManager;
 import de.fraunhofer.iosb.maypadbackend.services.reporefresh.MavenManager;
 import lombok.Data;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 
 /**
  * Buildsystem Maven
@@ -16,9 +18,14 @@ import javax.persistence.Entity;
 @Entity
 public class Maven extends BuildSystem {
 
+    @Column
     private String groupId;
+    @Column
     private String artifactId;
+    @Column
     private String version;
+
+    @Transient
     private MavenManager mavenManager;
 
     @Override

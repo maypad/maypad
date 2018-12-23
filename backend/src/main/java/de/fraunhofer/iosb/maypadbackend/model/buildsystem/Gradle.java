@@ -4,7 +4,9 @@ import de.fraunhofer.iosb.maypadbackend.services.reporefresh.BuildSystemManager;
 import de.fraunhofer.iosb.maypadbackend.services.reporefresh.GradleManager;
 import lombok.Data;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 
 /**
  * Buildsystem Gradle
@@ -16,7 +18,10 @@ import javax.persistence.Entity;
 @Entity
 public class Gradle extends BuildSystem {
 
+    @Column
     private String version;
+
+    @Transient
     private GradleManager gradleManager;
 
     @Override

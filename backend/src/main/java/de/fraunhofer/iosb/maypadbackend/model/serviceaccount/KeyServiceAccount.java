@@ -2,6 +2,7 @@ package de.fraunhofer.iosb.maypadbackend.model.serviceaccount;
 
 import lombok.Data;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 
 /**
@@ -12,8 +13,9 @@ import javax.persistence.Entity;
  */
 @Data
 @Entity
-public class KeyServiceAccount {
+public class KeyServiceAccount extends ServiceAccount {
 
+    @Column(name = "ssh_key")
     private String key;
 
 }
