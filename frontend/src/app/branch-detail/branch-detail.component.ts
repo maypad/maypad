@@ -10,12 +10,13 @@ import { BreadcrumbService } from '../breadcrumb.service';
 export class BranchDetailComponent implements OnInit {
   projId: number;
   branchName: string;
-  projName = "placeholder";
+  projName = 'Project';
   constructor(private route: ActivatedRoute, private crumbs: BreadcrumbService) { }
 
   ngOnInit() {
     this.projId = this.route.snapshot.params['id'];
     this.branchName = this.route.snapshot.params['branch'];
+    this.projName = this.projName + ':' + this.projId;
     this.crumbs.setBreadcrumbs([
       { name: this.projName, path: '/projects/' + this.projId },
       { name: this.branchName, path: '/projects/' + this.projId + '/branches/' + this.branchName }
