@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { BreadcrumbService } from '../breadcrumb.service';
 
 @Component({
   selector: 'ProjectDetail',
@@ -8,11 +9,13 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class ProjectDetailComponent implements OnInit {
   projId: number;
+  projName = "placeholder";
 
-  constructor(private route: ActivatedRoute) { }
+  constructor(private route: ActivatedRoute, private crumbs: BreadcrumbService) { }
 
   ngOnInit() {
     this.projId = this.route.snapshot.params['id'];
+    this.crumbs.setBreadcrumbs([{ name: this.projName, path: 'projects/' + this.projId }]);
   }
 
 }

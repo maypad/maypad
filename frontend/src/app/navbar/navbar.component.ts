@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { BreadcrumbService, IBreadcrumbs } from '../breadcrumb.service';
 
 @Component({
   selector: 'app-navbar',
@@ -6,11 +7,14 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent implements OnInit {
-  current: string;
-  constructor() { }
+  breadcrumbs: IBreadcrumbs[];
+  constructor(private crumbs: BreadcrumbService) { }
 
   ngOnInit() {
-    this.current = "404 Test";
+    this.crumbs.breadcrumbs.subscribe(data => {
+      this.breadcrumbs = data;
+    },
+      (err) => { console.log(err) }
+    )
   }
-
 }

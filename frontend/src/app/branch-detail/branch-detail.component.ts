@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { BreadcrumbService } from '../breadcrumb.service';
 
 @Component({
   selector: 'BranchDetail',
@@ -9,11 +10,16 @@ import { ActivatedRoute } from '@angular/router';
 export class BranchDetailComponent implements OnInit {
   projId: number;
   branchName: string;
-  constructor(private route: ActivatedRoute) { }
+  projName = "placeholder";
+  constructor(private route: ActivatedRoute, private crumbs: BreadcrumbService) { }
 
   ngOnInit() {
     this.projId = this.route.snapshot.params['id'];
     this.branchName = this.route.snapshot.params['branch'];
+    this.crumbs.setBreadcrumbs([
+      { name: this.projName, path: '/projects/' + this.projId },
+      { name: this.branchName, path: '/projects/' + this.projId + '/branches/' + this.branchName }
+    ]);
   }
 
 }

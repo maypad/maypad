@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { BreadcrumbService } from '../breadcrumb.service';
 
 @Component({
   selector: 'Dashboard',
@@ -7,9 +8,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DashboardComponent implements OnInit {
 
-  constructor() { }
+  constructor(private crumbs: BreadcrumbService) { }
 
   ngOnInit() {
+    this.crumbs.setBreadcrumbs([]);
   }
 
 }
