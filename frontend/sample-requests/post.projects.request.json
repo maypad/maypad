@@ -1,5 +1,5 @@
 {
-    "repositoryUrl":"https://git.maypad.de/one-test-project.git",
+    "repositoryURL":"https://git.maypad.de/one-test-project.git",
     "groupId":2,
     "serviceAccount": {
         "username":"maypad-git",

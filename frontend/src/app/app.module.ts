@@ -9,6 +9,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { ProjectDetailComponent } from './project-detail/project-detail.component';
 import { BranchDetailComponent } from './branch-detail/branch-detail.component';
 import { RouterLinkDirectiveStub } from 'src/testing/router-link-directive-stub.directive';
+import { HttpClientModule} from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { RouterLinkDirectiveStub } from 'src/testing/router-link-directive-stub.
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

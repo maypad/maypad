@@ -1,5 +1,5 @@
 {
     "id":42,
     "name":"New Test Projectgroup",
-    "buildStatus":"SUCCESS"
+    "buildStatus":"UNKNOWN"
 }
