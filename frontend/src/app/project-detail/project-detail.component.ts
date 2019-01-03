@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { BreadcrumbService } from '../breadcrumb.service';
 
 @Component({
-  selector: 'ProjectDetail',
+  selector: 'app-project-detail',
   templateUrl: './project-detail.component.html',
   styleUrls: ['./project-detail.component.css']
 })

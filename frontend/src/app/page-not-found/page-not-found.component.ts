@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'PageNotFoundComponent',
+  selector: 'app-page-not-found-component',
   templateUrl: './page-not-found.component.html',
   styleUrls: ['./page-not-found.component.css']
 })

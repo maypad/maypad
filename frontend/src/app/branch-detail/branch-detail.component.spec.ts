@@ -27,7 +27,7 @@ describe('BranchDetailComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(BranchDetailComponent);
     component = fixture.componentInstance;
-    activatedRoute.setParamMap({ id: 123, name: "master" });
+    activatedRoute.setParamMap({ id: 123, name: 'master' });
     fixture.detectChanges();
   });
 

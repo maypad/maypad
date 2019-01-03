@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { BreadcrumbService } from '../breadcrumb.service';
 
 @Component({
-  selector: 'Dashboard',
+  selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })

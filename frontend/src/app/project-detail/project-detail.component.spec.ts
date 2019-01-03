@@ -26,7 +26,7 @@ describe('ProjectDetailComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ProjectDetailComponent);
     component = fixture.componentInstance;
-    activatedRoute.setParamMap({ id: 123, name: "master" });
+    activatedRoute.setParamMap({ id: 123, name: 'master' });
     fixture.detectChanges();
   });
 

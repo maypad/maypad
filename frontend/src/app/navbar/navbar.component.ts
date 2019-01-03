@@ -14,7 +14,7 @@ export class NavbarComponent implements OnInit {
     this.crumbs.breadcrumbs.subscribe(data => {
       this.breadcrumbs = data;
     },
-      (err) => { console.log(err) }
-    )
+      (err) => console.log(err)
+    );
   }
 }

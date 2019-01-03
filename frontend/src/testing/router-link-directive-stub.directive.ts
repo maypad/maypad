@@ -1,3 +1,5 @@
+/* tslint:disable */
+// Should not lint because it would break some directives for testing
 import { Directive, Input } from '@angular/core';
 
 @Directive({
