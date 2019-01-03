@@ -1,18 +1,10 @@
 package de.fraunhofer.iosb.maypadbackend.model.deployment;
 
 import de.fraunhofer.iosb.maypadbackend.model.build.Build;
+import de.fraunhofer.iosb.maypadbackend.model.repository.Branch;
 import lombok.Data;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
@@ -33,5 +25,7 @@ public class Deployment {
     private Date timestamp;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Build build;
+    @ManyToOne
+    private Branch branch;
 
 }

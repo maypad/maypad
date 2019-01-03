@@ -2,13 +2,7 @@ package de.fraunhofer.iosb.maypadbackend.model.buildsystem;
 
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
+import javax.persistence.*;
 
 /**
  * Dependency that is stored in a buildsystem (no Maypad-dependency)
@@ -28,5 +22,8 @@ public abstract class Dependency {
 
     @Column
     private String version;
+
+    @ManyToOne
+    BuildSystem buildSystem;
 
 }

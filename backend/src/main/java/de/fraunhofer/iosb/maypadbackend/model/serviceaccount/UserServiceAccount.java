@@ -2,6 +2,7 @@ package de.fraunhofer.iosb.maypadbackend.model.serviceaccount;
 
 import lombok.Data;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
@@ -15,9 +16,9 @@ import javax.persistence.Entity;
 @Entity
 public class UserServiceAccount extends ServiceAccount {
 
-    @Column
+    @Basic
     private String password;
-    @Column
+    @Basic
     private String username;
 
 }

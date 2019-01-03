@@ -2,13 +2,7 @@ package de.fraunhofer.iosb.maypadbackend.model.webhook;
 
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
+import javax.persistence.*;
 
 /**
  * Webhook, which is a URL for triggering an event
@@ -25,7 +19,7 @@ public abstract class Webhook {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", updatable = false, nullable = false)
     private int id;
-    @Column
+    @Basic
     private String url;
 
 }

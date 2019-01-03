@@ -1,27 +1,17 @@
 package de.fraunhofer.iosb.maypadbackend.model.build;
 
 import de.fraunhofer.iosb.maypadbackend.model.Status;
+import de.fraunhofer.iosb.maypadbackend.model.repository.Branch;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Commit;
 import lombok.Data;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
  * A Build with its metadata
  *
- * @author Lukas Brosch
+ * @author Lukas Brosch, Max Willich
  * @version 1.0
  */
 @Data
@@ -41,5 +31,8 @@ public class Build {
 
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    @ManyToOne
+    private Branch branch;
 
 }

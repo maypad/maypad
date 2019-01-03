@@ -2,10 +2,7 @@ package de.fraunhofer.iosb.maypadbackend.model.webhook;
 
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.*;
 
 /**
  * A webhook provided by Maypad
@@ -17,7 +14,7 @@ import javax.persistence.Enumerated;
 @Entity
 public class InternalWebhook extends Webhook {
 
-    @Column
+    @Basic
     private String token;
     @Enumerated(EnumType.STRING)
     private WebhookType type;

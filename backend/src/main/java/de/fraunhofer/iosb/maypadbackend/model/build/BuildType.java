@@ -1,12 +1,9 @@
 package de.fraunhofer.iosb.maypadbackend.model.build;
 
+import de.fraunhofer.iosb.maypadbackend.model.repository.Branch;
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * BuildTypes start / trigger a build
@@ -23,7 +20,9 @@ public abstract class BuildType {
     @Column(name = "id", updatable = false, nullable = false)
     private int id;
 
-    @Column
     private String name;
+
+    @OneToOne
+    private Branch branch;
 
 }

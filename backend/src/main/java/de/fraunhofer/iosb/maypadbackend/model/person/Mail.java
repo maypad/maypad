@@ -2,11 +2,7 @@ package de.fraunhofer.iosb.maypadbackend.model.person;
 
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * An Email-Adress
@@ -22,7 +18,7 @@ public class Mail {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", updatable = false, nullable = false)
     private int id;
-    @Column
+    @Basic
     private String mailAddress;
 
 }
