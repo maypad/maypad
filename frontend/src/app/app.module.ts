@@ -8,6 +8,7 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { ProjectDetailComponent } from './project-detail/project-detail.component';
 import { BranchDetailComponent } from './branch-detail/branch-detail.component';
+import { RouterLinkDirectiveStub } from 'src/testing/router-link-directive-stub.directive';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { BranchDetailComponent } from './branch-detail/branch-detail.component';
     PageNotFoundComponent,
     DashboardComponent,
     ProjectDetailComponent,
-    BranchDetailComponent
+    BranchDetailComponent,
+    RouterLinkDirectiveStub
   ],
   imports: [
     BrowserModule,
