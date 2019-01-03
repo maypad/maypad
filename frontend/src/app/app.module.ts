@@ -9,6 +9,8 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { ProjectDetailComponent } from './project-detail/project-detail.component';
 import { BranchDetailComponent } from './branch-detail/branch-detail.component';
 import { RouterLinkDirectiveStub } from 'src/testing/router-link-directive-stub.directive';
+import { DeploymentHistoryComponent } from './deployment-history/deployment-history.component';
+import { BuildHistoryComponent } from './build-history/build-history.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +20,9 @@ import { RouterLinkDirectiveStub } from 'src/testing/router-link-directive-stub.
     DashboardComponent,
     ProjectDetailComponent,
     BranchDetailComponent,
-    RouterLinkDirectiveStub
+    RouterLinkDirectiveStub,
+    DeploymentHistoryComponent,
+    BuildHistoryComponent,
   ],
   imports: [
     BrowserModule,
