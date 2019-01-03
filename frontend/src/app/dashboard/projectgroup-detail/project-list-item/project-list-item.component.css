@@ -1,0 +1,22 @@
+.greyText {
+    color: grey;
+}
+
+.dot {
+  height: 15px;
+  width: 15px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot-0 {
+  background-color: green;
+}
+
+.dot-1 {
+    background-color: red;
+}
+
+.dot-3 {
+    background-color: grey;
+}

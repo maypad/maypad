@@ -1,4 +1,6 @@
-<p>
-  dashboard works!
-  <a routerLink="/projects/42">Sample Project</a>
-</p>
+<div class="container w-50 d-flex flex-column">
+  <div class="d-flex justify-content-end pb-3">
+    <button class="btn btn-secondary">Add Projectgroup</button>
+  </div>
+  <app-projectgroup-detail *ngFor="let group of projectGroups" [projGroup]="group"></app-projectgroup-detail>
+</div>

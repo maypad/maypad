@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { BreadcrumbService } from '../breadcrumb.service';
+import { Projectgroup } from '../model/projectGroup';
+import { Project } from '../model/project';
+import { BuildStatus } from '../model/buildStatus';
+import { Branch } from '../model/branch';
+import { ServiceAccount } from '../model/serviceAccount';
 
 @Component({
   selector: 'app-dashboard',
@@ -7,11 +12,32 @@ import { BreadcrumbService } from '../breadcrumb.service';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
+  projectGroups: Projectgroup[];
 
   constructor(private crumbs: BreadcrumbService) { }
 
   ngOnInit() {
     this.crumbs.setBreadcrumbs([]);
+    // Mocking api
+    let sAccount: ServiceAccount = { sshKey: "asd123" };
+    let branch: Branch;
+    let proj: Project = {
+      name: "Project Beta", id: 42,
+      repositoryURL: "testgit.com/repo.git", branches: [branch],
+      serviceAccount: sAccount, status: BuildStatus.SUCCESS
+    };
+    let proj2: Project = {
+      name: "Project Delta", id: 19,
+      repositoryURL: "testgit.com/repo.git", branches: [branch],
+      serviceAccount: sAccount, status: BuildStatus.FAILED
+    };
+    this.projectGroups = [{
+      name: "Group Alpha", id: 123,
+      projects: [proj, proj2, proj], status: BuildStatus.SUCCESS
+    }, {
+      name: "Group Gamma", id: 124,
+      projects: [proj, proj, proj2], status: BuildStatus.SUCCESS
+    }];
   }
 
 }

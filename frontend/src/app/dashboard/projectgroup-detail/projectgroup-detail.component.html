@@ -1,3 +1,14 @@
-<p>
-  projectgroup-detail works!
-</p>
+<div class="container py-2 border-bottom border-dark">
+  <div class="d-flex flex-row justify-content-between">
+    <a data-toggle="collapse" href="#collapse{{projGroup.id}}" role="button" aria-expanded="false" attr.aria-controls="collapse{{projGroup.id}}">
+      <h4 class="blackText">{{projGroup.name}}</h4>
+    </a>
+    <div>
+      <button class="btn btn-primary mr-2">Edit</button>
+      <button class="btn btn-primary">Delete</button>
+    </div>
+  </div>
+  <div class="collapse" id="collapse{{projGroup.id}}">
+    <app-project-list-item *ngFor="let proj of projGroup.projects" [project]="proj"></app-project-list-item>
+  </div>
+</div>
