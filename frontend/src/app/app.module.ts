@@ -11,6 +11,10 @@ import { BranchDetailComponent } from './branch-detail/branch-detail.component';
 import { RouterLinkDirectiveStub } from 'src/testing/router-link-directive-stub.directive';
 import { DeploymentHistoryComponent } from './deployment-history/deployment-history.component';
 import { BuildHistoryComponent } from './build-history/build-history.component';
+import { ProjectgroupDetailComponent } from './dashboard/projectgroup-detail/projectgroup-detail.component';
+import { AddProjectgroupDialogComponent } from './dashboard/add-projectgroup-dialog/add-projectgroup-dialog.component';
+import { EditProjectgroupDialogComponent } from './dashboard/projectgroup-detail/edit-projectgroup-dialog/edit-projectgroup-dialog.component';
+import { ProjectListItemComponent } from './dashboard/projectgroup-detail/project-list-item/project-list-item.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +27,10 @@ import { BuildHistoryComponent } from './build-history/build-history.component';
     RouterLinkDirectiveStub,
     DeploymentHistoryComponent,
     BuildHistoryComponent,
+    ProjectgroupDetailComponent,
+    AddProjectgroupDialogComponent,
+    EditProjectgroupDialogComponent,
+    ProjectListItemComponent
   ],
   imports: [
     BrowserModule,
