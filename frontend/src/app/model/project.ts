@@ -9,4 +9,5 @@ export class Project {
     branches: Branch[];
     serviceAccount: ServiceAccount;
     status: BuildStatus;
+    groupId: number;
 }

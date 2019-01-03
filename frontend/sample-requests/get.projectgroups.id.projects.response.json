@@ -3,16 +3,16 @@
         "id":2,
         "name":"One Test Project",
         "buildStatus":"SUCCESS",
-        "refreshUrl":"https://maypad.de/projects/2/refresh",
-        "repositoryUrl":"https://git.maypad.de/one-test-project.git",
+        "refreshURL":"https://maypad.de/projects/2/refresh",
+        "repositoryURL":"https://git.maypad.de/one-test-project.git",
         "serviceAccount":null
     },
     {
         "id":5,
         "name":"Another Test Project",
         "buildStatus":"FAILED",
-        "refreshUrl":"https://maypad.de/projects/5/refresh",
-        "repositoryUrl":"https://git.maypad.de/another-test-project.git",
+        "refreshURL":"https://maypad.de/projects/5/refresh",
+        "repositoryURL":"https://git.maypad.de/another-test-project.git",
         "serviceAccount": {
             "username":"maypad-git"
         }
@@ -21,8 +21,8 @@
         "id":6,
         "name":"Yet Another Test Project",
         "buildStatus":"RUNNING",
-        "refreshUrl":"https://maypad.de/projects/6/refresh",
-        "repositoryUrl":"https://git.maypad.de/yet-another-test-project.git",
+        "refreshURL":"https://maypad.de/projects/6/refresh",
+        "repositoryURL":"https://git.maypad.de/yet-another-test-project.git",
         "serviceAccount": {
             "key":"djnsvkgfbjsngjkbgjbkluaernl..."
         }

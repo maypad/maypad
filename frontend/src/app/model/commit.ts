@@ -1,6 +1,6 @@
 export class Commit {
     hash: string;
     author: string;
-    commitMsg: string;
+    message: string;
     timestamp: string;
 }

@@ -2,8 +2,8 @@
     "id":2,
     "name":"One Test Project",
     "buildStatus":"SUCCESS",
-    "refreshUrl":"https://maypad.de/projects/2/refresh",
-    "repositoryUrl":"https://git.maypad.de/one-test-project.git",
+    "refreshURL":"https://maypad.de/projects/2/refresh",
+    "repositoryURL":"https://git.maypad.de/one-test-project.git",
     "serviceAccount": {
         "username":"maypad-git"
     }
