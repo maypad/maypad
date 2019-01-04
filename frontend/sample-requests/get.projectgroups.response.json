@@ -1,0 +1,12 @@
+[
+    {
+        "id":1,
+        "name":"First projectgroup",
+        "buildStatus":"SUCCESS"
+    },
+    {
+        "id":2,
+        "name":"Second projectgroup",
+        "buildStatus":"FAILED"
+    }
+]
