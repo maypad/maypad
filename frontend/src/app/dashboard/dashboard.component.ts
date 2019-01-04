@@ -42,8 +42,7 @@ export class DashboardComponent implements OnInit {
     }];
   }
 
-  log(event: FocusEvent) {
-    console.log('asd', event);
+  clearInput(event: FocusEvent) {
     if (event.relatedTarget == null) {
       this.modal.clearInput();
     }
