@@ -15,6 +15,7 @@ import { ProjectgroupDetailComponent } from './dashboard/projectgroup-detail/pro
 import { AddProjectgroupDialogComponent } from './dashboard/add-projectgroup-dialog/add-projectgroup-dialog.component';
 import { EditProjectgroupDialogComponent } from './dashboard/projectgroup-detail/edit-projectgroup-dialog/edit-projectgroup-dialog.component';
 import { ProjectListItemComponent } from './dashboard/projectgroup-detail/project-list-item/project-list-item.component';
+import { AddProjectDialogComponent } from './dashboard/projectgroup-detail/add-project-dialog/add-project-dialog.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { ProjectListItemComponent } from './dashboard/projectgroup-detail/projec
     ProjectgroupDetailComponent,
     AddProjectgroupDialogComponent,
     EditProjectgroupDialogComponent,
-    ProjectListItemComponent
+    ProjectListItemComponent,
+    AddProjectDialogComponent
   ],
   imports: [
     BrowserModule,
