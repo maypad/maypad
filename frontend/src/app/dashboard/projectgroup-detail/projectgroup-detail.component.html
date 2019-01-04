@@ -5,10 +5,19 @@
     </a>
     <div>
       <button class="btn btn-primary mr-2">Edit</button>
-      <button class="btn btn-primary">Delete</button>
+      <button class="btn btn-primary" data-toggle="modal" attr.data-target="#addProjectModal{{projGroup.id}}">Add</button>
     </div>
   </div>
   <div class="collapse" id="collapse{{projGroup.id}}">
     <app-project-list-item *ngFor="let proj of projGroup.projects" [project]="proj"></app-project-list-item>
+  </div>
+</div>
+
+<div class="modal fade" id="addProjectModal{{projGroup.id}}" (blur)="clearInput($event)" tabindex="0" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content" tabindex="1">
+      <app-add-project-dialog #addProjectDialog{{projGroup.id}}>
+      </app-add-project-dialog>
+    </div>
   </div>
 </div>

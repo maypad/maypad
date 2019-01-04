@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { BreadcrumbService } from '../breadcrumb.service';
 import { Projectgroup } from '../model/projectGroup';
 import { Project } from '../model/project';
 import { BuildStatus } from '../model/buildStatus';
 import { Branch } from '../model/branch';
 import { ServiceAccount } from '../model/serviceAccount';
+import { AddProjectgroupDialogComponent } from './add-projectgroup-dialog/add-projectgroup-dialog.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -12,6 +13,7 @@ import { ServiceAccount } from '../model/serviceAccount';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
+  @ViewChild('addGroupDialog') modal: AddProjectgroupDialogComponent;
   projectGroups: Projectgroup[];
 
   constructor(private crumbs: BreadcrumbService) { }
@@ -40,4 +42,10 @@ export class DashboardComponent implements OnInit {
     }];
   }
 
+  log(event: FocusEvent) {
+    console.log('asd', event);
+    if (event.relatedTarget == null) {
+      this.modal.clearInput();
+    }
+  }
 }

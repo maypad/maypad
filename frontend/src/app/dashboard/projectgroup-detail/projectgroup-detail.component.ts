@@ -1,5 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { Projectgroup } from 'src/app/model/projectGroup';
+import { AddProjectDialogComponent } from './add-project-dialog/add-project-dialog.component';
 
 @Component({
   selector: 'app-projectgroup-detail',
@@ -8,9 +9,15 @@ import { Projectgroup } from 'src/app/model/projectGroup';
 })
 export class ProjectgroupDetailComponent implements OnInit {
   @Input('projGroup') projGroup: Projectgroup;
+  @ViewChild('addProjectDialog{{projGroup.id}}') addModal: AddProjectDialogComponent;
   constructor() { }
 
   ngOnInit() {
   }
 
+  clearInput(event: FocusEvent) {
+    if (event.relatedTarget == null) {
+      this.addModal.clearInput();
+    }
+  }
 }
