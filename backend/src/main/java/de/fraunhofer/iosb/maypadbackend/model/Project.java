@@ -4,6 +4,7 @@ import de.fraunhofer.iosb.maypadbackend.model.repository.Repository;
 import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.ServiceAccount;
 import de.fraunhofer.iosb.maypadbackend.model.webhook.InternalWebhook;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -26,8 +27,9 @@ import java.util.Date;
  * @version 1.0
  */
 @Data
+@NoArgsConstructor
 @Entity
-public abstract class Project {
+public class Project {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -51,5 +53,22 @@ public abstract class Project {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private InternalWebhook refreshWebhook;
 
-
+    /**
+     * Constructor for Project.
+     * @param lastUpdate the exact time of the last repository update
+     * @param buildStatus the build status of the project
+     * @param repository the repository
+     * @param repoUrl the repository URL
+     * @param serviceAccount the serviceaccount
+     * @param refreshWebhook the webhook for refreshing the project
+     */
+    public Project(Date lastUpdate, Status buildStatus, Repository repository, String repoUrl,
+                   ServiceAccount serviceAccount, InternalWebhook refreshWebhook) {
+        this.lastUpdate = lastUpdate;
+        this.buildStatus = buildStatus;
+        this.repository = repository;
+        this.repoUrl = repoUrl;
+        this.serviceAccount = serviceAccount;
+        this.refreshWebhook = refreshWebhook;
+    }
 }

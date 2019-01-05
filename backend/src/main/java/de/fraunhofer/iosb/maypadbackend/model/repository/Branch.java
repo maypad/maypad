@@ -8,6 +8,7 @@ import de.fraunhofer.iosb.maypadbackend.model.deployment.DeploymentType;
 import de.fraunhofer.iosb.maypadbackend.model.person.Mail;
 import de.fraunhofer.iosb.maypadbackend.model.person.Person;
 import de.fraunhofer.iosb.maypadbackend.model.webhook.InternalWebhook;
+
 import lombok.Data;
 
 import javax.persistence.CascadeType;
@@ -19,8 +20,10 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+
 import java.util.List;
 
 /**
@@ -49,6 +52,8 @@ public class Branch {
     private List<Person> members;
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Mail> mails;
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Branch> dependencies;
 
     //build
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

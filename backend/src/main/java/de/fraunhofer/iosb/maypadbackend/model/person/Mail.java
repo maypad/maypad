@@ -1,6 +1,7 @@
 package de.fraunhofer.iosb.maypadbackend.model.person;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,6 +16,7 @@ import javax.persistence.Id;
  * @version 1.0
  */
 @Data
+@NoArgsConstructor
 @Entity
 public class Mail {
 
@@ -25,4 +27,11 @@ public class Mail {
     @Column
     private String mailAddress;
 
+    /**
+     * Constructor for Mail.
+     * @param mailAddress the Mailaddress
+     */
+    public Mail(String mailAddress) {
+        this.mailAddress = mailAddress;
+    }
 }

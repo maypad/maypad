@@ -42,4 +42,15 @@ public class Build {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    /**
+     * Constructor for Build.
+     * @param timestamp the exact time of the build
+     * @param commit the last commit on the built branch
+     * @param status the status of the build
+     */
+    public Build(Date timestamp, Commit commit, Status status) {
+        this.timestamp = timestamp;
+        this.commit = commit;
+        this.status = status;
+    }
 }
