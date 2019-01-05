@@ -7,17 +7,20 @@ import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 })
 export class AddProjectgroupDialogComponent implements OnInit {
   @ViewChild('groupName') input: ElementRef;
+  groupName: string = '';
   constructor() { }
 
   ngOnInit() {
   }
 
   // POST new request, wait for response and reload site
-  addProjectgroup(name: string) {
-    console.log(name);
+  addProjectgroup() {
+    console.log(this.groupName);
   }
 
   clearInput() {
-    this.input.nativeElement.value = '';
+    // this.input.nativeElement.value = '';
+    console.log(this.groupName);
+    this.groupName = '';
   }
 }

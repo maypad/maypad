@@ -8,10 +8,10 @@ import { Projectgroup } from 'src/app/model/projectGroup';
 })
 export class AddProjectDialogComponent implements OnInit {
   @Input('projGroup') projGroup: Projectgroup;
-  @ViewChild('repoUrl') repoField: ElementRef;
-  @ViewChild('sshKey') sshField: ElementRef;
-  @ViewChild('username') username: ElementRef;
-  @ViewChild('password') password: ElementRef;
+  repoUrl: string = '';
+  sshKey: string = '';
+  username: string = '';
+  password: string = '';
   selectedIndex: Number = 1;
 
   constructor() { }
@@ -20,14 +20,29 @@ export class AddProjectDialogComponent implements OnInit {
   }
 
   clearInput() {
-    this.repoField.nativeElement.value = '';
-    this.sshField.nativeElement.value = '';
-    this.username.nativeElement.value = '';
-    this.password.nativeElement.value = '';
+    this.repoUrl = '';
+    this.sshKey = '';
+    this.username = '';
+    this.password = '';
   }
 
   setSelected(num: Number) {
     this.selectedIndex = num;
+  }
+
+  addProject() {
+    switch (this.selectedIndex) {
+      case 1:
+        console.log(`[${this.projGroup.id}]Add project url: ${this.repoUrl} with sshKey:`, this.sshKey);
+        break;
+      case 2:
+        console.log(`[${this.projGroup.id}]Add project url: ${this.repoUrl} with username/password:`, this.username, this.password);
+        break;
+      default:
+        console.error(`[${this.projGroup.id}]Invalid authentification method.`)
+        break;
+    }
+    this.clearInput();
   }
 
 }

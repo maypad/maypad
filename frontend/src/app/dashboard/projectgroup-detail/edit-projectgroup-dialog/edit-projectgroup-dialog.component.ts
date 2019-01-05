@@ -8,18 +8,19 @@ import { Projectgroup } from 'src/app/model/projectGroup';
 })
 export class EditProjectgroupDialogComponent implements OnInit {
   @Input('projGroup') projGroup: Projectgroup;
-  @ViewChild('newNameInput') newNameInput: ElementRef;
+  newName: string = '';
   constructor() { }
 
   ngOnInit() {
+    this.newName = this.projGroup.name;
   }
 
   clearInput() {
-    this.newNameInput.nativeElement.value = '';
+    this.newName = this.projGroup.name;
   }
 
-  updateProjectgroup(newName: string) {
-    console.log(`Update projgroup ${this.projGroup.id} to new name: ${newName}`);
+  updateProjectgroup() {
+    console.log(`Update projgroup ${this.projGroup.id} to new name: ${this.newName}`);
     // Reload page?
   }
 

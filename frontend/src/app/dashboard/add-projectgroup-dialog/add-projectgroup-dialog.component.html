@@ -7,13 +7,13 @@
 <div class="modal-body">
   <div class="input-group mb-3">
     <div class="input-group-prepend">
-      <span class="input-group-text" id="basic-addon3">Projectgroup Name:</span>
+      <span class="input-group-text" id="nameLabel">Projectgroup Name:</span>
     </div>
-    <input type="text" class="form-control" #groupName aria-describedby="basic-addon3">
+    <input type="text" class="form-control" [(ngModel)]="groupName" aria-describedby="nameLabel">
   </div>
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-  <button type="button" class="btn btn-primary" (click)="addProjectgroup(groupName.value)" data-dismiss="modal">Add
+  <button type="button" class="btn btn-primary" (click)="addProjectgroup()" data-dismiss="modal">Add
     Projectgroup</button>
 </div>
