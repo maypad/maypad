@@ -2,11 +2,10 @@
   <div class="d-flex justify-content-end pb-3">
     <button class="btn btn-secondary" data-toggle="modal" data-target="#addGroupModal">Add
       Projectgroup</button>
-    <button class="btn btn-secondary" (click)="log()">Addasdasdas Projectgroup</button>
   </div>
   <app-projectgroup-detail *ngFor="let group of projectGroups" [projGroup]="group"></app-projectgroup-detail>
 </div>
-<div class="modal fade" #addGroupModal (focusout)="log($event)" id="addGroupModal" tabindex="-1" role="dialog">
+<div class="modal fade" #addGroupModal (focusout)="clearInput($event)" id="addGroupModal" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <app-add-projectgroup-dialog #addGroupDialog>
