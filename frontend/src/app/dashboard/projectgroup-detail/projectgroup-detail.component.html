@@ -4,7 +4,7 @@
       <h4 class="blackText">{{projGroup.name}}</h4>
     </a>
     <div>
-      <button class="btn btn-primary mr-2">Edit</button>
+      <button class="btn btn-primary mr-2" data-toggle="modal" attr.data-target="#editProjectgroupModal{{projGroup.id}}">Edit</button>
       <button class="btn btn-primary" data-toggle="modal" attr.data-target="#addProjectModal{{projGroup.id}}">Add</button>
     </div>
   </div>
@@ -16,8 +16,17 @@
 <div class="modal fade" id="addProjectModal{{projGroup.id}}" (blur)="clearInput($event)" tabindex="0" role="dialog">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content" tabindex="1">
-      <app-add-project-dialog #addProjectDialog{{projGroup.id}}>
+      <app-add-project-dialog #addProjectDialog{{projGroup.id}} [projGroup]="projGroup">
       </app-add-project-dialog>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="editProjectgroupModal{{projGroup.id}}" (blur)="clearInput($event)" tabindex="0" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content" tabindex="1">
+      <app-edit-projectgroup-dialog #editProjectgroupDialog{{projGroup.id}} [projGroup]="projGroup">
+      </app-edit-projectgroup-dialog>
     </div>
   </div>
 </div>
