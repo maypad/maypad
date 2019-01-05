@@ -1,4 +1,4 @@
-<div class="container py-2 d-flex flex-row">
+<div class="container py-2 d-flex flex-row" [ngClass]="{'border-bottom border-secondary': border}">
   <a routerLink="/projects/{{project.id}}">
     <div class="mr-1">{{project.name}}</div>
   </a>

@@ -9,7 +9,7 @@
     </div>
   </div>
   <div class="collapse" id="collapse{{projGroup.id}}">
-    <app-project-list-item *ngFor="let proj of projGroup.projects" [project]="proj"></app-project-list-item>
+    <app-project-list-item *ngFor="let proj of projGroup.projects; let last = last" [border]="!last" [project]="proj"></app-project-list-item>
   </div>
 </div>
 

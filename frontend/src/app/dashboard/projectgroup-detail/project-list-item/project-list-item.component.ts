@@ -8,6 +8,7 @@ import { Project } from 'src/app/model/project';
 })
 export class ProjectListItemComponent implements OnInit {
   @Input('project') project: Project;
+  @Input('border') border: boolean;
   constructor() { }
 
   ngOnInit() {
