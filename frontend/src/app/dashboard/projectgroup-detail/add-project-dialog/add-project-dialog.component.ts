@@ -1,4 +1,5 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Input } from '@angular/core';
+import { Projectgroup } from 'src/app/model/projectGroup';
 
 @Component({
   selector: 'app-add-project-dialog',
@@ -6,6 +7,7 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
   styleUrls: ['./add-project-dialog.component.css']
 })
 export class AddProjectDialogComponent implements OnInit {
+  @Input('projGroup') projGroup: Projectgroup;
   @ViewChild('repoUrl') repoField: ElementRef;
   @ViewChild('sshKey') sshField: ElementRef;
   @ViewChild('username') username: ElementRef;
