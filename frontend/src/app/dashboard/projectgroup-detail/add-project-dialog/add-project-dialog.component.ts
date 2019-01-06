@@ -16,8 +16,7 @@ export class AddProjectDialogComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
-  }
+  ngOnInit() { }
 
   clearInput() {
     this.repoUrl = '';
@@ -33,9 +32,12 @@ export class AddProjectDialogComponent implements OnInit {
   addProject() {
     switch (this.selectedIndex) {
       case 1:
-        console.log(`[${this.projGroup.id}]Add project url: ${this.repoUrl} with sshKey:`, this.sshKey);
+        console.log(`[${this.projGroup.id}]Add project url: ${this.repoUrl} with no authentification method`);
         break;
       case 2:
+        console.log(`[${this.projGroup.id}]Add project url: ${this.repoUrl} with sshKey:`, this.sshKey);
+        break;
+      case 3:
         console.log(`[${this.projGroup.id}]Add project url: ${this.repoUrl} with username/password:`, this.username, this.password);
         break;
       default:
@@ -44,5 +46,4 @@ export class AddProjectDialogComponent implements OnInit {
     }
     this.clearInput();
   }
-
 }
