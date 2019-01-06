@@ -10,8 +10,6 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { ProjectDetailComponent } from './project-detail/project-detail.component';
 import { BranchDetailComponent } from './branch-detail/branch-detail.component';
 import { RouterLinkDirectiveStub } from 'src/testing/router-link-directive-stub.directive';
-import { DeploymentHistoryComponent } from './deployment-history/deployment-history.component';
-import { BuildHistoryComponent } from './build-history/build-history.component';
 import { ProjectgroupDetailComponent } from './dashboard/projectgroup-detail/projectgroup-detail.component';
 import { AddProjectgroupDialogComponent } from './dashboard/add-projectgroup-dialog/add-projectgroup-dialog.component';
 // tslint:disable-next-line
@@ -28,8 +26,6 @@ import { AddProjectDialogComponent } from './dashboard/projectgroup-detail/add-p
     ProjectDetailComponent,
     BranchDetailComponent,
     RouterLinkDirectiveStub,
-    DeploymentHistoryComponent,
-    BuildHistoryComponent,
     ProjectgroupDetailComponent,
     AddProjectgroupDialogComponent,
     EditProjectgroupDialogComponent,
