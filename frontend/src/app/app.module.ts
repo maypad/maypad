@@ -14,6 +14,7 @@ import { DeploymentHistoryComponent } from './deployment-history/deployment-hist
 import { BuildHistoryComponent } from './build-history/build-history.component';
 import { ProjectgroupDetailComponent } from './dashboard/projectgroup-detail/projectgroup-detail.component';
 import { AddProjectgroupDialogComponent } from './dashboard/add-projectgroup-dialog/add-projectgroup-dialog.component';
+// tslint:disable-next-line
 import { EditProjectgroupDialogComponent } from './dashboard/projectgroup-detail/edit-projectgroup-dialog/edit-projectgroup-dialog.component';
 import { ProjectListItemComponent } from './dashboard/projectgroup-detail/project-list-item/project-list-item.component';
 import { AddProjectDialogComponent } from './dashboard/projectgroup-detail/add-project-dialog/add-project-dialog.component';

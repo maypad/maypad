@@ -9,7 +9,7 @@ import { EditProjectgroupDialogComponent } from './edit-projectgroup-dialog/edit
   styleUrls: ['./projectgroup-detail.component.css']
 })
 export class ProjectgroupDetailComponent implements OnInit {
-  @Input('projGroup') projGroup: Projectgroup;
+  @Input() projGroup: Projectgroup;
   @ViewChild('addProjectDialog{{projGroup.id}}') addModal: AddProjectDialogComponent;
   @ViewChild('editProjectgroupDialog{{projGroup.id}}') editModal: EditProjectgroupDialogComponent;
   constructor() { }

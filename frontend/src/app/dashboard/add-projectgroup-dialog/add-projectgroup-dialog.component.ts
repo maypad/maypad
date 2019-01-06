@@ -6,8 +6,7 @@ import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
   styleUrls: ['./add-projectgroup-dialog.component.css']
 })
 export class AddProjectgroupDialogComponent implements OnInit {
-  @ViewChild('groupName') input: ElementRef;
-  groupName: string = '';
+  groupName = '';
   constructor() { }
 
   ngOnInit() {

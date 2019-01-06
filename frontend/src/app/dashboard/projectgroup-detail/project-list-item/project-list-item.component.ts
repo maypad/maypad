@@ -7,8 +7,8 @@ import { Project } from 'src/app/model/project';
   styleUrls: ['./project-list-item.component.css']
 })
 export class ProjectListItemComponent implements OnInit {
-  @Input('project') project: Project;
-  @Input('border') border: boolean;
+  @Input() project: Project;
+  @Input() border: boolean;
   constructor() { }
 
   ngOnInit() {

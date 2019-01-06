@@ -7,12 +7,12 @@ import { Projectgroup } from 'src/app/model/projectGroup';
   styleUrls: ['./add-project-dialog.component.css']
 })
 export class AddProjectDialogComponent implements OnInit {
-  @Input('projGroup') projGroup: Projectgroup;
-  repoUrl: string = '';
-  sshKey: string = '';
-  username: string = '';
-  password: string = '';
-  selectedIndex: Number = 1;
+  @Input() projGroup: Projectgroup;
+  repoUrl = '';
+  sshKey = '';
+  username = '';
+  password = '';
+  selectedIndex = 1;
 
   constructor() { }
 
@@ -26,7 +26,7 @@ export class AddProjectDialogComponent implements OnInit {
     this.password = '';
   }
 
-  setSelected(num: Number) {
+  setSelected(num) {
     this.selectedIndex = num;
   }
 
@@ -39,7 +39,7 @@ export class AddProjectDialogComponent implements OnInit {
         console.log(`[${this.projGroup.id}]Add project url: ${this.repoUrl} with username/password:`, this.username, this.password);
         break;
       default:
-        console.error(`[${this.projGroup.id}]Invalid authentification method.`)
+        console.error(`[${this.projGroup.id}]Invalid authentification method.`);
         break;
     }
     this.clearInput();

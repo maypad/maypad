@@ -7,8 +7,8 @@ import { Projectgroup } from 'src/app/model/projectGroup';
   styleUrls: ['./edit-projectgroup-dialog.component.css']
 })
 export class EditProjectgroupDialogComponent implements OnInit {
-  @Input('projGroup') projGroup: Projectgroup;
-  newName: string = '';
+  @Input() projGroup: Projectgroup;
+  newName = '';
   constructor() { }
 
   ngOnInit() {

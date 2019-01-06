@@ -21,23 +21,23 @@ export class DashboardComponent implements OnInit {
   ngOnInit() {
     this.crumbs.setBreadcrumbs([]);
     // Mocking api
-    let sAccount: ServiceAccount = { sshKey: "asd123" };
-    let branch: Branch;
-    let proj: Project = {
-      name: "Project Beta", id: 42,
-      repositoryURL: "testgit.com/repo.git", branches: [branch],
+    const sAccount: ServiceAccount = { sshKey: 'asd123' };
+    const branch: Branch = null;
+    const proj: Project = {
+      name: 'Project Beta', id: 42,
+      repositoryURL: 'testgit.com/repo.git', branches: [branch],
       serviceAccount: sAccount, status: BuildStatus.SUCCESS
     };
-    let proj2: Project = {
-      name: "Project Delta", id: 19,
-      repositoryURL: "testgit.com/repo.git", branches: [branch],
+    const proj2: Project = {
+      name: 'Project Delta', id: 19,
+      repositoryURL: 'testgit.com/repo.git', branches: [branch],
       serviceAccount: sAccount, status: BuildStatus.FAILED
     };
     this.projectGroups = [{
-      name: "Group Alpha", id: 123,
+      name: 'Group Alpha', id: 123,
       projects: [proj, proj2, proj], status: BuildStatus.SUCCESS
     }, {
-      name: "Group Gamma", id: 124,
+      name: 'Group Gamma', id: 124,
       projects: [proj, proj, proj2], status: BuildStatus.SUCCESS
     }];
   }
