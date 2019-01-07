@@ -1,40 +1,43 @@
 <div class="modal-header">
-  <h5 class="modal-title">Add Project</h5>
+  <h5 class="modal-title" i18n="add project|Add the project defined in the dialog">Add Project</h5>
   <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 </div>
 <div class="modal-body">
   <div class="input-group mb-3">
-    <div class="input-group-prepend"><span class="input-group-text" id="repoField">Repository URL</span></div>
+    <div class="input-group-prepend"><span class="input-group-text" id="repoField" i18n="repo url|Project repository url">Repository
+        URL</span></div>
     <input type="text" class="form-control" [(ngModel)]="repoUrl" aria-describedby="repoField" />
   </div>
   <div class="dropdown mb-3 d-flex justify-content-end">
     <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
-      aria-haspopup="true" aria-expanded="false">
+      aria-haspopup="true" aria-expanded="false" i18n="auth method|Authentification method to be used for the repository">
       Authentification Method
     </button>
     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-      <button class="dropdown-item" [ngClass]="{ active: selectedIndex == 1 }" (mousedown)="setSelected(1)">None</button>
-      <button class="dropdown-item" [ngClass]="{ active: selectedIndex == 2 }" (mousedown)="setSelected(2)">SSH-Key</button>
-      <button class="dropdown-item" [ngClass]="{ active: selectedIndex == 3 }" (mousedown)="setSelected(3)">Service
+      <button class="dropdown-item" [ngClass]="{ active: selectedIndex == 1 }" (mousedown)="setSelected(1)" i18n="None|No authentification method">None</button>
+      <button class="dropdown-item" [ngClass]="{ active: selectedIndex == 2 }" (mousedown)="setSelected(2)" i18n="SSH-Key|Repo Auth: SSH-Key">SSH-Key</button>
+      <button class="dropdown-item" [ngClass]="{ active: selectedIndex == 3 }" (mousedown)="setSelected(3)" i18n="Service Account|Repo Auth: Service account">Service
         Account</button>
     </div>
   </div>
   <div class="input-group mb-3" [ngClass]="{ 'd-none': selectedIndex != 2 }">
-    <div class="input-group-prepend"><span class="input-group-text" id="sshField">SSH Key</span></div>
+    <div class="input-group-prepend"><span class="input-group-text" id="sshField" i18n="SSH-Key|Repo Auth: SSH-Key">SSH
+        Key</span></div>
     <input type="text" class="form-control" [(ngModel)]="sshKey" aria-describedby="sshField" />
   </div>
   <div [ngClass]="{ 'd-none': selectedIndex != 3 }">
     <div class="input-group mb-3">
-      <div class="input-group-prepend"><span class="input-group-text" id="usernameField">Username</span></div>
+      <div class="input-group-prepend"><span class="input-group-text" id="usernameField" i18n="Username|Repo Auth: service account username">Username</span></div>
       <input type="text" class="form-control" [(ngModel)]="username" aria-describedby="usernameField" />
     </div>
     <div class="input-group mb-3">
-      <div class="input-group-prepend"><span class="input-group-text" id="passwordField">Password</span></div>
+      <div class="input-group-prepend"><span class="input-group-text" id="passwordField" i18n="Password|Repo Auth: service account password">Password</span></div>
       <input type="text" class="form-control" [(ngModel)]="password" aria-describedby="passwordField" />
     </div>
   </div>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-  <button type="button" class="btn btn-primary" (click)="addProject()" data-dismiss="modal">Add Project</button>
+  <button type="button" class="btn btn-secondary" data-dismiss="modal" i18n="Cancel">Cancel</button>
+  <button type="button" class="btn btn-primary" (click)="addProject()" data-dismiss="modal" i18n="add project|Add the project defined in the dialog">Add
+    Project</button>
 </div>
