@@ -35,8 +35,6 @@ public class Commit {
     private String commitIdentifier;
     @Temporal(TemporalType.TIMESTAMP)
     private Date timestamp;
-    @OneToOne
-    private Branch branch;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Author author;
 

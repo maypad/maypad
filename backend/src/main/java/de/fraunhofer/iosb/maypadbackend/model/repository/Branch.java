@@ -12,7 +12,17 @@ import de.fraunhofer.iosb.maypadbackend.model.person.Person;
 import de.fraunhofer.iosb.maypadbackend.model.webhook.InternalWebhook;
 import lombok.Data;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import java.util.List;
 
 /**
@@ -31,9 +41,8 @@ public class Branch {
     private int id;
 
     //repository
-    @Basic
+    @Column
     private String readme;
-
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Commit lastCommit;
 
@@ -51,6 +60,7 @@ public class Branch {
 
     //build
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private BuildType buildType;
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Build> builds;

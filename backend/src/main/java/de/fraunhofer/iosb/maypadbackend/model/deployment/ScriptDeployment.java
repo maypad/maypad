@@ -2,7 +2,6 @@ package de.fraunhofer.iosb.maypadbackend.model.deployment;
 
 import lombok.Data;
 
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import java.io.File;
@@ -17,7 +16,7 @@ import java.io.File;
 @Entity
 public class ScriptDeployment extends DeploymentType {
 
-    @Basic
+    @Column
     private File script;
 
 }
