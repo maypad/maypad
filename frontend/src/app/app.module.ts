@@ -9,7 +9,7 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { ProjectDetailComponent } from './project-detail/project-detail.component';
 import { BranchDetailComponent } from './branch-detail/branch-detail.component';
-import { RouterLinkDirectiveStub } from 'src/testing/router-link-directive-stub.directive';
+import { RouterStubsModule } from 'src/testing/router-link-directive-stub.directive';
 import { ProjectgroupDetailComponent } from './dashboard/projectgroup-detail/projectgroup-detail.component';
 import { AddProjectgroupDialogComponent } from './dashboard/add-projectgroup-dialog/add-projectgroup-dialog.component';
 // tslint:disable-next-line
@@ -25,7 +25,6 @@ import { AddProjectDialogComponent } from './dashboard/projectgroup-detail/add-p
     DashboardComponent,
     ProjectDetailComponent,
     BranchDetailComponent,
-    RouterLinkDirectiveStub,
     ProjectgroupDetailComponent,
     AddProjectgroupDialogComponent,
     EditProjectgroupDialogComponent,
@@ -35,7 +34,8 @@ import { AddProjectDialogComponent } from './dashboard/projectgroup-detail/add-p
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule
+    FormsModule,
+    RouterStubsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
