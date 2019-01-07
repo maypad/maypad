@@ -3,8 +3,6 @@ package de.fraunhofer.iosb.maypadbackend.model.repository;
 import de.fraunhofer.iosb.maypadbackend.model.Status;
 import de.fraunhofer.iosb.maypadbackend.model.build.Build;
 import de.fraunhofer.iosb.maypadbackend.model.build.BuildType;
-import de.fraunhofer.iosb.maypadbackend.model.buildsystem.BuildSystem;
-import de.fraunhofer.iosb.maypadbackend.model.buildsystem.Dependency;
 import de.fraunhofer.iosb.maypadbackend.model.deployment.Deployment;
 import de.fraunhofer.iosb.maypadbackend.model.deployment.DeploymentType;
 import de.fraunhofer.iosb.maypadbackend.model.person.Mail;
@@ -46,17 +44,11 @@ public class Branch {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Commit lastCommit;
 
-    //buildsystem
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private BuildSystem buildSystem;
-
     //maypad-data
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Person> members;
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Mail> mails;
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Dependency> dependencies;
 
     //build
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
