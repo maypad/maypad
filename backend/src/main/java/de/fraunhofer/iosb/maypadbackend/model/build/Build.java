@@ -19,7 +19,7 @@ import javax.persistence.TemporalType;
 import java.util.Date;
 
 /**
- * A Build with its metadata
+ * A Build with its metadata.
  *
  * @author Lukas Brosch
  * @version 1.0

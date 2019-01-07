@@ -9,7 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
- * An Email-Adress
+ * An Email-Adress.
  *
  * @author Lukas Brosch
  * @version 1.0

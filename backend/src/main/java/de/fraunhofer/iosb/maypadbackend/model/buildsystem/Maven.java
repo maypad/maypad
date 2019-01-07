@@ -9,7 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.Transient;
 
 /**
- * Buildsystem Maven
+ * Buildsystem Maven.
  *
  * @author Lukas Brosch
  * @version 1.0

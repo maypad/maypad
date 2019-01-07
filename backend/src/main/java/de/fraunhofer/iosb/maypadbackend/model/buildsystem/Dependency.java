@@ -11,7 +11,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 
 /**
- * Dependency that is stored in a buildsystem (no Maypad-dependency)
+ * Dependency that is stored in a buildsystem (no Maypad-dependency).
  *
  * @author Lukas Brosch
  * @version 1.0

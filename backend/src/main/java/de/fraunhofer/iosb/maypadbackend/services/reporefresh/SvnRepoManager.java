@@ -3,7 +3,7 @@ package de.fraunhofer.iosb.maypadbackend.services.reporefresh;
 import de.fraunhofer.iosb.maypadbackend.model.Project;
 
 /**
- * Manager for a svn repository
+ * Manager for a svn repository.
  *
  * @author Lukas Brosch
  * @version 1.0
@@ -11,7 +11,7 @@ import de.fraunhofer.iosb.maypadbackend.model.Project;
 public class SvnRepoManager extends RepoManager {
 
     /**
-     * Constructor, prepare the SvnRepoManager
+     * Constructor, prepare the SvnRepoManager.
      *
      * @param project Project for which the svn-repository is to be managed
      */

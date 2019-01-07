@@ -8,7 +8,7 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
 
 /**
- * Author for a commit
+ * Author for a commit.
  *
  * @author Lukas Brosch
  * @version 1.0

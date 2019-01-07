@@ -6,7 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 
 /**
- * Dependency for the {@link Gradle} buildsystem
+ * Dependency for the {@link Gradle} buildsystem.
  *
  * @author Lukas Brosch
  * @version 1.0

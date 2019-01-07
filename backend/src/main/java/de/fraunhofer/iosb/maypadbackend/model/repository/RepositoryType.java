@@ -5,7 +5,7 @@ import de.fraunhofer.iosb.maypadbackend.services.reporefresh.GitRepoManager;
 import de.fraunhofer.iosb.maypadbackend.services.reporefresh.RepoManager;
 
 /**
- * Types of a version control system
+ * Types of a version control system.
  *
  * @author Lukas Brosch
  * @version 1.0
@@ -14,7 +14,7 @@ import de.fraunhofer.iosb.maypadbackend.services.reporefresh.RepoManager;
 public enum RepositoryType {
 
     /**
-     * Version control system git
+     * Version control system git.
      */
     GIT {
         @Override
@@ -23,7 +23,7 @@ public enum RepositoryType {
         }
     },
     /**
-     * Version control system SVN (Subversion)
+     * Version control system SVN (Subversion).
      */
     SVN {
         @Override
@@ -32,7 +32,7 @@ public enum RepositoryType {
         }
     },
     /**
-     * Unknown version control system
+     * Unknown version control system.
      */
     NONE {
         @Override

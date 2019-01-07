@@ -26,7 +26,7 @@ import javax.persistence.OneToOne;
 import java.util.List;
 
 /**
- * A branch within a {@link Repository}
+ * A branch within a {@link Repository}.
  *
  * @author Lukas Brosch
  * @version 1.0
@@ -60,7 +60,6 @@ public class Branch {
 
     //build
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private BuildType buildType;
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Build> builds;

@@ -6,7 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 
 /**
- * Service account whose authentication is using an username and password
+ * Service account whose authentication is using an username and password.
  *
  * @author Lukas Brosch
  * @version 1.0

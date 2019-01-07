@@ -8,7 +8,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 /**
- * Dependency for the {@link Maven} buildsystem
+ * Dependency for the {@link Maven} buildsystem.
  *
  * @author Lukas Brosch
  * @version 1.0

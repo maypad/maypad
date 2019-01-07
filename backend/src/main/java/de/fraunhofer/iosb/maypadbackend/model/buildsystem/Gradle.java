@@ -9,7 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.Transient;
 
 /**
- * Buildsystem Gradle
+ * Buildsystem Gradle.
  *
  * @author Lukas Brosch
  * @version 1.0

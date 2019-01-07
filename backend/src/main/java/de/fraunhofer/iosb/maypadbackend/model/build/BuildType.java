@@ -9,7 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
- * BuildTypes start / trigger a build
+ * BuildTypes start / trigger a build.
  *
  * @author Lukas Brosch
  * @version 1.0

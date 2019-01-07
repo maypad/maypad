@@ -15,7 +15,7 @@ import javax.persistence.OneToMany;
 import java.util.List;
 
 /**
- * A projectgroup in which can have {@link Project}s
+ * A projectgroup in which can have {@link Project}s.
  *
  * @author Lukas Brosch
  * @version 1.0

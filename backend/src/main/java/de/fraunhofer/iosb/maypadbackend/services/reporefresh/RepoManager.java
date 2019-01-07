@@ -13,7 +13,7 @@ public abstract class RepoManager {
     private Project project;
 
     /**
-     * Constructor, prepare the RepoManager
+     * Constructor, prepare the RepoManager.
      *
      * @param project Project for which the repository is to be managed
      */

@@ -1,7 +1,7 @@
 package de.fraunhofer.iosb.maypadbackend.model;
 
 /**
- * Describes different states for an action (e.g. a build)
+ * Describes different states for an action (e.g. a build).
  *
  * @author Lukas Brosch
  * @version 1.0
@@ -9,23 +9,23 @@ package de.fraunhofer.iosb.maypadbackend.model;
 public enum Status {
 
     /**
-     * The process was completed successfully
+     * The process was completed successfully.
      */
     SUCCESS,
     /**
-     * The process was completed incorrectly
+     * The process was completed incorrectly.
      */
     FAILED,
     /**
-     * The process has not been completed yet
+     * The process has not been completed yet.
      */
     RUNNING,
     /**
-     * The process was canceled
+     * The process was canceled.
      */
     CANCELED,
     /**
-     * The status of the process is unknown
+     * The status of the process is unknown.
      */
     UNKNOWN;
 

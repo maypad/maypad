@@ -16,7 +16,7 @@ import java.io.File;
 import java.util.List;
 
 /**
- * Repository of a version management system
+ * Repository of a version management system.
  *
  * @author Lukas Brosch
  * @version 1.0

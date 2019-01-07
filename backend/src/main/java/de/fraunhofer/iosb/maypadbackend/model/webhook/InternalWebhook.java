@@ -8,7 +8,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 /**
- * A webhook provided by Maypad
+ * A webhook provided by Maypad.
  *
  * @author Lukas Brosch
  * @version 1.0

@@ -9,7 +9,7 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
 
 /**
- * A build that is triggered by calling a webhook
+ * A build that is triggered by calling a webhook.
  *
  * @author Lukas Brosch
  * @version 1.0

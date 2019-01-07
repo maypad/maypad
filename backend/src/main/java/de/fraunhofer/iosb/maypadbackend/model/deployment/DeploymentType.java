@@ -11,7 +11,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 
 /**
- * Generalized method for a deployment
+ * Generalized method for a deployment.
  *
  * @author Lukas Brosch
  * @version 1.0

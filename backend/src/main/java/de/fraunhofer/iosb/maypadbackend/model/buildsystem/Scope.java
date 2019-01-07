@@ -1,7 +1,7 @@
 package de.fraunhofer.iosb.maypadbackend.model.buildsystem;
 
 /**
- * Depicts the used scope of a (Maven-)dependency
+ * Depicts the used scope of a (Maven-)dependency.
  *
  * @author Lukas Brosch
  * @version 1.0
@@ -9,31 +9,31 @@ package de.fraunhofer.iosb.maypadbackend.model.buildsystem;
 public enum Scope {
 
     /**
-     * No explicit scope has been set
+     * No explicit scope has been set.
      */
     NONE,
     /**
-     * The scope compile is used
+     * The scope compile is used.
      */
     COMPILE,
     /**
-     * The scope provided is used
+     * The scope provided is used.
      */
     PRIVIDED,
     /**
-     * The scope runtime is used
+     * The scope runtime is used.
      */
     RUNTIME,
     /**
-     * The scope test is used
+     * The scope test is used.
      */
     TEST,
     /**
-     * The scope system is used
+     * The scope system is used.
      */
     SYSTEM,
     /**
-     * The scope import is used
+     * The scope import is used.
      */
     IMPORT;
 

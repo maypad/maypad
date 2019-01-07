@@ -11,7 +11,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 
 /**
- * A general person
+ * A general person.
  *
  * @author Lukas Brosch
  * @version 1.0

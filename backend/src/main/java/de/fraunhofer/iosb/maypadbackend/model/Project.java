@@ -20,7 +20,7 @@ import javax.persistence.TemporalType;
 import java.util.Date;
 
 /**
- * A project in maypad which has a {@link Repository}
+ * A project in maypad which has a {@link Repository}.
  *
  * @author Lukas Brosch
  * @version 1.0
@@ -43,7 +43,7 @@ public abstract class Project {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Repository repository;
     @Column
-    private String repoURL;
+    private String repoUrl;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private ServiceAccount serviceAccount;
 

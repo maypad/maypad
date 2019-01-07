@@ -16,7 +16,7 @@ import javax.persistence.OneToMany;
 import java.util.List;
 
 /**
- * Buildsystem, which is managed by a {@link BuildSystemManager}
+ * Buildsystem, which is managed by a {@link BuildSystemManager}.
  *
  * @author Lukas Brosch
  * @version 1.0
@@ -39,7 +39,7 @@ public abstract class BuildSystem {
 
 
     /**
-     * Get an instance of a {@link BuildSystemManager} which manage the respective build system
+     * Get an instance of a {@link BuildSystemManager} which manage the respective build system.
      *
      * @return An instance of a BuildSystemManager
      */
