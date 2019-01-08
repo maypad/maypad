@@ -1,0 +1,60 @@
+[
+    {
+        "projectName":"One Test Project",
+        "name":"master",
+        "readme":"# MAYPAD\nDocumentation: [https://github.com/juliantodt/maypad-docs](https://github.com/juliantodt/maypad-docs)",
+        "lastCommit":{
+            "hash":"e37ab2d1f1eddc11b1b6531372569793bd110b83",
+            "timestamp":"Wed Jan 2 14:37:30 2019 +0100",
+            "message":"Fix various bugs",
+            "author":"Developer One <developer.one@maypad.de"
+        },
+        "members":[
+            "Developer One",
+            "Developer Two"
+        ],
+        "mails":[
+            "developer.one@maypad.de",
+            "developer.two@maypad.de"
+        ],
+        "buildWebhook":"https://git.maypad.de/pipeline-hook?token=kjadbhjasebjkdsa",
+        "deloyment":"webhook: https://ship.maypad.de/hook?token=vjfsdbjhkvlfavhkl",
+        "maypadDependencies":[
+            "3:master",
+            "12:dev",
+            "24:master"
+        ],
+        "buildStatus":"SUCCESS",
+        "buildSuccessUrl":"https://maypad.de/projects/1/branches/master/builds/success?token=djhbvjskbfavhbkdfbvlfbva",
+        "buildFailUrl":"https://maypad.de/projects/1/branches/master/builds/fail?token=jhdsbfajdbfhjbhvjdafb"
+    },
+    {
+        "projectName":"One Test Project",
+        "name":"dev",
+        "readme":"# MAYPAD\nDocumentation: [https://github.com/juliantodt/maypad-docs](https://github.com/juliantodt/maypad-docs)",
+        "lastCommit":{
+            "hash":"e37ab2d1f1eddc11b1b6531372569793bd110b83",
+            "timestamp":"Wed Jan 2 14:39:32 2019 +0100",
+            "message":"Fix typo",
+            "author":"Developer One <developer.one@maypad.de"
+        },
+        "members":[
+            "Developer One",
+            "Developer Two"
+        ],
+        "mails":[
+            "developer.one@maypad.de",
+            "developer.two@maypad.de"
+        ],
+        "buildWebhook":"https://git.maypad.de/pipeline-hook?token=sadjkcndfjkvfkv",
+        "deloyment":"webhook: https://ship.maypad.de/hook?token=jabjdksvnkf",
+        "maypadDependencies":[
+            "3:dev",
+            "12:testing",
+            "24:dev"
+        ],
+        "buildStatus":"RUNNING",
+        "buildSuccessUrl":"https://maypad.de/projects/1/branches/dev/builds/success?token=adjvnfjkvadnfjkvnkjsfd",
+        "buildFailUrl":"https://maypad.de/projects/1/branches/dev/builds/fail?token=sajkvdbfdjkvnfjksvnjkfdv"
+    }
+]

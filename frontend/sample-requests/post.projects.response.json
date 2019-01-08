@@ -1,0 +1,10 @@
+{
+    "id":2,
+    "name":"",
+    "buildStatus":"UNKNOWN",
+    "refreshUrl":"https://maypad.de/projects/2/refresh",
+    "repositoryUrl":"https://git.maypad.de/one-test-project.git",
+    "serviceAccount": {
+        "username":"maypad-git"
+    }
+}
