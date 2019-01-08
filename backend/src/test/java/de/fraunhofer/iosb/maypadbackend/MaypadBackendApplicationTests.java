@@ -11,7 +11,6 @@ public class MaypadBackendApplicationTests {
 
     @Test
     public void contextLoads() {
-
     }
 
 }

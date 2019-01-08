@@ -47,7 +47,7 @@ build.xml
 .DS_Store
 
 # build files
-build/
+#build/
 bin/
 dist/
 manifest.mf
