@@ -2,6 +2,8 @@ package de.fraunhofer.iosb.maypadbackend.dtos.response;
 
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  *  Data transfer object for transferring information about a Deployment entity.
  *
@@ -9,6 +11,6 @@ import lombok.Data;
  */
 @Data
 public class DeploymentResponse {
-    private String name;
-    private String url;
+    private Date timestamp;
+    private BuildResponse build;
 }

@@ -3,6 +3,7 @@ package de.fraunhofer.iosb.maypadbackend.model.build;
 import de.fraunhofer.iosb.maypadbackend.model.Status;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Commit;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -25,6 +26,7 @@ import java.util.Date;
  * @version 1.0
  */
 @Data
+@NoArgsConstructor
 @Entity
 public class Build {
 

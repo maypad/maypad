@@ -12,7 +12,7 @@ import java.util.List;
 /**
  *  Interface for mapping a Deployment-Entity to a Deployment-Response DTO.
  */
-@Mapper(componentModel = "spring", uses = {CommitMapper.class})
+@Mapper(componentModel = "spring", uses = {BuildMapper.class})
 public interface DeploymentMapper {
     public DeploymentResponse toResponse(Deployment deployment);
 

@@ -43,6 +43,8 @@ public class Branch {
 
     //repository
     @Column
+    private String name;
+    @Column
     private String readme;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Commit lastCommit;

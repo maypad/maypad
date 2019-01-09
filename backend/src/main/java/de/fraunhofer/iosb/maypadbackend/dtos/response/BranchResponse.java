@@ -20,8 +20,6 @@ public class BranchResponse {
     private String buildFailureUrl;
     private String[] mails;
     private Status buildStatus;
-    private ServiceAccountResponse serviceAccount;
     private CommitResponse lastCommit;
     private BuildResponse[] builds;
-    private TagResponse[] tags;
 }

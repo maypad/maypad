@@ -22,6 +22,9 @@ public class CommitMapperTest {
     private static final Author commitAuthor = new Author("Max Mustermann",
             new Mail("musterman@maypad.de"));
 
+    /**
+     * Setup test resources.
+     */
     @Before
     public void setup() {
         commitMapper = Mappers.getMapper(CommitMapper.class);
