@@ -1,6 +1,7 @@
 package de.fraunhofer.iosb.maypadbackend.model.webhook;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,6 +15,7 @@ import javax.persistence.Enumerated;
  * @version 1.0
  */
 @Data
+@NoArgsConstructor
 @Entity
 public class InternalWebhook extends Webhook {
 
@@ -22,4 +24,15 @@ public class InternalWebhook extends Webhook {
     @Enumerated(EnumType.STRING)
     private WebhookType type;
 
+    /**
+     * Constructor for InternalWebhook.
+     * @param url the URL of the webhook.
+     * @param token the token that identifies the webhook in maypad
+     * @param type the type of the webhook
+     */
+    public InternalWebhook(String url, String token, WebhookType type) {
+        super(url);
+        this.token = token;
+        this.type = type;
+    }
 }

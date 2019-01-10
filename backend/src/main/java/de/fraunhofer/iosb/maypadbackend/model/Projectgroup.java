@@ -1,6 +1,7 @@
 package de.fraunhofer.iosb.maypadbackend.model;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -12,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,6 +24,7 @@ import java.util.List;
  */
 
 @Data
+@NoArgsConstructor
 @Entity
 public class Projectgroup {
 
@@ -36,4 +39,14 @@ public class Projectgroup {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Project> projects;
 
+    /**
+     * Constructor for Projectgorup.
+     * @param name the projectgroups name
+     * @param buildStatus the projectgroups BuildStatus
+     */
+    public Projectgroup(String name, Status buildStatus) {
+        this.name = name;
+        this.buildStatus = buildStatus;
+        projects = new ArrayList<>();
+    }
 }

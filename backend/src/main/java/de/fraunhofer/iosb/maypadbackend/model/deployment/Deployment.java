@@ -2,6 +2,7 @@ package de.fraunhofer.iosb.maypadbackend.model.deployment;
 
 import de.fraunhofer.iosb.maypadbackend.model.build.Build;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -22,6 +23,7 @@ import java.util.Date;
  * @version 1.0
  */
 @Data
+@NoArgsConstructor
 @Entity
 public class Deployment {
 
@@ -34,4 +36,14 @@ public class Deployment {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Build build;
 
+
+    /**
+     * Constructor for Deployment.
+     * @param timestamp the exact time of the deployment start
+     * @param build the build that is deployed
+     */
+    public Deployment(Date timestamp, Build build) {
+        this.timestamp = timestamp;
+        this.build = build;
+    }
 }
