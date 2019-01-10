@@ -41,12 +41,23 @@ public class Projectgroup {
 
     /**
      * Constructor for Projectgorup.
-     * @param name the projectgroups name
-     * @param buildStatus the projectgroups BuildStatus
+     *
+     * @param name        the projectgroup name
+     * @param buildStatus the projectgroup BuildStatus
      */
     public Projectgroup(String name, Status buildStatus) {
         this.name = name;
         this.buildStatus = buildStatus;
         projects = new ArrayList<>();
     }
+
+    /**
+     * Constructor for Projectgorup.
+     *
+     * @param name the projectgroup name
+     */
+    public Projectgroup(String name) {
+        this(name, Status.UNKNOWN);
+    }
+
 }
