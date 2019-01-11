@@ -51,8 +51,7 @@ public class ProjectgroupService {
      * @return Created projectgroup
      */
     public Projectgroup create(String name) {
-        Projectgroup projectgroup = new Projectgroup(name);
-        return saveProjectgroup(projectgroup);
+        return saveProjectgroup(new Projectgroup(name));
     }
 
     /**
