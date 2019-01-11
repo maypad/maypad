@@ -2,11 +2,14 @@ import { BuildStatus } from './buildStatus';
 import { Commit } from './commit';
 
 export class Branch {
-    deploymentType: string;
-    respPerson: string;
+    name: string;
+    projectName: string;
+    deployment: string;
+    members: string[];
+    mails: string[];
     dependencies: string[];
-    readmeURL: string;
-    branchURL: string;
+    readme: string;
+    buildWebhook: string;
     buildSuccessURL: string;
     buildFailURL: string;
     tags: string[];

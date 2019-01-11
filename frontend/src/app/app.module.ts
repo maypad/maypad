@@ -16,6 +16,7 @@ import { AddProjectgroupDialogComponent } from './dashboard/add-projectgroup-dia
 import { EditProjectgroupDialogComponent } from './dashboard/projectgroup-detail/edit-projectgroup-dialog/edit-projectgroup-dialog.component';
 import { ProjectListItemComponent } from './dashboard/projectgroup-detail/project-list-item/project-list-item.component';
 import { AddProjectDialogComponent } from './dashboard/projectgroup-detail/add-project-dialog/add-project-dialog.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { AddProjectDialogComponent } from './dashboard/projectgroup-detail/add-p
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    RouterStubsModule
+    RouterStubsModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
