@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
-import { Projectgroup} from './model/projectGroup';
+import { Projectgroup } from './model/projectGroup';
 import { Project } from './model/project';
 import { Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import {KeyServiceAccount, ServiceAccount, UserServiceAccount} from './model/serviceAccount';
+import { KeyServiceAccount, ServiceAccount, UserServiceAccount } from './model/serviceAccount';
 import { BuildStatus } from './model/buildStatus';
 
 
@@ -15,7 +15,7 @@ export class ProjectgroupService {
 
   constructor(
     private api: ApiService,
-  ) {}
+  ) { }
 
   loadProjectgroups(): Observable<Projectgroup[]> {
     const url = `${this.api.backendUrl}projectgroups`;
@@ -28,7 +28,7 @@ export class ProjectgroupService {
           });
         }),
         catchError(this.api.handleError<Projectgroup[]>('loadProjectgroups', []))
-    );
+      );
   }
 
   loadProjects(id: number): Observable<Project[]> {
@@ -36,7 +36,7 @@ export class ProjectgroupService {
     return this.api.http.get<Project[]>(url)
       .pipe(
         map(response => {
-          return response.map( project => {
+          return response.map(project => {
             project.status = (<any>BuildStatus)[project['buildStatus']];
             if (project['serviceAccount'] != null) {
               if (project['serviceAccount']['key'] !== undefined) {
@@ -52,8 +52,8 @@ export class ProjectgroupService {
             return project;
           });
         }),
-      catchError(this.api.handleError<Project[]>('loadProjects', []))
-    );
+        catchError(this.api.handleError<Project[]>('loadProjects', []))
+      );
   }
 
   createProject(id: number, repoUrl: string, serviceAccount: ServiceAccount): Observable<Project> {
@@ -80,8 +80,8 @@ export class ProjectgroupService {
           }
           return response;
         }),
-      catchError(this.api.handleError<Project>('createProject'))
-    );
+        catchError(this.api.handleError<Project>('createProject'))
+      );
   }
 
   createProjectgroup(name: string): Observable<Projectgroup> {
@@ -96,7 +96,7 @@ export class ProjectgroupService {
           return group;
         }),
         catchError(this.api.handleError<Projectgroup>('createProjectgroup'))
-    );
+      );
   }
 
   updateProjectgroup(id: number, newName: string): Observable<Projectgroup> {
@@ -111,24 +111,18 @@ export class ProjectgroupService {
           return group;
         }),
         catchError(this.api.handleError<Projectgroup>('updateProjectgroup'))
-    );
+      );
   }
 
-  deleteProject(id: number): void {
+  deleteProject(id: number): Observable<{}> {
     const url = `${this.api.backendUrl}projects/${id}`;
-    new Promise((resolve, reject) => {
-      this.api.http.delete(url, this.api.httpOptions)
-        .pipe(catchError(this.api.handleError<Projectgroup>('deleteProject')))
-        .toPromise().then(() => { resolve(); });
-    }).valueOf();
+    return this.api.http.delete(url, this.api.httpOptions)
+      .pipe(catchError(this.api.handleError<Project>('deleteProject')));
   }
 
-  deleteProjectgroup(id: number): void {
+  deleteProjectgroup(id: number): Observable<{}> {
     const url = `${this.api.backendUrl}projectgroups/${id}`;
-    new Promise((resolve, reject) => {
-      this.api.http.delete(url, this.api.httpOptions)
-        .pipe(catchError(this.api.handleError<Projectgroup>('deleteProjectgroup')))
-        .toPromise().then(() => { resolve(); });
-    }).valueOf();
+    return this.api.http.delete(url, this.api.httpOptions)
+      .pipe(catchError(this.api.handleError<Projectgroup>('deleteProjectgroup')));
   }
 }
