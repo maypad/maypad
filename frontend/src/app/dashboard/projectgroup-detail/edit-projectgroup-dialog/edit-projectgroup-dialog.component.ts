@@ -1,5 +1,7 @@
 import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 import { Projectgroup } from 'src/app/model/projectGroup';
+import { ProjectgroupService } from 'src/app/projectgroup.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-edit-projectgroup-dialog',
@@ -9,7 +11,7 @@ import { Projectgroup } from 'src/app/model/projectGroup';
 export class EditProjectgroupDialogComponent implements OnInit {
   @Input() projGroup: Projectgroup;
   newName = '';
-  constructor() { }
+  constructor(private groupService: ProjectgroupService, private router: Router) { }
 
   ngOnInit() {
     this.newName = this.projGroup.name;
@@ -20,13 +22,19 @@ export class EditProjectgroupDialogComponent implements OnInit {
   }
 
   updateProjectgroup() {
-    console.log(`Update projgroup ${this.projGroup.id} to new name: ${this.newName}`);
-    // Reload page?
+    this.groupService.updateProjectgroup(this.projGroup.id, this.newName).subscribe(
+      // In case of the backend not accepting the new name
+      group => {
+        this.projGroup.name = group.name;
+        this.newName = group.name;
+      }
+    );
   }
 
   deleteProjectgroup() {
-    console.log(`Delete projgroup ${this.projGroup.id}.`);
-    // Reload page?
+    this.groupService.deleteProjectgroup(this.projGroup.id).subscribe(
+      () => { this.router.navigateByUrl('/'); }
+    );
   }
 
 }

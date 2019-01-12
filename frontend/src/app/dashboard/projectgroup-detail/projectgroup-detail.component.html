@@ -1,7 +1,7 @@
 <div class="container py-2 border-bottom border-dark">
   <div class="d-flex flex-row justify-content-between">
     <a class="groupCollapse" data-toggle="collapse" href="#collapse{{ projGroup.id }}" role="button" aria-expanded="false"
-      attr.aria-controls="collapse{{ projGroup.id }}">
+      (click)="loadGroup()" attr.aria-controls="collapse{{ projGroup.id }}">
       <h4 class="blackText">{{ projGroup.name }}</h4>
     </a>
     <div>
@@ -11,6 +11,9 @@
     </div>
   </div>
   <div class="collapse" id="collapse{{ projGroup.id }}">
+    <div *ngIf="!finishedLoading">
+      <a>Loading...</a>
+    </div>
     <app-project-list-item *ngFor="let proj of projGroup.projects; let last = last" [border]="!last" [project]="proj"></app-project-list-item>
   </div>
 </div>

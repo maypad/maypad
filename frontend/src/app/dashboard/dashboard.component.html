@@ -1,7 +1,12 @@
 <div class="container w-50 d-flex flex-column">
   <div class="d-flex justify-content-end pb-3">
-    <button class="btn btn-secondary" data-toggle="modal" data-target="#addGroupModal">Add
+    <button class="btn btn-secondary" data-toggle="modal" data-target="#addGroupModal" i18n="Add projectgroup">Add
       Projectgroup</button>
+  </div>
+  <div *ngIf="!finishedLoading">
+    <h4>
+      Loading...
+    </h4>
   </div>
   <app-projectgroup-detail *ngFor="let group of projectGroups" [projGroup]="group"></app-projectgroup-detail>
 </div>

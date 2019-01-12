@@ -1,4 +1,6 @@
 import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
+import { ProjectgroupService } from 'src/app/projectgroup.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-add-projectgroup-dialog',
@@ -7,19 +9,18 @@ import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 })
 export class AddProjectgroupDialogComponent implements OnInit {
   groupName = '';
-  constructor() { }
+  constructor(private groupService: ProjectgroupService, private router: Router) { }
 
   ngOnInit() {
   }
 
-  // POST new request, wait for response and reload site
   addProjectgroup() {
-    console.log(this.groupName);
+    this.groupService.createProjectgroup(this.groupName).subscribe(
+      () => { this.router.navigateByUrl('/'); }
+    );
   }
 
   clearInput() {
-    // this.input.nativeElement.value = '';
-    console.log(this.groupName);
     this.groupName = '';
   }
 }
