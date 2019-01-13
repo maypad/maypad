@@ -1,5 +1,5 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { ProjectgroupService} from './projectgroup.service';
+import { ProjectgroupService } from './projectgroup.service';
 import { TestBed, fakeAsync } from '@angular/core/testing';
 import { environment } from '../environments/environment';
 import { BuildStatus } from './model/buildStatus';
@@ -132,7 +132,7 @@ describe('Service: ProjectgroupService', () => {
 
   it('should delete a project',
     fakeAsync(() => {
-      service.deleteProject(69);
+      service.deleteProject(69).subscribe();
 
       const req = httpTestingController.expectOne(`${environment.baseUrl}projects/69`);
       expect(req.request.method).toEqual('DELETE');
@@ -142,7 +142,7 @@ describe('Service: ProjectgroupService', () => {
 
   it('should delete a projectgroup',
     fakeAsync(() => {
-      service.deleteProjectgroup(96);
+      service.deleteProjectgroup(96).subscribe();
 
       const req = httpTestingController.expectOne(`${environment.baseUrl}projectgroups/96`);
       expect(req.request.method).toEqual('DELETE');

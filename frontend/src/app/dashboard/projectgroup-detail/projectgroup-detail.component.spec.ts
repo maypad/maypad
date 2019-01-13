@@ -6,19 +6,25 @@ import { AddProjectDialogComponent } from './add-project-dialog/add-project-dial
 import { EditProjectgroupDialogComponent } from './edit-projectgroup-dialog/edit-projectgroup-dialog.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { FormsModule } from '@angular/forms';
-import { Project } from 'src/app/model/project';
+import { ProjectgroupService } from 'src/app/projectgroup.service';
+import { ProjectgroupServiceStub } from 'src/testing/projectgroup.service.stub';
 import { Projectgroup } from 'src/app/model/projectGroup';
-import { BuildStatus } from 'src/app/model/buildStatus';
+import * as get_projectgroups_response from 'sample-requests/get.projectgroups.response.json';
+import * as get_projectgroups_id_projects_response from 'sample-requests/get.projectgroups.id.projects.response.json';
+import { Project } from 'src/app/model/project';
 
 describe('ProjectgroupDetailComponent', () => {
   let component: ProjectgroupDetailComponent;
   let fixture: ComponentFixture<ProjectgroupDetailComponent>;
+  const response: Projectgroup = get_projectgroups_response['default'][0];
+  const projects: Project[] = get_projectgroups_id_projects_response['default'];
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ProjectgroupDetailComponent, ProjectListItemComponent,
         AddProjectDialogComponent, EditProjectgroupDialogComponent],
-      imports: [RouterTestingModule, FormsModule]
+      imports: [RouterTestingModule, FormsModule],
+      providers: [{ provide: ProjectgroupService, useClass: ProjectgroupServiceStub }]
     })
       .compileComponents();
   }));
@@ -26,20 +32,33 @@ describe('ProjectgroupDetailComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ProjectgroupDetailComponent);
     component = fixture.componentInstance;
-    const mockProj: Project = {
-      name: 'Project Beta', id: 42,
-      repositoryURL: 'testgit.com/repo.git', branches: [],
-      serviceAccount: null, status: null
-    };
-    const mockGroup: Projectgroup = {
-      name: 'Group Alpha', id: 123,
-      projects: [mockProj], status: BuildStatus.SUCCESS
-    };
-    component.projGroup = mockGroup;
+    component.projGroup = get_projectgroups_response['default'][0];
     fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should show unloaded info', () => {
+    const nativeElement: HTMLElement = fixture.nativeElement;
+    const buttons: NodeListOf<Element> = nativeElement.querySelectorAll('button');
+
+    expect(nativeElement.querySelector('h4').textContent).toBe(response.name);
+    expect(buttons[0].textContent).toBe('Edit');
+    expect(buttons[1].textContent).toBe('Add');
+  });
+
+  it('should show projectgroup info', () => {
+    component.loadGroup();
+    fixture.detectChanges();
+    const nativeElement: HTMLElement = fixture.nativeElement;
+    const items: NodeListOf<Element> = nativeElement.querySelectorAll('app-project-list-item');
+
+    expect(nativeElement.querySelector('h4').textContent).toBe(response.name);
+    expect(items.length).toBe(projects.length);
+    for (let i = 0; i < items.length; i++) {
+      expect(items[i].querySelectorAll('div')[1].textContent).toBe(projects[i].name);
+    }
   });
 });
