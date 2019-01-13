@@ -18,7 +18,7 @@ import java.util.Locale;
  */
 @ComponentScan
 @Configuration
-public class WebConfig implements WebMvcConfigurer {
+public abstract class WebConfig implements WebMvcConfigurer {
 
     /**
      * Returns LocaleResolver that resolves current locale from session.
