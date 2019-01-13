@@ -1,5 +1,6 @@
 package de.fraunhofer.iosb.maypadbackend.config.server;
 
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
@@ -9,6 +10,7 @@ import java.util.List;
 @Component
 @PropertySource("classpath:maypad.yml")
 @ConfigurationProperties(prefix = "maypad")
+@Data
 public class ServerConfigImpl implements ServerConfig {
 
     private String projectName;

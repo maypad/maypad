@@ -2,8 +2,6 @@ package de.fraunhofer.iosb.maypadbackend.config;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import javax.sql.DataSource;
 
@@ -13,18 +11,17 @@ import javax.sql.DataSource;
  *
  * @author Max Willich
  */
-@Configuration
 public class DatabaseConfig {
 
-    @Value("${database.user}")
+    @Value("${database.user:}")
     private String user;
-    @Value("${database.password}")
+    @Value("${database.password:}")
     private String password;
-    @Value("${database.database}")
+    @Value("${database.database:}")
     private String database;
-    @Value("${database.host}")
+    @Value("${database.host:}")
     private String host;
-    @Value("${database.port}")
+    @Value("${database.port:1337}")
     private int port;
 
     /**
@@ -33,7 +30,6 @@ public class DatabaseConfig {
      *
      * @return The DataSource-Object for connection purposes.
      */
-    @Bean
     public DataSource getDataSource() {
         MysqlDataSource ret = new MysqlDataSource();
         ret.setUser(user);
