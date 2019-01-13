@@ -50,10 +50,11 @@ public class ServerConfigImpl implements ServerConfig {
     }
 
     /**
-     * List of all Branches specified in property file. Conversion to Branch-Entity happens in service-level.
+     * List of all Branches specified in property file.
+     * Conversion to Branch-Entity happens in service-level.
      * Property:
      *
-     * maypad:
+     * <p>maypad:
      *   branches:
      *     - master:
      *         name: master

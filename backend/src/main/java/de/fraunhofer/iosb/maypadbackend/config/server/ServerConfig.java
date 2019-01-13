@@ -10,26 +10,27 @@ import java.util.List;
 public interface ServerConfig {
 
     /**
-     * Returns project name configured in Maypad
-     * @return The project name
+     * Returns project name configured in Maypad.
+     * @return The project name.
      */
     String getProjectName();
 
     /**
-     * Returns project description configured in Maypad
-     * @return The project description
+     * Returns project description configured in Maypad.
+     * @return The project description.
      */
     String getProjectDescription();
 
     /**
-     * Returns property, whether all branches should be added to project or not
+     * Returns property, whether all branches should be added to project or not.
      *
-     * @return true if all branches of repository should be added to project, false otherwise
+     * @return true if all branches of repository should be added to project, false otherwise.
      */
     boolean getAddAllBranches();
 
     /**
-     * List of all Branches specified in property file. Conversion to Branch-Entity happens in service-level.
+     * List of all Branches specified in property file.
+     * Conversion to Branch-Entity happens in service-level.
      *
      * @return List of BranchProperty-Objects describing branches.
      */
