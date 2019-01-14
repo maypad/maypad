@@ -1,6 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BreadcrumbService } from '../breadcrumb.service';
+import { Project } from '../model/project';
+import { Branch } from '../model/branch';
+import { EditProjectDialogComponent } from './edit-project-dialog/edit-project-dialog.component';
 
 @Component({
   selector: 'app-project-detail',
@@ -8,15 +11,25 @@ import { BreadcrumbService } from '../breadcrumb.service';
   styleUrls: ['./project-detail.component.css']
 })
 export class ProjectDetailComponent implements OnInit {
-  projId: number;
-  projName = 'Project';
-
+  @ViewChild('editDialog') editDialog: EditProjectDialogComponent;
+  project: Project;
+  branches: Branch[];
   constructor(private route: ActivatedRoute, private crumbs: BreadcrumbService) { }
 
   ngOnInit() {
-    this.projId = this.route.snapshot.params['id'];
-    this.projName = this.projName + ':' + this.projId;
-    this.crumbs.setBreadcrumbs([{ name: this.projName, path: 'projects/' + this.projId }]);
+    this.route.data.subscribe(
+      (data: { project: Project, branches: Branch[] }) => {
+        this.project = data.project;
+        this.crumbs.setBreadcrumbs([{ name: this.project.name, path: 'projects/' + this.project.id }]);
+        this.branches = data.branches;
+      }
+    );
+  }
+
+  clearInput(event: FocusEvent) {
+    if (event.relatedTarget == null) {
+      this.editDialog.initServiceMethod();
+    }
   }
 
 }
