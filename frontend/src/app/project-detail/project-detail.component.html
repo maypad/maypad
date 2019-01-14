@@ -1,4 +1,19 @@
-<p>
-  Project information about: {{projId}}
-  <a routerLink="branches/master">Some branch</a>
-</p>
+<div class="container d-flex flex-column w-50">
+  <div class="container d-flex flex-row justify-content-between mb-4">
+    <h2>{{project.name}}</h2>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editProjectModal" i18n="Edit project">Edit
+      Project</button>
+  </div>
+
+  <app-branch-list-item *ngFor="let branch of branches;" [branch]="branch">
+  </app-branch-list-item>
+</div>
+
+<div class="modal fade" id="editProjectModal" (blur)="clearInput($event)" tabindex="0" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content" tabindex="1">
+      <app-edit-project-dialog [project]="project" #editDialog>
+      </app-edit-project-dialog>
+    </div>
+  </div>
+</div>
