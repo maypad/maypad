@@ -1,5 +1,7 @@
 package de.fraunhofer.iosb.maypadbackend.config.server;
 
+import de.fraunhofer.iosb.maypadbackend.config.server.data.BranchProperty;
+
 import java.util.List;
 
 /**

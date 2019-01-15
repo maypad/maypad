@@ -1,4 +1,4 @@
-package de.fraunhofer.iosb.maypadbackend.config.server;
+package de.fraunhofer.iosb.maypadbackend.config.server.data;
 
 import lombok.Data;
 import java.util.List;
