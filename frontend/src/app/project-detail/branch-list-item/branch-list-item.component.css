@@ -5,30 +5,3 @@
 .text-black {
     color:black;
 }
-
-.dot {
-  height: 15px;
-  width: 15px;
-  border-radius: 50%;
-  display: inline-block;
-}
-
-/* Dot 0 corresponds to Buildstatus.SUCCESS */
-.dot-0 {
-  background-color: green;
-}
-
-/* Dot 1 corresponds to Buildstatus.FAILED */
-.dot-1 {
-  background-color: red;
-}
-
-/* Dot 2 corresponds to Buildstatus.RUNNING */
-.dot-2 {
-  background-color: orange;
-}
-
-/* Dot 3 corresponds to Buildstatus.UNKNOWN */
-.dot-3 {
-  background-color: grey;
-}
