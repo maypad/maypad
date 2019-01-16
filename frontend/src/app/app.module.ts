@@ -19,27 +19,27 @@ import { AddProjectDialogComponent } from './dashboard/projectgroup-detail/add-p
 import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    NavbarComponent,
-    PageNotFoundComponent,
-    DashboardComponent,
-    ProjectDetailComponent,
-    BranchDetailComponent,
-    ProjectgroupDetailComponent,
-    AddProjectgroupDialogComponent,
-    EditProjectgroupDialogComponent,
-    ProjectListItemComponent,
-    AddProjectDialogComponent
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    FormsModule,
-    RouterStubsModule,
-    HttpClientModule
-  ],
-  providers: [],
-  bootstrap: [AppComponent]
+    declarations: [
+        AppComponent,
+        NavbarComponent,
+        PageNotFoundComponent,
+        DashboardComponent,
+        ProjectDetailComponent,
+        BranchDetailComponent,
+        ProjectgroupDetailComponent,
+        AddProjectgroupDialogComponent,
+        EditProjectgroupDialogComponent,
+        ProjectListItemComponent,
+        AddProjectDialogComponent
+    ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        FormsModule,
+        RouterStubsModule,
+        HttpClientModule
+    ],
+    providers: [],
+    bootstrap: [AppComponent]
 })
 export class AppModule { }
