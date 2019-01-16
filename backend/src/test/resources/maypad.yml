@@ -1,5 +1,17 @@
-projectName: cool_name
-projectDescription: lorem ipsum dolor sit amet
-allBranches: true
+webServerPort: 1337
+reloadRepositoriesSeconds: 900
 
-branches:
+maximumRefreshRequests:
+  enabled: true
+  seconds: 3600
+  maximumRequests: 100
+
+logLevel: INFO #ERROR, WARN, INFO, DEBUG
+repositoryStoragePath: /home/maypad/repositories
+
+mysql:
+  user: my_user
+  password: 123456
+  database: database
+  host: 127.0.0.1
+  port: 7357

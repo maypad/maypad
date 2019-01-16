@@ -17,7 +17,7 @@ import javax.sql.DataSource;
 @Configuration
 @PropertySource("classpath:application.properties")
 @Data
-public class DatabaseConfig {
+public class DatabaseConfigOld {
 
     @Value("${database.user}")
     private String user;

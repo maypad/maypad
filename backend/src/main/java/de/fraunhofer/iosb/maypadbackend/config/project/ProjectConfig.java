@@ -1,6 +1,6 @@
-package de.fraunhofer.iosb.maypadbackend.config.server;
+package de.fraunhofer.iosb.maypadbackend.config.project;
 
-import de.fraunhofer.iosb.maypadbackend.config.server.data.BranchProperty;
+import de.fraunhofer.iosb.maypadbackend.config.project.data.BranchProperty;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ import java.util.List;
  *
  * @author Max Willich
  */
-public interface ServerConfig {
+public interface ProjectConfig {
 
     /**
      * Returns project name configured in Maypad.

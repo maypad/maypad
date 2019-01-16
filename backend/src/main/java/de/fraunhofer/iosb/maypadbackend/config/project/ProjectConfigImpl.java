@@ -1,7 +1,7 @@
-package de.fraunhofer.iosb.maypadbackend.config.server;
+package de.fraunhofer.iosb.maypadbackend.config.project;
 
-import de.fraunhofer.iosb.maypadbackend.config.server.data.BranchProperty;
-import de.fraunhofer.iosb.maypadbackend.config.server.data.MaypadYamlObject;
+import de.fraunhofer.iosb.maypadbackend.config.project.data.BranchProperty;
+import de.fraunhofer.iosb.maypadbackend.config.project.data.MaypadYamlObject;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
@@ -10,7 +10,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 
-public class ServerConfigImpl implements ServerConfig {
+public class ProjectConfigImpl implements ProjectConfig {
 
     private MaypadYamlObject yamlObject;
 
@@ -19,7 +19,7 @@ public class ServerConfigImpl implements ServerConfig {
      *
      * @param yamlFile The YAML-File to be parsed.
      */
-    public ServerConfigImpl(File yamlFile) {
+    public ProjectConfigImpl(File yamlFile) {
         Yaml yaml = new Yaml(new Constructor(MaypadYamlObject.class));
         try {
             FileInputStream in = new FileInputStream(yamlFile);
