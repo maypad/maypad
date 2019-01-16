@@ -1,0 +1,19 @@
+<div class="modal-header">
+  <h5 class="modal-title" i18n>Add Projectgroup</h5>
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="input-group mb-3">
+    <div class="input-group-prepend">
+      <span class="input-group-text" id="nameLabel" i18n>Projectgroup Name:</span>
+    </div>
+    <input type="text" class="form-control" [(ngModel)]="groupName" aria-describedby="nameLabel">
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" data-dismiss="modal" i18n>Cancel</button>
+  <button type="button" class="btn btn-primary" (click)="addProjectgroup()" data-dismiss="modal" i18n>Add
+    Projectgroup</button>
+</div>
