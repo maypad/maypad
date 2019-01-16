@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="51e188c8cb0f3a271406297b7ba0c7b4442d2413" datatype="html">
+        <source>Add Project</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dashboard/projectgroup-detail/add-project-dialog/add-project-dialog.component.html</context>
+          <context context-type="linenumber">2</context>
+        </context-group>
+        <note priority="1" from="description">Add the project defined in the dialog</note>
+        <note priority="1" from="meaning">add project</note>
+      </trans-unit>
+      <trans-unit id="128b80409bd662e13de9506d4fa032ea3650f3bd" datatype="html">
+        <source>Repository
+        URL</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dashboard/projectgroup-detail/add-project-dialog/add-project-dialog.component.html</context>
+          <context context-type="linenumber">7</context>
+        </context-group>
+        <note priority="1" from="description">Project repository url</note>
+        <note priority="1" from="meaning">repo url</note>
+      </trans-unit>
+      <trans-unit id="0d4e48d4b4d88ea20b962ed8d842e356fdde696e" datatype="html">
+        <source>
+      Authentification Method
+    </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dashboard/projectgroup-detail/add-project-dialog/add-project-dialog.component.html</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
+        <note priority="1" from="description">Authentification method to be used for the repository</note>
+        <note priority="1" from="meaning">auth method</note>
+      </trans-unit>
+      <trans-unit id="d6b3f87af5463d12f40bed8e95fb60ef6758f003" datatype="html">
+        <source>None</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dashboard/projectgroup-detail/add-project-dialog/add-project-dialog.component.html</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+        <note priority="1" from="description">No authentification method</note>
+        <note priority="1" from="meaning">None</note>
+      </trans-unit>
+      <trans-unit id="071d9e39578960b90f1450669f0438483c5ab5c8" datatype="html">
+        <source>SSH-Key</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dashboard/projectgroup-detail/add-project-dialog/add-project-dialog.component.html</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+        <note priority="1" from="description">Repo Auth: SSH-Key</note>
+        <note priority="1" from="meaning">SSH-Key</note>
+      </trans-unit>
+      <trans-unit id="fe9650d7fb665c19abe06924ffced2e3ce35c860" datatype="html">
+        <source>Service
+        Account</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dashboard/projectgroup-detail/add-project-dialog/add-project-dialog.component.html</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+        <note priority="1" from="description">Repo Auth: Service account</note>
+        <note priority="1" from="meaning">Service Account</note>
+      </trans-unit>
+      <trans-unit id="f82ffb1d378761dc4e83117a7ea7b7809989382c" datatype="html">
+        <source>SSH
+        Key</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dashboard/projectgroup-detail/add-project-dialog/add-project-dialog.component.html</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+        <note priority="1" from="description">Repo Auth: SSH-Key</note>
+        <note priority="1" from="meaning">SSH-Key</note>
+      </trans-unit>
+      <trans-unit id="24d2b4036a62b1379e82fdfe2d88b6ec98fc4b5d" datatype="html">
+        <source>Username</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dashboard/projectgroup-detail/add-project-dialog/add-project-dialog.component.html</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
+        <note priority="1" from="description">Repo Auth: service account username</note>
+        <note priority="1" from="meaning">Username</note>
+      </trans-unit>
+      <trans-unit id="30baf8b3b2c5215039d5a27e23ecd8d76de25be9" datatype="html">
+        <source>Password</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dashboard/projectgroup-detail/add-project-dialog/add-project-dialog.component.html</context>
+          <context context-type="linenumber">34</context>
+        </context-group>
+        <note priority="1" from="description">Repo Auth: service account password</note>
+        <note priority="1" from="meaning">Password</note>
+      </trans-unit>
+      <trans-unit id="d7b35c384aecd25a516200d6921836374613dfe7" datatype="html">
+        <source>Cancel</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dashboard/projectgroup-detail/add-project-dialog/add-project-dialog.component.html</context>
+          <context context-type="linenumber">40</context>
+        </context-group>
+        <note priority="1" from="description">Cancel</note>
+      </trans-unit>
+      <trans-unit id="712cc76dd8040c504bce9e97fc20f79339315919" datatype="html">
+        <source>Add
+    Project</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dashboard/projectgroup-detail/add-project-dialog/add-project-dialog.component.html</context>
+          <context context-type="linenumber">41</context>
+        </context-group>
+        <note priority="1" from="description">Add the project defined in the dialog</note>
+        <note priority="1" from="meaning">add project</note>
+      </trans-unit>
+      <trans-unit id="93cddb61d29df86e96cc886162407dbea3219d65" datatype="html">
+        <source>Edit Projectgroup</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dashboard/projectgroup-detail/edit-projectgroup-dialog/edit-projectgroup-dialog.component.html</context>
+          <context context-type="linenumber">2</context>
+        </context-group>
+        <note priority="1" from="description">Edit Projectgroup</note>
+      </trans-unit>
+      <trans-unit id="d325e7c6a38c80fe51b0a0fc6dc94d80e2619fef" datatype="html">
+        <source>Projectgroup name</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dashboard/projectgroup-detail/edit-projectgroup-dialog/edit-projectgroup-dialog.component.html</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+        <note priority="1" from="description">Projectgroup name</note>
+      </trans-unit>
+      <trans-unit id="629e8282385cd1afa4c08a5abb89021c6c9e9956" datatype="html">
+        <source>Delete</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dashboard/projectgroup-detail/edit-projectgroup-dialog/edit-projectgroup-dialog.component.html</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dashboard/projectgroup-detail/edit-projectgroup-dialog/edit-projectgroup-dialog.component.html</context>
+          <context context-type="linenumber">32</context>
+        </context-group>
+        <note priority="1" from="description">Delete Projectgroup</note>
+        <note priority="1" from="meaning">Delete</note>
+      </trans-unit>
+      <trans-unit id="e5723af1f45250573b3a4c241358b9ef592cf748" datatype="html">
+        <source>Cancel</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dashboard/projectgroup-detail/edit-projectgroup-dialog/edit-projectgroup-dialog.component.html</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dashboard/projectgroup-detail/edit-projectgroup-dialog/edit-projectgroup-dialog.component.html</context>
+          <context context-type="linenumber">33</context>
+        </context-group>
+        <note priority="1" from="description">Cancel the projectgroup editing process</note>
+        <note priority="1" from="meaning">Cancel</note>
+      </trans-unit>
+      <trans-unit id="2a53409d2c4c9f8d1a9fd0e3dff8fadd977cdde2" datatype="html">
+        <source>Submit</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dashboard/projectgroup-detail/edit-projectgroup-dialog/edit-projectgroup-dialog.component.html</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+        <note priority="1" from="description">Submit the changes to the projectgroup</note>
+        <note priority="1" from="meaning">Submit</note>
+      </trans-unit>
+      <trans-unit id="cda40e88d66799f0dc089b69787b32034ad4506b" datatype="html">
+        <source>
+        Are you sure you want to delete this Projectgroup?
+      </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dashboard/projectgroup-detail/edit-projectgroup-dialog/edit-projectgroup-dialog.component.html</context>
+          <context context-type="linenumber">28</context>
+        </context-group>
+        <note priority="1" from="description">Ask for confirmation to delete the project group</note>
+        <note priority="1" from="meaning">projectgroup deletion confirmation</note>
+      </trans-unit>
+      <trans-unit id="28f86ffd419b869711aa13f5e5ff54be6d70731c" datatype="html">
+        <source>Edit</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dashboard/projectgroup-detail/projectgroup-detail.component.html</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
+        <note priority="1" from="description">Edit projectgroup</note>
+      </trans-unit>
+      <trans-unit id="23ad2a18aa91b46c0d3ba51e3ae2494504f7ddda" datatype="html">
+        <source>Add</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dashboard/projectgroup-detail/projectgroup-detail.component.html</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+        <note priority="1" from="description">Add project to projectgroup</note>
+        <note priority="1" from="meaning">Add project</note>
+      </trans-unit>
+      <trans-unit id="2e0de53b0fdf7e59d49268abc6859a7178ff0afb" datatype="html">
+        <source>
+    Build Status:
+    <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/>
+  </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dashboard/projectgroup-detail/project-list-item/project-list-item.component.html</context>
+          <context context-type="linenumber">6</context>
+        </context-group>
+        <note priority="1" from="description">Build status</note>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
