@@ -1,4 +1,4 @@
-package de.fraunhofer.iosb.maypadbackend.config;
+package de.fraunhofer.iosb.maypadbackend.config.server;
 
 import de.fraunhofer.iosb.maypadbackend.config.factories.YamlPropertySourceFactory;
 import lombok.Data;

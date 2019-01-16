@@ -1,4 +1,4 @@
-package de.fraunhofer.iosb.maypadbackend.config;
+package de.fraunhofer.iosb.maypadbackend.config.server;
 
 import lombok.Data;
 import java.util.Map;

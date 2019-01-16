@@ -1,6 +1,6 @@
 package de.fraunhofer.iosb.maypadbackend.config;
 
-import org.junit.BeforeClass;
+import de.fraunhofer.iosb.maypadbackend.config.server.ServerConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
