@@ -5,6 +5,8 @@ import de.fraunhofer.iosb.maypadbackend.config.project.YamlProjectConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -21,14 +23,16 @@ public class ProjectConfigTest {
     private ProjectConfig projectConfig;
     private boolean isLoaded;
 
+    private Logger logger = LoggerFactory.getLogger(ProjectConfigTest.class);
+
     @Before
     public void setup() {
-        File f = new File("src/test/resources/project.yml");
+        File f = new File("src/test/resources/project.yaml");
         try {
             projectConfig = new YamlProjectConfig(f);
             isLoaded = true;
         } catch (IOException e) {
-            System.err.println(f.getAbsolutePath() + " does not exist!");
+            logger.error(e.getMessage());
             isLoaded = false;
         }
     }

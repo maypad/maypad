@@ -1,6 +1,8 @@
 package de.fraunhofer.iosb.maypadbackend.config.server;
 
 import lombok.Data;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +16,8 @@ import java.io.File;
 @Configuration
 @Data
 public class YamlServerConfig implements ServerConfig {
+
+    private static Logger logger = LoggerFactory.getLogger(YamlServerConfig.class);
 
     @Value("${webServerPort:${MAYPAD_WEBSERVER_PORT:-1}}")
     private int webServerPort;
@@ -41,7 +45,7 @@ public class YamlServerConfig implements ServerConfig {
     private int dbPort;
 
     /**
-     * Bean for easy access to properties in maypad.yml
+     * Bean for easy access to properties in maypad.yaml
      *
      * @return A Placeholder for Properties, so that @Value works
      */
@@ -50,10 +54,10 @@ public class YamlServerConfig implements ServerConfig {
         PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer
                 = new PropertySourcesPlaceholderConfigurer();
         YamlPropertiesFactoryBean yaml = new YamlPropertiesFactoryBean();
-        File configFile = new File("/etc/maypad/maypad.yml");
+        File configFile = new File("/etc/maypad/maypad.yaml");
         if (!configFile.exists()) {
-            System.err.println(configFile.getAbsolutePath() + " does not exist!");
-            yaml.setResources(new ClassPathResource("maypad.yml"));
+            logger.error(configFile.getAbsolutePath() + " does not exist!");
+            yaml.setResources(new ClassPathResource("maypad.yaml"));
         } else {
             yaml.setResources(new FileSystemResource(configFile));
         }
