@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  database:
+    image: mysql
+    container_name: maypad-database
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+    - MYSQL_DATABASE=maypad
+    - MYSQL_USER=maypad
+    - MYSQL_PASSWORD=maypaddb
+    - MYSQL_RANDOM_ROOT_PASSWORD=yes
+
+  app:
+    image: maypad
+    container_name: maypad-app
+    restart: always
+    ports:
+    - 8080:8080
