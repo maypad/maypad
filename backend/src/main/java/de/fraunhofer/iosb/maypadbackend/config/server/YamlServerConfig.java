@@ -15,9 +15,6 @@ import java.io.File;
 @Data
 public class YamlServerConfig implements ServerConfig {
 
-    private static final String ANSI_RESET = "\u001B[0m";
-    private static final String ANSI_RED = "\u001B[31m";
-
     @Value("${webServerPort:${MAYPAD_WEBSERVER_PORT:-1}}")
     private int webServerPort;
     @Value("${reloadRepositoriesSeconds:${MAYPAD_RELOAD_REPOSITORIES_SECONDS:900}}")
@@ -55,8 +52,7 @@ public class YamlServerConfig implements ServerConfig {
         YamlPropertiesFactoryBean yaml = new YamlPropertiesFactoryBean();
         File configFile = new File("/etc/maypad/maypad.yml");
         if (!configFile.exists()) {
-            System.err.println(ANSI_RED + configFile.getAbsolutePath()
-                    + " does not exist!" + ANSI_RESET);
+            System.err.println(configFile.getAbsolutePath() + " does not exist!");
             yaml.setResources(new ClassPathResource("maypad.yml"));
         } else {
             yaml.setResources(new FileSystemResource(configFile));
