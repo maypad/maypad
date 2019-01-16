@@ -11,7 +11,7 @@ export class ProjectBranchResolverService implements Resolve<Branch[]> {
 
   constructor(private projService: ProjectService) { }
 
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Branch[]> | Observable<never> {
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Branch[]> {
     const id = route.paramMap.get('id');
     return this.projService.loadBranches(parseInt(id, 10));
   }

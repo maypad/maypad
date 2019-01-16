@@ -12,7 +12,7 @@ export class ProjectDetailResolverService implements Resolve<Project> {
 
   constructor(private projService: ProjectService, private router: Router) { }
 
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Project> | Observable<never> {
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Project> {
     const id = route.paramMap.get('id');
     return this.projService.loadProject(parseInt(id, 10)).pipe(
       catchError(() => {
