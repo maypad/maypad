@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class ServerConfigTest {
@@ -16,63 +18,64 @@ public class ServerConfigTest {
 
     @Test
     public void testWebServerPort() {
-        assert(dbconfig.getWebServerPort() == 1337);
+        assertThat(dbconfig.getWebServerPort()).isEqualTo(1337);
     }
 
     @Test
     public void testReloadRepoSeconds() {
-        assert(dbconfig.getReloadRepositoriesSeconds() == 900);
+        assertThat(dbconfig.getReloadRepositoriesSeconds()).isEqualTo(900);
     }
 
     @Test
-    public void testMaxRefreshEnabled() {
-        assert(dbconfig.isMaximumRefreshRequestsEnabled());
+    public void testMaxRefreshEnabled()
+    {
+        assertThat(dbconfig.isMaximumRefreshRequestsEnabled()).isEqualTo(true);
     }
 
     @Test
-    public void testMaxRefreshSeconds() {
-        assert(dbconfig.getMaximumRefreshRequestsSeconds() == 3600);
+    public void testMaxRefreshSeconds()
+    {
+        assertThat(dbconfig.getMaximumRefreshRequestsSeconds()).isEqualTo(3600);
     }
 
     @Test
     public void testMaxRefreshRequests() {
-        assert(dbconfig.getMaximumRefreshRequests() == 100);
+        assertThat(dbconfig.getMaximumRefreshRequests()).isEqualTo(100);
     }
 
     @Test
     public void testLogLevel() {
-        System.out.println(dbconfig.getLogLevel());
-        assert(dbconfig.getLogLevel().equals("INFO"));
+        assertThat(dbconfig.getLogLevel()).isEqualTo("INFO");
     }
 
     @Test
     public void testRepoStoragePath() {
-        assert(dbconfig.getRepositoryStoragePath().equals("/home/maypad/repositories"));
+        assertThat(dbconfig.getRepositoryStoragePath()).isEqualTo("/home/maypad/repositories");
     }
 
     @Test
     public void testSqlUser() {
-        assert(dbconfig.getDbUser().equals("my_user"));
+        assertThat(dbconfig.getDbUser()).isEqualTo("my_user");
     }
 
     @Test
     public void testSqlPassword() {
-        assert(dbconfig.getDbPassword().equals("123456"));
+        assertThat(dbconfig.getDbPassword()).isEqualTo("123456");
     }
 
     @Test
     public void testSqlDatabase() {
-        assert(dbconfig.getDbDatabase().equals("database"));
+        assertThat(dbconfig.getDbDatabase()).isEqualTo("database");
     }
 
     @Test
     public void testSqlHost() {
-        assert(dbconfig.getDbHost().equals("127.0.0.1"));
+        assertThat(dbconfig.getDbHost()).isEqualTo("127.0.0.1");
     }
 
     @Test
     public void testSqlPort() {
-        assert(dbconfig.getDbPort() == 7357);
+        assertThat(dbconfig.getDbPort()).isEqualTo(7357);
     }
 
 

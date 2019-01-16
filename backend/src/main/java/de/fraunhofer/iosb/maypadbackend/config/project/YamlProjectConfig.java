@@ -1,7 +1,7 @@
 package de.fraunhofer.iosb.maypadbackend.config.project;
 
 import de.fraunhofer.iosb.maypadbackend.config.project.data.BranchProperty;
-import de.fraunhofer.iosb.maypadbackend.config.project.data.MaypadYamlObject;
+import de.fraunhofer.iosb.maypadbackend.config.project.data.ProjectConfigData;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
@@ -10,23 +10,23 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 
-public class ProjectConfigImpl implements ProjectConfig {
+public class YamlProjectConfig implements ProjectConfig {
 
-    private MaypadYamlObject yamlObject;
+    private ProjectConfigData yamlObject;
 
     /**
      * Constructs a new ServerConfigImpl with a given YAML-File.
      *
      * @param yamlFile The YAML-File to be parsed.
      */
-    public ProjectConfigImpl(File yamlFile) {
-        Yaml yaml = new Yaml(new Constructor(MaypadYamlObject.class));
+    public YamlProjectConfig(File yamlFile) throws IOException {
+        Yaml yaml = new Yaml(new Constructor(ProjectConfigData.class));
         try {
             FileInputStream in = new FileInputStream(yamlFile);
             this.yamlObject = yaml.load(in);
             in.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IOException("File " + yamlFile.getAbsolutePath() + " does not exist!");
         }
     }
 

@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class MaypadYamlObject {
+public class ProjectConfigData {
     private String projectName;
     private String projectDescription;
     private boolean allBranches;

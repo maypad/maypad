@@ -27,7 +27,7 @@ public class YamlPropertySourceFactory implements PropertySourceFactory {
 
     @Override
     public PropertySource<?> createPropertySource(String name,
-                                                  EncodedResource resource) throws IOException {
+                                                  EncodedResource resource) {
         if (!ClassUtils.isPresent("org.yaml.snakeyaml.Yaml", null)) {
             return null;
         }
@@ -35,7 +35,6 @@ public class YamlPropertySourceFactory implements PropertySourceFactory {
         factory.setMatchDefault(true);
         factory.setResources(resource.getResource());
         factory.afterPropertiesSet();
-
         Properties props = factory.getObject();
         return props.isEmpty() ? null : new PropertiesPropertySource(name, props);
     }
