@@ -17,6 +17,9 @@ import { EditProjectgroupDialogComponent } from './dashboard/projectgroup-detail
 import { ProjectListItemComponent } from './dashboard/projectgroup-detail/project-list-item/project-list-item.component';
 import { AddProjectDialogComponent } from './dashboard/projectgroup-detail/add-project-dialog/add-project-dialog.component';
 import { HttpClientModule } from '@angular/common/http';
+import { EditProjectDialogComponent } from './project-detail/edit-project-dialog/edit-project-dialog.component';
+import { BranchListItemComponent } from './project-detail/branch-list-item/branch-list-item.component';
+import { HeaderComponent } from './branch-detail/header/header.component';
 
 @NgModule({
     declarations: [
@@ -30,7 +33,10 @@ import { HttpClientModule } from '@angular/common/http';
         AddProjectgroupDialogComponent,
         EditProjectgroupDialogComponent,
         ProjectListItemComponent,
-        AddProjectDialogComponent
+        AddProjectDialogComponent,
+        BranchListItemComponent,
+        EditProjectDialogComponent,
+        HeaderComponent
     ],
     imports: [
         BrowserModule,
