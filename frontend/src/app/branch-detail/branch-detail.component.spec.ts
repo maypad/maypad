@@ -2,24 +2,38 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BranchDetailComponent } from './branch-detail.component';
 import { ActivatedRouteStub } from 'src/testing/activated-route-stub';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, convertToParamMap, ActivatedRouteSnapshot } from '@angular/router';
+import { HeaderComponent } from './header/header.component';
+import { MarkdownModule, MarkdownService, MarkedOptions } from 'ngx-markdown';
+import { HttpClientModule } from '@angular/common/http';
+import * as branchesResponse from 'sample-requests/get.projects.id.branches.ref.response.json';
+import { of } from 'rxjs';
 
 describe('BranchDetailComponent', () => {
   let component: BranchDetailComponent;
   let fixture: ComponentFixture<BranchDetailComponent>;
-  let activatedRoute: ActivatedRouteStub;
-
+  const branch = branchesResponse['default'];
+  const snapshot = new ActivatedRouteSnapshot();
 
   beforeEach(async(() => {
-    activatedRoute = new ActivatedRouteStub();
+    spyOn(snapshot.paramMap, 'get').and.returnValue('');
     TestBed.configureTestingModule({
-      declarations: [BranchDetailComponent],
+      declarations: [BranchDetailComponent, HeaderComponent],
       providers: [
         {
           // Mock ActivatedRoute because a unit test can't have a "real" route
-          provide: ActivatedRoute, useValue: activatedRoute
+          provide: ActivatedRoute, useClass: class {
+            snapshot = snapshot; data = of({ branch: branch });
+          }
+        },
+        {
+          provide: MarkdownService, useClass: MarkdownService
+        },
+        {
+          provide: MarkedOptions, useValue: {}
         }
-      ]
+      ],
+      imports: [MarkdownModule, HttpClientModule]
     })
       .compileComponents();
   }));
@@ -27,7 +41,6 @@ describe('BranchDetailComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(BranchDetailComponent);
     component = fixture.componentInstance;
-    activatedRoute.setParamMap({ id: 123, name: 'master' });
     fixture.detectChanges();
   });
 

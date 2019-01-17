@@ -1,4 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
+import { Branch } from 'src/app/model/branch';
+import { BranchService } from 'src/app/branch.service';
+import { stripGeneratedFileSuffix } from '@angular/compiler/src/aot/util';
 
 @Component({
     selector: 'app-branch-header',
@@ -6,7 +9,47 @@ import {Component, OnInit} from '@angular/core';
     styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit {
-    constructor() {}
+    @Input() projId: number;
+    @Input() branch: Branch;
+    @ViewChild('rebuild') rebuild: ElementRef;
+    alertType: string;
+    showAlert = false;
+    constructor(private branchService: BranchService) { }
 
-    ngOnInit() {}
+    ngOnInit() { }
+
+    triggerDeploy(build: Boolean) {
+        this.branchService.triggerDeployment(
+            this.projId, this.branch.name, true, this.rebuild.nativeElement.checked
+        ).subscribe(
+            x => { },
+            error => {
+                console.error(error);
+                alert(`Deployment couldn't be started. see console for error log.`);
+            },
+            () => { this.alert('deployment'); }
+        );
+    }
+
+    triggerBuild() {
+        this.branchService.triggerBuild(
+            this.projId, this.branch.name, this.rebuild.nativeElement.checked
+        ).subscribe(
+            x => { },
+            error => {
+                console.error(error);
+                alert(`Build couldn't be started. see console for error log.`);
+            },
+            () => { this.alert('build'); }
+        );
+    }
+
+    buildAndDeploy() {
+        this.triggerDeploy(true);
+    }
+
+    alert(type: string) {
+        this.alertType = type;
+        this.showAlert = true;
+    }
 }
