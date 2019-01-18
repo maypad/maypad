@@ -3,15 +3,21 @@ package de.fraunhofer.iosb.maypadbackend.config;
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 import de.fraunhofer.iosb.maypadbackend.config.server.ServerConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 import javax.sql.DataSource;
 
 @Configuration
 public class DatabaseConfig {
 
-    @Autowired
     private ServerConfig yamlServerConfig;
+
+    @Autowired
+    public DatabaseConfig(ServerConfig yamlServerConfig) {
+        this.yamlServerConfig = yamlServerConfig;
+    }
 
     /**
      * Adds a DataSource object to the environment of Spring to access
@@ -19,7 +25,8 @@ public class DatabaseConfig {
      *
      * @return The DataSource object.
      */
-    // @Bean
+    @Bean
+    @Profile("prod")
     public DataSource dataSource() {
         MysqlDataSource ds = new MysqlDataSource();
         ds.setUser(yamlServerConfig.getDbUser());

@@ -3,14 +3,11 @@ package de.fraunhofer.iosb.maypadbackend.config.server;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.core.env.Environment;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 
 import java.io.File;
@@ -21,8 +18,6 @@ public class YamlServerConfig implements ServerConfig {
 
     private static Logger logger = LoggerFactory.getLogger(YamlServerConfig.class);
 
-    @Value("${MAYPAD_HOME:/usr/share/maypad}")
-    private static String maypadHome;
 
     @Value("${webServerPort:${MAYPAD_WEBSERVER_PORT:-1}}")
     private int webServerPort;
@@ -48,9 +43,13 @@ public class YamlServerConfig implements ServerConfig {
     private String dbHost;
     @Value("${mysql.port:${MAYPAD_DB_PORT:-1}}")
     private int dbPort;
+    @Value("${scheduler.poolSize:${MAYPAD_SCHEDULER_POOL_SIZE:2}}")
+    private int schedulerPoolSize;
+    @Value("${webhook.tokenLength:${MAYPAD_WEBHOOK_TOKEN_LENGTH:20}}")
+    private int webhookTokenLength;
 
     /**
-     * Bean for easy access to properties in maypad.yaml
+     * Bean for easy access to properties.
      *
      * @return A Placeholder for Properties, so that @Value works
      */
@@ -59,12 +58,19 @@ public class YamlServerConfig implements ServerConfig {
         PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer
                 = new PropertySourcesPlaceholderConfigurer();
         YamlPropertiesFactoryBean yaml = new YamlPropertiesFactoryBean();
-        File configFile = new File(maypadHome + "/config.yaml");
-        if (!configFile.exists()) {
-            logger.error(configFile.getAbsolutePath() + " does not exist!");
-            yaml.setResources(new ClassPathResource("maypad.yaml"));
+        String maypadHomePath = System.getenv("MAYPAD_HOME");
+        maypadHomePath = maypadHomePath.equals("") ? "/usr/share/maypad" : maypadHomePath;
+        File maypadHome = new File(maypadHomePath);
+        File configFile = new File(maypadHome.getAbsolutePath() + "/config.yaml");
+        if (maypadHome.isDirectory()) {
+            if (configFile.exists()) {
+                logger.info("Serverconfig found.");
+                yaml.setResources(new FileSystemResource(configFile));
+            } else {
+                logger.error("No config found in " + maypadHome.getAbsolutePath());
+            }
         } else {
-            yaml.setResources(new FileSystemResource(configFile));
+            logger.error("MAYPAD_HOME is not set properly.");
         }
         propertySourcesPlaceholderConfigurer.setProperties(yaml.getObject());
         return propertySourcesPlaceholderConfigurer;
