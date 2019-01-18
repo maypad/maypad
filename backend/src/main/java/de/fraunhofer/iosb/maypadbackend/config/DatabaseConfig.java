@@ -1,6 +1,6 @@
 package de.fraunhofer.iosb.maypadbackend.config;
 
-import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
+import com.mysql.cj.jdbc.MysqlDataSource;
 import de.fraunhofer.iosb.maypadbackend.config.server.ServerConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -32,7 +32,7 @@ public class DatabaseConfig {
         ds.setUser(yamlServerConfig.getDbUser());
         ds.setPassword(yamlServerConfig.getDbPassword());
         ds.setDatabaseName(yamlServerConfig.getDbDatabase());
-        ds.setUrl(yamlServerConfig.getDbHost());
+        ds.setServerName(yamlServerConfig.getDbHost());
         ds.setPort(yamlServerConfig.getDbPort());
         return ds;
     }
