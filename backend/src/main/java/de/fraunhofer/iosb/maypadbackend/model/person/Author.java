@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
 
 /**
@@ -19,7 +18,7 @@ import javax.persistence.OneToOne;
 @Entity
 public class Author extends Person {
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
     private Mail mail;
 
     /**

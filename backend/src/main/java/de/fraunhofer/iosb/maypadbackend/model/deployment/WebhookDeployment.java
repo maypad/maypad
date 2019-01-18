@@ -5,7 +5,6 @@ import lombok.Data;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
 
 /**
@@ -18,7 +17,7 @@ import javax.persistence.OneToOne;
 @Entity
 public class WebhookDeployment extends DeploymentType {
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
     private ExternalWebhook deploymentWebhook;
 
 }
