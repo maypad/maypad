@@ -26,4 +26,8 @@ public interface ServerConfig {
 
     public int getDbPort();
 
+    public int getSchedulerPoolSize();
+
+    public int getWebhookTokenLength();
+
 }

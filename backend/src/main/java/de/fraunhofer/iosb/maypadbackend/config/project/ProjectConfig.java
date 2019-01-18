@@ -5,7 +5,7 @@ import de.fraunhofer.iosb.maypadbackend.config.project.data.BranchProperty;
 import java.util.List;
 
 /**
- *  Interface for classes that implement the parsing of a Maypad configuration file.
+ * Interface for classes that implement the parsing of a Maypad configuration file.
  *
  * @author Max Willich
  */
@@ -13,12 +13,14 @@ public interface ProjectConfig {
 
     /**
      * Returns project name configured in Maypad.
+     *
      * @return The project name.
      */
     String getProjectName();
 
     /**
      * Returns project description configured in Maypad.
+     *
      * @return The project description.
      */
     String getProjectDescription();

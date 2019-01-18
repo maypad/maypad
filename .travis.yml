@@ -23,6 +23,9 @@ branches:
 before_script:
  - npm install -g @angular/cli
 
+env:
+  - MAYPAD_HOME=/home/travis/build/juliantodt/maypad/backend
+
 script:
   - cd backend
   - ./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -B -V

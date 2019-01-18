@@ -17,7 +17,7 @@ import java.io.File;
 import java.util.Locale;
 
 /**
- *  Configuration Class to access properties for the client, e.g. the locale.
+ * Configuration Class to access properties for the client, e.g. the locale.
  *
  * @author Max Willich
  */
