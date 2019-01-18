@@ -36,7 +36,7 @@ public class Projectgroup {
     private String name;
     @Enumerated(EnumType.STRING)
     private Status buildStatus;
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Project> projects;
 
     /**
