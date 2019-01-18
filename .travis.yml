@@ -23,7 +23,7 @@ branches:
 before_script:
  - npm install -g @angular/cli
 
- env:
+env:
   - MAYPAD_HOME=/home/travis/maypad/backend
 
 script:
