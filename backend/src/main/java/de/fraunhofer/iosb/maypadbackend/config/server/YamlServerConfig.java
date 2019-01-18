@@ -59,7 +59,7 @@ public class YamlServerConfig implements ServerConfig {
                 = new PropertySourcesPlaceholderConfigurer();
         YamlPropertiesFactoryBean yaml = new YamlPropertiesFactoryBean();
         String maypadHomePath = System.getenv("MAYPAD_HOME");
-        maypadHomePath = maypadHomePath.equals("") ? "/usr/share/maypad" : maypadHomePath;
+        maypadHomePath = maypadHomePath == null ? "/usr/share/maypad" : maypadHomePath;
         File maypadHome = new File(maypadHomePath);
         File configFile = new File(maypadHome.getAbsolutePath() + "/config.yaml");
         if (maypadHome.isDirectory()) {
