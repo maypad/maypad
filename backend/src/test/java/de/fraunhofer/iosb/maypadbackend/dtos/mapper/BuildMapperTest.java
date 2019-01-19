@@ -56,6 +56,5 @@ public class BuildMapperTest {
         assertThat(response.getCommit().getCommitIdentifier()).isEqualTo(commitIdentifier);
         assertThat(response.getCommit().getAuthor()).isEqualTo(
                 commitAuthor.getMail().getMailAddress());
-        assertThat(response.getCommit().getTimestamp()).isEqualTo(commitTimestamp);
     }
 }
