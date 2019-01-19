@@ -53,12 +53,11 @@ public class DeploymentMapperTest {
         assertThat(response.getTimestamp()).isEqualTo(deployDate);
         assertThat(response.getBuild().getStatus()).isEqualTo(buildStatus);
         assertThat(response.getBuild().getTimestamp()).isEqualTo(buildDate);
-        assertThat(response.getBuild().getTimestamp()).isEqualTo(commitTimestamp);
+        assertThat(response.getBuild().getCommit().getTimestamp()).isEqualTo(commitTimestamp);
         assertThat(response.getBuild().getCommit().getCommitMessage()).isEqualTo(commitMessage);
         assertThat(response.getBuild().getCommit().getCommitIdentifier())
                 .isEqualTo(commitIdentifier);
         assertThat(response.getBuild().getCommit().getAuthor()).isEqualTo(
                 commitAuthor.getMail().getMailAddress());
-        assertThat(response.getBuild().getCommit().getTimestamp()).isEqualTo(commitTimestamp);
     }
 }
