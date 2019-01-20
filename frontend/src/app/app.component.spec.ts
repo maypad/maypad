@@ -22,9 +22,9 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'Maypad'`, () => {
+  it(`should have as title 'MAYPAD'`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.debugElement.componentInstance;
-    expect(app.title).toEqual('Maypad');
+    expect(app.title).toEqual('MAYPAD');
   });
 });
