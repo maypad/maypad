@@ -1,0 +1,17 @@
+#!/bin/bash
+echo "=> Building the frontend"
+docker run \
+  -v $(pwd)/frontend:/src \
+  -w /src \
+  node:11 \
+  /bin/sh -c 'npm install && $(npm bin)/ng build --prod'
+
+echo "=> Building the backend"
+docker run  \
+  -v $(pwd)/backend:/src \
+  -w /src \
+  java:8 \
+  ./mvnw install -DskipTests
+
+echo "=> Building the docker image"
+docker build -f $DOCKERFILE_PATH -t $IMAGE_NAME .
