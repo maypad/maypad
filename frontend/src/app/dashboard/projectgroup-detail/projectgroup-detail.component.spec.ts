@@ -46,7 +46,7 @@ describe('ProjectgroupDetailComponent', () => {
 
     expect(nativeElement.querySelector('h4').textContent).toBe(response.name);
     expect(buttons[0].textContent).toBe('Edit');
-    expect(buttons[1].textContent).toBe('Add');
+    expect(buttons[1].textContent).toBe('Add Project');
   });
 
   it('should show projectgroup info', () => {
