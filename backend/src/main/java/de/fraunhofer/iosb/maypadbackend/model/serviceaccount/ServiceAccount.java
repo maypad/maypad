@@ -18,7 +18,7 @@ import javax.persistence.InheritanceType;
  */
 @Data
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public abstract class ServiceAccount {
 
     @Id

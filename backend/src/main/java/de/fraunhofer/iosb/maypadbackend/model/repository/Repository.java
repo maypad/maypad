@@ -1,19 +1,22 @@
 package de.fraunhofer.iosb.maypadbackend.model.repository;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Repository of a version management system.
@@ -23,6 +26,7 @@ import java.util.List;
  */
 @Data
 @Entity
+@NoArgsConstructor
 public class Repository {
 
     @Id
@@ -36,10 +40,12 @@ public class Repository {
     @Enumerated(EnumType.STRING)
     private RepositoryType repositoryType;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Tag> tags;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Branch> branches;
+    @ElementCollection()
+    @MapKeyColumn(name = "name", length = 200)
+    private Map<String, Branch> branches;
+
 
 }

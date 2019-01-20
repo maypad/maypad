@@ -10,18 +10,22 @@ import { DeploymentHistoryComponent } from './deployment-history/deployment-hist
 import { BuildHistoryComponent } from './build-history/build-history.component';
 import { BhistoryResolverService } from './build-history/bhistory-resolver.service';
 import { DhistoryResolverService } from './deployment-history/dhistory-resolver.service';
+import { BranchDetailResolverService } from './branch-detail/branch-detail-resolver.service';
 
 const routes: Routes = [
   { path: 'dashboard', component: DashboardComponent },
   {
     path: 'projects/:id/branches/:branch/buildhistory', component: BuildHistoryComponent,
-    resolve: { builds: BhistoryResolverService, branch: BranchResolverService }
+    resolve: { builds: BhistoryResolverService, branch: BranchDetailResolverService }
   },
   {
     path: 'projects/:id/branches/:branch/deploymenthistory', component: DeploymentHistoryComponent,
-    resolve: { deplyoments: DhistoryResolverService, branch: BranchResolverService }
+    resolve: { deplyoments: DhistoryResolverService, branch: BranchDetailResolverService }
   },
-  { path: 'projects/:id/branches/:branch', component: BranchDetailComponent },
+  {
+    path: 'projects/:id/branches/:branch', component: BranchDetailComponent,
+    resolve: { branch: BranchDetailResolverService }
+  },
   {
     path: 'projects/:id', component: ProjectDetailComponent,
     resolve: { project: ProjectDetailResolverService, branches: ProjectBranchResolverService }

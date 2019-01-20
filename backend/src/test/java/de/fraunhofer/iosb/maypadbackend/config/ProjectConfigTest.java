@@ -25,6 +25,9 @@ public class ProjectConfigTest {
 
     private Logger logger = LoggerFactory.getLogger(ProjectConfigTest.class);
 
+    /**
+     * Setup test.
+     */
     @Before
     public void setup() {
         File f = new File("src/test/resources/project.yaml");
@@ -39,7 +42,9 @@ public class ProjectConfigTest {
 
     @Test
     public void testServerConfig() {
-        if (!isLoaded) { fail(); }
+        if (!isLoaded) {
+            fail();
+        }
         assertThat(projectConfig.getProjectName()).isEqualTo("cool_name");
         assertThat(projectConfig.getProjectDescription()).isEqualTo("lorem ipsum dolor sit amet");
         assertThat(projectConfig.getAddAllBranches()).isEqualTo(true);

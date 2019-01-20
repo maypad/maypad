@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BreadcrumbService } from '../breadcrumb.service';
+import { Branch } from '../model/branch';
 
 @Component({
   selector: 'app-branch-detail',
@@ -8,19 +9,18 @@ import { BreadcrumbService } from '../breadcrumb.service';
   styleUrls: ['./branch-detail.component.css']
 })
 export class BranchDetailComponent implements OnInit {
+  branch: Branch;
   projId: number;
-  branchName: string;
-  projName = 'Project';
   constructor(private route: ActivatedRoute, private crumbs: BreadcrumbService) { }
 
   ngOnInit() {
-    this.projId = this.route.snapshot.params['id'];
-    this.branchName = this.route.snapshot.params['branch'];
-    this.projName = this.projName + ':' + this.projId;
+    this.projId = parseInt(this.route.snapshot.paramMap.get('id'), 10);
+    this.route.data.subscribe((data: { branch: Branch }) => {
+      this.branch = data.branch;
+    });
     this.crumbs.setBreadcrumbs([
-      { name: this.projName, path: '/projects/' + this.projId },
-      { name: this.branchName, path: '/projects/' + this.projId + '/branches/' + this.branchName }
+      { name: this.branch.projectName, path: '/projects/' + this.projId },
+      { name: this.branch.name, path: '/projects/' + this.projId + '/branches/' + this.branch.name }
     ]);
   }
-
 }

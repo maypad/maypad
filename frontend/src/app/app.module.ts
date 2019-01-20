@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MarkdownModule } from 'ngx-markdown';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -23,6 +24,7 @@ import { BranchListItemComponent } from './project-detail/branch-list-item/branc
 import { EditProjectDialogComponent } from './project-detail/edit-project-dialog/edit-project-dialog.component';
 import { BhistoryListItemComponent } from './build-history/bhistory-list-item/bhistory-list-item.component';
 import { DhistoryListItemComponent } from './deployment-history/dhistory-list-item/dhistory-list-item.component';
+import { HeaderComponent } from './branch-detail/header/header.component';
 
 @NgModule({
     declarations: [
@@ -42,14 +44,16 @@ import { DhistoryListItemComponent } from './deployment-history/dhistory-list-it
         BranchListItemComponent,
         EditProjectDialogComponent,
         BhistoryListItemComponent,
-        DhistoryListItemComponent
+        DhistoryListItemComponent,
+        HeaderComponent
     ],
     imports: [
         BrowserModule,
         AppRoutingModule,
         FormsModule,
         RouterStubsModule,
-        HttpClientModule
+        HttpClientModule,
+        MarkdownModule.forRoot()
     ],
     providers: [],
     bootstrap: [AppComponent]

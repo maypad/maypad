@@ -1,6 +1,12 @@
 webServerPort: 1337
 reloadRepositoriesSeconds: 900
 
+scheduler:
+  poolSize: 4
+
+webhook:
+  tokenLength: 24
+
 maximumRefreshRequests:
   enabled: true
   seconds: 3600

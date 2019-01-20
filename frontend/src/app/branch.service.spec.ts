@@ -115,7 +115,7 @@ describe('Service: BranchService', () => {
 
   it('refresh a branch',
     fakeAsync(() => {
-      service.refreshBranch(2, 'master');
+      service.refreshBranch(2, 'master').subscribe();
 
       const req = httpTestingController.expectOne(`${environment.baseUrl}projects/2/refresh`);
       expect(req.request.method).toEqual('POST');
@@ -125,7 +125,7 @@ describe('Service: BranchService', () => {
 
   it('triggers a build',
     fakeAsync(() => {
-      service.triggerBuild(2, 'master', true);
+      service.triggerBuild(2, 'master', true).subscribe();
 
       const req = httpTestingController.expectOne(`${environment.baseUrl}projects/2/branches/master/builds`);
       expect(req.request.method).toEqual('POST');
@@ -136,7 +136,7 @@ describe('Service: BranchService', () => {
 
   it('triggers a deployment',
     fakeAsync(() => {
-      service.triggerDeployment(2, 'master', true, false);
+      service.triggerDeployment(2, 'master', true, false).subscribe();
 
       const req = httpTestingController.expectOne(`${environment.baseUrl}projects/2/branches/master/deployments`);
       expect(req.request.method).toEqual('POST');

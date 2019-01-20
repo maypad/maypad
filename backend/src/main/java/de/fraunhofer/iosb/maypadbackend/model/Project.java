@@ -11,7 +11,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -42,23 +41,24 @@ public class Project {
     private Status buildStatus;
 
     //repository
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
     private Repository repository;
     @Column
     private String repoUrl;
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private ServiceAccount serviceAccount;
 
     //webhooks
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
     private InternalWebhook refreshWebhook;
 
     /**
      * Constructor for Project.
-     * @param lastUpdate the exact time of the last repository update
-     * @param buildStatus the build status of the project
-     * @param repository the repository
-     * @param repoUrl the repository URL
+     *
+     * @param lastUpdate     the exact time of the last repository update
+     * @param buildStatus    the build status of the project
+     * @param repository     the repository
+     * @param repoUrl        the repository URL
      * @param serviceAccount the serviceaccount
      * @param refreshWebhook the webhook for refreshing the project
      */
@@ -70,5 +70,24 @@ public class Project {
         this.repoUrl = repoUrl;
         this.serviceAccount = serviceAccount;
         this.refreshWebhook = refreshWebhook;
+    }
+
+    /**
+     * Constructor for Project.
+     *
+     * @param repoUrl the repository URL
+     */
+    public Project(String repoUrl) {
+        this(repoUrl, null);
+    }
+
+    /**
+     * Constructor for Project.
+     *
+     * @param repoUrl        the repository URL
+     * @param serviceAccount the serviceaccount
+     */
+    public Project(String repoUrl, ServiceAccount serviceAccount) {
+        this(new Date(), Status.UNKNOWN, null, repoUrl, serviceAccount, null);
     }
 }

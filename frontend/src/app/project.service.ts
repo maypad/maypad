@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
-import { Branch} from './model/branch';
+import { Branch } from './model/branch';
 import { Project } from './model/project';
 import { Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -16,7 +16,7 @@ export class ProjectService {
 
   constructor(
     private api: ApiService,
-  ) {}
+  ) { }
 
   loadProject(id: number): Observable<Project> {
     const url = `${this.api.backendUrl}projects/${id}`;
@@ -37,23 +37,23 @@ export class ProjectService {
           }
           return project;
         }),
-      catchError(this.api.handleError<Project>('loadProject'))
-    );
+        catchError(this.api.handleError<Project>('loadProject'))
+      );
   }
 
   loadBranches(id: number): Observable<Branch[]> {
     const url = `${this.api.backendUrl}projects/${id}/branches`;
     return this.api.http.get<Branch[]>(url)
       .pipe(
-        map( response => {
-          return response.map( branch => {
+        map(response => {
+          return response.map(branch => {
             branch.status = (<any>BuildStatus)[branch['buildStatus']];
             branch.lastCommit = <Commit>branch['lastCommit'];
             return branch;
           });
         }),
-      catchError(this.api.handleError<Branch[]>('loadBranches', []))
-    );
+        catchError(this.api.handleError<Branch[]>('loadBranches', []))
+      );
   }
 
   updateServiceAccount(id: number, newAccount: ServiceAccount): Observable<Project> {
@@ -79,7 +79,7 @@ export class ProjectService {
           return response;
         }),
         catchError(this.api.handleError<Project>('updateServiceAccount'))
-    );
+      );
   }
 }
 

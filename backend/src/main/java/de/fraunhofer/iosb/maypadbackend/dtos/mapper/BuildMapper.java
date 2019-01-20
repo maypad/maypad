@@ -15,5 +15,5 @@ import java.util.List;
 public interface BuildMapper {
     public BuildResponse toResponse(Build build);
 
-    public List<Build> toResponseList(List<Build> builds);
+    public List<BuildResponse> toResponseList(List<Build> builds);
 }
