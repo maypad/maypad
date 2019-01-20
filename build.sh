@@ -3,10 +3,10 @@
 # Build MAYPAD
 
 cd frontend
-ng b
+ng b $1
 
 cd ../backend
-mvn install
+mvn install $2
 
 cd ..
 docker build -t maypad:latest .
