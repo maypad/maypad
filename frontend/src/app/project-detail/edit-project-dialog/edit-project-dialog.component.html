@@ -20,16 +20,16 @@
   <div class="input-group mb-3" [ngClass]="{ 'd-none': serviceType != 2 }">
     <div class="input-group-prepend"><span class="input-group-text" id="sshField" i18n="SSH-Key|Repo Auth: SSH-Key">SSH
         Key</span></div>
-    <input type="text" class="form-control" [(ngModel)]="sshKey" aria-describedby="sshField" placeholder="{{serviceString}}" />
+    <input type="text" class="form-control" [(ngModel)]="sshKey" aria-describedby="sshField" />
   </div>
   <div [ngClass]="{ 'd-none': serviceType != 3 }">
     <div class="input-group mb-3">
       <div class="input-group-prepend"><span class="input-group-text" id="usernameField" i18n="Username|Repo Auth: service account username">Username</span></div>
-      <input type="text" class="form-control" [(ngModel)]="username" aria-describedby="usernameField" placeholder="{{serviceString}}" />
+      <input type="text" class="form-control" [(ngModel)]="username" aria-describedby="usernameField" />
     </div>
     <div class="input-group mb-3">
       <div class="input-group-prepend"><span class="input-group-text" id="passwordField" i18n="Password|Repo Auth: service account password">Password</span></div>
-      <input type="text" class="form-control" [(ngModel)]="password" aria-describedby="passwordField" placeholder="{{serviceString}}" />
+      <input type="text" class="form-control" [(ngModel)]="password" aria-describedby="passwordField" />
     </div>
   </div>
 </div>
