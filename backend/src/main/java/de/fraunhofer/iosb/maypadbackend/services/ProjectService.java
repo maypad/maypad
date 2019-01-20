@@ -62,9 +62,9 @@ public class ProjectService {
      */
     public Project create(int projectgroupId, String repositoryUrl) {
         //TODO: Webhook and Repo for model
-        Project project = new Project(repositoryUrl);
+        Project project = saveProject(new Project(repositoryUrl));
         addProjectToProjectgroup(projectgroupId, project);
-        return saveProject(project);
+        return project;
     }
 
     /**
@@ -75,10 +75,9 @@ public class ProjectService {
      */
     public Project create(CreateProjectRequest request) {
         ServiceAccount serviceAccount = getServiceAccount(request.getServiceAccountRequest());
-        Project project = new Project(request.getRepositoryUrl(), serviceAccount);
-
+        Project project = saveProject(new Project(request.getRepositoryUrl(), serviceAccount));
         addProjectToProjectgroup(request.getGroupId(), project);
-        return saveProject(project);
+        return project;
     }
 
     /**
@@ -88,6 +87,9 @@ public class ProjectService {
      * @return List with all branches from given project(id)
      */
     public List<Branch> getBranches(int id) {
+        if (getProject(id).getRepository() == null) {
+            return new ArrayList<>();
+        }
         return new ArrayList<>(getProject(id).getRepository().getBranches().values());
     }
 
@@ -164,8 +166,10 @@ public class ProjectService {
      * @return Serviceaccount if the needed data were available, else null
      */
     private ServiceAccount getServiceAccount(ServiceAccountRequest request) {
+        if (request == null) {
+            return null;
+        }
         ServiceAccount serviceAccount = null;
-
         if (request.getKey() != null
                 && request.getKey().isPresent()) {
             serviceAccount = new KeyServiceAccount(request.getKey().get());
