@@ -2,15 +2,9 @@ package de.fraunhofer.iosb.maypadbackend.services.reporefresh;
 
 import de.fraunhofer.iosb.maypadbackend.config.project.ProjectConfig;
 import de.fraunhofer.iosb.maypadbackend.model.Project;
-import de.fraunhofer.iosb.maypadbackend.model.person.Author;
-import de.fraunhofer.iosb.maypadbackend.model.person.Mail;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Commit;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Tag;
-import de.fraunhofer.iosb.maypadbackend.util.Tuple;
 
-import java.io.File;
-import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -47,19 +41,17 @@ public class NullRepoManager extends RepoManager {
      */
     @Override
     public List<String> getBranchNames() {
-        return new LinkedList<>();
+        return null;
     }
 
     /**
      * Switches the branch of a repository .
      *
      * @param name Name of the branch
-     * @return true, if the switch to other branch was successfully, else false
      */
     @Override
-    public boolean switchBranch(String name) {
-        //we haven't a repo, so we do nothing here
-        return true;
+    public void switchBranch(String name) {
+
     }
 
     /**
@@ -69,8 +61,7 @@ public class NullRepoManager extends RepoManager {
      */
     @Override
     public String getReadme() {
-        // no repo, no readme
-        return "";
+        return null;
     }
 
     /**
@@ -80,7 +71,7 @@ public class NullRepoManager extends RepoManager {
      */
     @Override
     public List<Tag> getTags() {
-        return new LinkedList<>();
+        return null;
     }
 
     /**
@@ -90,28 +81,24 @@ public class NullRepoManager extends RepoManager {
      */
     @Override
     public Commit getLastCommit() {
-        return new Commit("", "", new Date(0), new Author("", new Mail("")));
+        return null;
     }
 
     /**
      * Clones the repository using the repository URL stored in the project.
-     *
-     * @return True in success, else false
      */
     @Override
-    protected boolean cloneRepository() {
-        //we have no valid repo, so we haven't to clone something
-        return true;
+    protected void cloneRepository() {
+
     }
 
     /**
-     * Returns a configuration with path that contains all values of the project configuration from the repository.
+     * Returns a configuration that contains all values of the project configuration from the repository.
      *
-     * @return Tuple of projectconfig and path to config
+     * @return Projectconfig of the project
      */
     @Override
-    public Tuple<ProjectConfig, File> getProjectConfig() {
-        //no repo, no projectconfig
+    protected ProjectConfig getProjectConfig() {
         return null;
     }
 }
