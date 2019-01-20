@@ -5,8 +5,8 @@ import { catchError, map } from 'rxjs/operators';
 import { Build } from './model/build';
 import { Deployment } from './model/deployment';
 import { Branch } from './model/branch';
-import {BuildStatus} from './model/buildStatus';
-import {Commit} from './model/commit';
+import { BuildStatus } from './model/buildStatus';
+import { Commit } from './model/commit';
 
 
 @Injectable({
@@ -16,7 +16,7 @@ export class BranchService {
 
   constructor(
     private api: ApiService,
-  ) {}
+  ) { }
 
   loadBuildHistory(projId: number, branch: string): Observable<Build[]> {
     const url = `${this.api.backendUrl}projects/${projId}/branches/${branch}/builds`;
@@ -30,7 +30,7 @@ export class BranchService {
           });
         }),
         catchError(this.api.handleError<Build[]>('loadBuildHistory', []))
-    );
+      );
   }
 
   loadDeploymentHistory(projId: number, branch: string): Observable<Deployment[]> {
@@ -50,36 +50,25 @@ export class BranchService {
           return response;
         }),
         catchError(this.api.handleError<Branch>('loadBranch'))
-    );
+      );
   }
 
-  refreshBranch(projId: number, branch: string): void {
+  refreshBranch(projId: number, branch: string): Observable<{}> {
     const url = `${this.api.backendUrl}projects/${projId}/refresh`;
-    new Promise((resolve, reject) => {
-      this.api.http.post(url, '', this.api.httpOptions)
-        .pipe(catchError(this.api.handleError('refreshBranch')))
-        .toPromise().then(() => { resolve(); });
-    }).valueOf();
+    return this.api.http.post(url, '', this.api.httpOptions)
+      .pipe(catchError(this.api.handleError('refreshBranch')));
   }
 
-  triggerBuild(projId: number, branch: string, withDependencies = false): void {
+  triggerBuild(projId: number, branch: string, withDependencies = false): Observable<{}> {
     const url = `${this.api.backendUrl}projects/${projId}/branches/${branch}/builds`;
-    const body = JSON.stringify({ 'withDependencies' : withDependencies});
-    new Promise((resolve, reject) => {
-      this.api.http.post(url, body, this.api.httpOptions)
-        .pipe(catchError(this.api.handleError('triggerBuild')))
-        .toPromise().then(() => { resolve(); });
-    }).valueOf();
+    const body = JSON.stringify({ 'withDependencies': withDependencies });
+    return this.api.http.post(url, body, this.api.httpOptions);
   }
 
-  triggerDeployment(projId: number, branch: string, withBuild = false, withDependencies = false): void {
+  triggerDeployment(projId: number, branch: string, withBuild = false, withDependencies = false): Observable<{}> {
     const url = `${this.api.backendUrl}projects/${projId}/branches/${branch}/deployments`;
-    const body = JSON.stringify({ 'withBuild' : withBuild, 'withDependencies' : withDependencies});
-    new Promise((resolve, reject) => {
-      this.api.http.post(url, body, this.api.httpOptions)
-        .pipe(catchError(this.api.handleError('triggerDeployment')))
-        .toPromise().then(() => { resolve(); });
-    }).valueOf();
+    const body = JSON.stringify({ 'withBuild': withBuild, 'withDependencies': withDependencies });
+    return this.api.http.post(url, body, this.api.httpOptions);
   }
 }
 

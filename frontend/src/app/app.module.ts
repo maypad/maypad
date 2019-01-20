@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MarkdownModule } from 'ngx-markdown';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -17,6 +18,9 @@ import { EditProjectgroupDialogComponent } from './dashboard/projectgroup-detail
 import { ProjectListItemComponent } from './dashboard/projectgroup-detail/project-list-item/project-list-item.component';
 import { AddProjectDialogComponent } from './dashboard/projectgroup-detail/add-project-dialog/add-project-dialog.component';
 import { HttpClientModule } from '@angular/common/http';
+import { EditProjectDialogComponent } from './project-detail/edit-project-dialog/edit-project-dialog.component';
+import { BranchListItemComponent } from './project-detail/branch-list-item/branch-list-item.component';
+import { HeaderComponent } from './branch-detail/header/header.component';
 
 @NgModule({
     declarations: [
@@ -30,14 +34,18 @@ import { HttpClientModule } from '@angular/common/http';
         AddProjectgroupDialogComponent,
         EditProjectgroupDialogComponent,
         ProjectListItemComponent,
-        AddProjectDialogComponent
+        AddProjectDialogComponent,
+        BranchListItemComponent,
+        EditProjectDialogComponent,
+        HeaderComponent
     ],
     imports: [
         BrowserModule,
         AppRoutingModule,
         FormsModule,
         RouterStubsModule,
-        HttpClientModule
+        HttpClientModule,
+        MarkdownModule.forRoot()
     ],
     providers: [],
     bootstrap: [AppComponent]

@@ -1,0 +1,20 @@
+<div class="container w-50" *ngIf="showAlert">
+    <div class="alert alert-success alert-dismissible fade show" role="alert" i18n="Depl. or build started">
+        A {{ alertType }} has been started!
+        <button type="button" class="close" (click)="showAlert = false;" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+</div>
+<div class="container d-flex flex-row w-50 border-bottom border-dark pb-2">
+    <h3>{{branch.name}}</h3>
+    <button type="button" class="btn btn-secondary ml-3" (click)="triggerBuild()" i18n="Trigger Build">Trigger Build</button>
+    <div class="pt-2 ml-2">
+        <input type="checkbox" #rebuild id="rebuild">
+        <label for="rebuild" i18n="Build Dependencies">Build Dependencies</label>
+    </div>
+    <button type="button" class="btn btn-secondary ml-3" (click)="buildAndDeploy()" i18n="Build & Deploy">Build &
+        Deploy</button>
+    <button type="button" class="btn btn-secondary ml-3" (click)="triggerDeploy(false)" i18n="Trigger Deploy">Trigger
+        Deploy</button>
+</div>

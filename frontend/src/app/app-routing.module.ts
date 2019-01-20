@@ -6,10 +6,14 @@ import { ProjectDetailComponent } from './project-detail/project-detail.componen
 import { BranchDetailComponent } from './branch-detail/branch-detail.component';
 import { ProjectDetailResolverService } from './project-detail/project-detail-resolver.service';
 import { ProjectBranchResolverService } from './project-detail/project-branch-resolver.service';
+import { BranchDetailResolverService } from './branch-detail/branch-detail-resolver.service';
 
 const routes: Routes = [
   { path: 'dashboard', component: DashboardComponent },
-  { path: 'projects/:id/branches/:branch', component: BranchDetailComponent },
+  {
+    path: 'projects/:id/branches/:branch', component: BranchDetailComponent,
+    resolve: { branch: BranchDetailResolverService }
+  },
   {
     path: 'projects/:id', component: ProjectDetailComponent,
     resolve: { project: ProjectDetailResolverService, branches: ProjectBranchResolverService }
