@@ -2,6 +2,7 @@ import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 import { Projectgroup } from 'src/app/model/projectGroup';
 import { ProjectgroupService } from 'src/app/projectgroup.service';
 import { Router } from '@angular/router';
+import { DashboardService } from '../../dashboard.service';
 
 @Component({
   selector: 'app-edit-projectgroup-dialog',
@@ -11,7 +12,9 @@ import { Router } from '@angular/router';
 export class EditProjectgroupDialogComponent implements OnInit {
   @Input() projGroup: Projectgroup;
   newName = '';
-  constructor(private groupService: ProjectgroupService, private router: Router) { }
+  constructor(private groupService: ProjectgroupService,
+    private router: Router,
+    private dashService: DashboardService) { }
 
   ngOnInit() {
     this.newName = this.projGroup.name;
@@ -22,6 +25,10 @@ export class EditProjectgroupDialogComponent implements OnInit {
   }
 
   updateProjectgroup() {
+    if (this.newName === '') {
+      alert(`Error: Group name can't be empty`);
+      return;
+    }
     this.groupService.updateProjectgroup(this.projGroup.id, this.newName).subscribe(
       // In case of the backend not accepting the new name
       group => {
@@ -33,7 +40,7 @@ export class EditProjectgroupDialogComponent implements OnInit {
 
   deleteProjectgroup() {
     this.groupService.deleteProjectgroup(this.projGroup.id).subscribe(
-      () => { this.router.navigateByUrl('/'); }
+      () => { this.dashService.deleteProjGroup(this.projGroup); }
     );
   }
 

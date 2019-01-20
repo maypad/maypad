@@ -6,12 +6,18 @@ import { Projectgroup } from '../model/projectGroup';
   providedIn: 'root'
 })
 export class DashboardService {
-  public projGroups: Subject<Projectgroup>;
+  public subjectNewGroup: Subject<Projectgroup>;
+  public subjectDeleteGroup: Subject<Projectgroup>;
   constructor() {
-    this.projGroups = new Subject<Projectgroup>();
+    this.subjectNewGroup = new Subject<Projectgroup>();
+    this.subjectDeleteGroup = new Subject<Projectgroup>();
   }
 
   addProjGroup(newVal: Projectgroup) {
-    this.projGroups.next(newVal);
+    this.subjectNewGroup.next(newVal);
+  }
+
+  deleteProjGroup(newVal: Projectgroup) {
+    this.subjectDeleteGroup.next(newVal);
   }
 }

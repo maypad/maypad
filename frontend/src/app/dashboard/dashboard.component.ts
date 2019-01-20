@@ -26,7 +26,13 @@ export class DashboardComponent implements OnInit {
         this.finishedLoading = true;
       }
     );
-    this.dashService.projGroups.subscribe((group) => { this.projectGroups.push(group); });
+    this.dashService.subjectNewGroup.subscribe(group => { this.projectGroups.push(group); });
+    this.dashService.subjectDeleteGroup.subscribe(group => {
+      const index = this.projectGroups.indexOf(group, 0);
+      if (index > -1) {
+        this.projectGroups.splice(index, 1);
+      }
+    });
   }
 
   clearInput(event: FocusEvent) {

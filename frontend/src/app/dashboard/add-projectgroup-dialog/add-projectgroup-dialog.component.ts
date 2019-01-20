@@ -18,6 +18,10 @@ export class AddProjectgroupDialogComponent implements OnInit {
   }
 
   addProjectgroup() {
+    if (this.groupName === '') {
+      alert(`Error: Group name can't be empty`);
+      return;
+    }
     this.groupService.createProjectgroup(this.groupName).subscribe(
       (group) => { this.dashService.addProjGroup(group); }
     );
