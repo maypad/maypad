@@ -10,6 +10,7 @@ import de.fraunhofer.iosb.maypadbackend.model.person.Mail;
 import de.fraunhofer.iosb.maypadbackend.model.person.Person;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Branch;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Commit;
+import de.fraunhofer.iosb.maypadbackend.model.repository.DependencyDescriptor;
 import de.fraunhofer.iosb.maypadbackend.model.webhook.InternalWebhook;
 import de.fraunhofer.iosb.maypadbackend.model.webhook.WebhookType;
 import org.junit.Before;
@@ -21,6 +22,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,18 +40,20 @@ public class BranchMapperTest {
      */
     @Before
     public void setup() {
-        Branch branchDependency = new Branch();
-        branchDependency.setId(4);
+        DependencyDescriptor branchDependency = new DependencyDescriptor();
+        branchDependency.setBranchName("master");
+        branchDependency.setProjectId(12);
+        List<DependencyDescriptor> dependencies = new ArrayList<>();
+        dependencies.add(branchDependency);
         WebhookBuild webhookBuild = new WebhookBuild();
         webhookBuild.setName("https://buildProject.com/4372434");
         WebhookDeployment webhookDeployment = new WebhookDeployment();
         webhookDeployment.setName("https://deployProject.com/3742493");
 
-
         testBranch = new Branch();
         testBranch.setName("testBranch");
         testBranch.setReadme("Test Readme");
-        testBranch.setDependencies(new ArrayList<>(Collections.singletonList(branchDependency)));
+        testBranch.setDependencies(dependencies);
         testBranch.setMembers(new ArrayList<>(Collections.singletonList(
                 new Person("Max Mustermann"))));
         testBranch.setBuildType(webhookBuild);
@@ -70,7 +74,7 @@ public class BranchMapperTest {
     public void mapBuildToBuildResponse() {
         BranchResponse response = branchMapper.toResponse(testBranch);
 
-        int[] dependencies = {4};
+        String[] dependencies = {"12:master"};
         String[] members = {"Max Mustermann"};
         String[] mails = {"max.mustermann@maypad.de"};
 

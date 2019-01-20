@@ -2,10 +2,7 @@ package de.fraunhofer.iosb.maypadbackend.dtos.mapper;
 
 import de.fraunhofer.iosb.maypadbackend.dtos.response.BuildResponse;
 import de.fraunhofer.iosb.maypadbackend.model.build.Build;
-
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
 
 import java.util.List;
 

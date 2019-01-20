@@ -4,7 +4,7 @@ import de.fraunhofer.iosb.maypadbackend.dtos.response.BranchResponse;
 import de.fraunhofer.iosb.maypadbackend.model.person.Mail;
 import de.fraunhofer.iosb.maypadbackend.model.person.Person;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Branch;
-
+import de.fraunhofer.iosb.maypadbackend.model.repository.DependencyDescriptor;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -40,11 +40,13 @@ public interface BranchMapper {
      * @return array of dependencies associated with the given branch
      */
     @Named("toDependencies")
-    default int[] toDependencies(Branch branch) {
-        List<Branch> dependencies = branch.getDependencies();
-        int[] dependenciesArr = new int[dependencies.size()];
+    default String[] toDependencies(Branch branch) {
+        List<DependencyDescriptor> dependencies = branch.getDependencies();
+        String[] dependenciesArr = new String[dependencies.size()];
         for (int i = 0; i < dependencies.size(); i++) {
-            dependenciesArr[i] = dependencies.get(i).getId();
+            DependencyDescriptor d = dependencies.get(i);
+            String dep = d.getProjectId() + ":" + d.getBranchName();
+            dependenciesArr[i] = dep;
         }
         return dependenciesArr;
     }

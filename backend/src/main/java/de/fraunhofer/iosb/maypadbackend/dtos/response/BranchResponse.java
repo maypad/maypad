@@ -17,7 +17,7 @@ public class BranchResponse {
     private String[] mails;
     private String buildWebhook;
     private String deploymentWebhook;
-    private int[] dependencies;
+    private String[] dependencies;
     private Status buildStatus;
     private String buildSuccessUrl;
     private String buildFailureUrl;
