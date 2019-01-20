@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.validation.Valid;
 import java.util.List;
 
-@RequestMapping("/projectgroups")
+@RequestMapping("/api/projectgroups")
 public interface ProjectgroupApi {
     /**
      * Creates a new projectgorup with the parameters set in the Request.
