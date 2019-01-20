@@ -20,7 +20,7 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = CommitMapper.class)
 public interface BranchMapper {
     @Mappings({
-            @Mapping(source = "branch", target = "maypadDependencyIds",
+            @Mapping(source = "branch", target = "dependencies",
                     qualifiedByName = "toDependencies"),
             @Mapping(source = "branch", target = "members", qualifiedByName = "toMembers"),
             @Mapping(source = "buildType.name", target = "buildWebhook"),

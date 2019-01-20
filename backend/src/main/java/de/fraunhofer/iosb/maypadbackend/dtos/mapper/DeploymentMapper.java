@@ -4,6 +4,8 @@ import de.fraunhofer.iosb.maypadbackend.dtos.response.DeploymentResponse;
 import de.fraunhofer.iosb.maypadbackend.model.deployment.Deployment;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 import java.util.List;
 
@@ -14,6 +16,9 @@ import java.util.List;
  */
 @Mapper(componentModel = "spring", uses = {BuildMapper.class})
 public interface DeploymentMapper {
+    @Mappings({
+            @Mapping(source = "type.name", target = "type")
+    })
     public DeploymentResponse toResponse(Deployment deployment);
 
     public List<DeploymentResponse> toResponseList(List<Deployment> deployments);

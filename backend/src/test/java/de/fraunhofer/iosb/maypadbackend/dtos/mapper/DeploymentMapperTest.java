@@ -4,6 +4,8 @@ import de.fraunhofer.iosb.maypadbackend.dtos.response.DeploymentResponse;
 import de.fraunhofer.iosb.maypadbackend.model.Status;
 import de.fraunhofer.iosb.maypadbackend.model.build.Build;
 import de.fraunhofer.iosb.maypadbackend.model.deployment.Deployment;
+import de.fraunhofer.iosb.maypadbackend.model.deployment.DeploymentType;
+import de.fraunhofer.iosb.maypadbackend.model.deployment.WebhookDeployment;
 import de.fraunhofer.iosb.maypadbackend.model.person.Author;
 import de.fraunhofer.iosb.maypadbackend.model.person.Mail;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Commit;
@@ -43,6 +45,7 @@ public class DeploymentMapperTest {
     @Before
     public void setup() {
         testDeployment = new Deployment(deployDate, new Build(buildDate, buildCommit, buildStatus));
+        testDeployment.setType(new WebhookDeployment());
     }
 
     @Test
@@ -51,13 +54,6 @@ public class DeploymentMapperTest {
 
         assertThat(response).isNotNull();
         assertThat(response.getTimestamp()).isEqualTo(deployDate);
-        assertThat(response.getBuild().getStatus()).isEqualTo(buildStatus);
-        assertThat(response.getBuild().getTimestamp()).isEqualTo(buildDate);
-        assertThat(response.getBuild().getCommit().getTimestamp()).isEqualTo(commitTimestamp);
-        assertThat(response.getBuild().getCommit().getCommitMessage()).isEqualTo(commitMessage);
-        assertThat(response.getBuild().getCommit().getCommitIdentifier())
-                .isEqualTo(commitIdentifier);
-        assertThat(response.getBuild().getCommit().getAuthor()).isEqualTo(
-                commitAuthor.getMail().getMailAddress());
+        assertThat(response.getType()).isEqualTo(testDeployment.getType().getName());
     }
 }

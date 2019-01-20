@@ -77,7 +77,7 @@ public class BranchMapperTest {
         assertThat(response).isNotNull();
         assertThat(response.getName()).isEqualTo("testBranch");
         assertThat(response.getReadme()).isEqualTo("Test Readme");
-        assertThat(response.getMaypadDependencyIds()).isEqualTo(dependencies);
+        assertThat(response.getDependencies()).isEqualTo(dependencies);
         assertThat(response.getMembers()).isEqualTo(members);
         assertThat(response.getBuildWebhook()).isEqualTo("https://buildProject.com/4372434");
         assertThat(response.getDeploymentWebhook()).isEqualTo("https://deployProject.com/3742493");
@@ -86,6 +86,5 @@ public class BranchMapperTest {
         assertThat(response.getMails()).isEqualTo(mails);
         assertThat(response.getBuildStatus()).isEqualTo(Status.SUCCESS);
         assertThat(response.getLastCommit()).isNotNull();
-        assertThat(response.getBuilds().length).isEqualTo(1);
     }
 }

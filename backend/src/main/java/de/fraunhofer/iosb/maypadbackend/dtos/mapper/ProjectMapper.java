@@ -16,7 +16,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface ProjectMapper {
     @Mappings({
-            @Mapping(source = "refreshWebhook.url", target = "projectRefreshUrl")
+            @Mapping(source = "refreshWebhook.url", target = "refreshUrl")
     })
     public ProjectResponse toResponse(Project project);
 

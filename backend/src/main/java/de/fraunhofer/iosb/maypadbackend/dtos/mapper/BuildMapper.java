@@ -4,6 +4,8 @@ import de.fraunhofer.iosb.maypadbackend.dtos.response.BuildResponse;
 import de.fraunhofer.iosb.maypadbackend.model.build.Build;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 import java.util.List;
 
@@ -13,6 +15,7 @@ import java.util.List;
  */
 @Mapper(componentModel = "spring", uses = {CommitMapper.class})
 public interface BuildMapper {
+
     public BuildResponse toResponse(Build build);
 
     public List<BuildResponse> toResponseList(List<Build> builds);

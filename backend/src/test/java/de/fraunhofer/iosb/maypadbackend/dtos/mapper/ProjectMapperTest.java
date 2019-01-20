@@ -43,9 +43,9 @@ public class ProjectMapperTest {
 
         assertThat(response).isNotNull();
         assertThat(response.getId()).isEqualTo(projectId);
-        assertThat(response.getRepoUrl()).isEqualTo(projectRepoUrl);
-        assertThat(response.getLastUpdate()).isEqualTo(lastUpdate);
+        assertThat(response.getName()).isEqualTo(testProject.getName());
+        assertThat(response.getRepositoryUrl()).isEqualTo(projectRepoUrl);
         assertThat(response.getBuildStatus()).isEqualTo(buildStatus);
-        assertThat(response.getProjectRefreshUrl()).isEqualTo(projectRefreshUrl);
+        assertThat(response.getRefreshUrl()).isEqualTo(projectRefreshUrl);
     }
 }
