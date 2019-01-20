@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
@@ -81,5 +82,14 @@ public class WebConfig implements WebMvcConfigurer {
             logger.error(maypadHomePath + " does not contain valid frontend files.");
         }
 
+    }
+
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry) {
+        registry.addViewController("/").setViewName("forward:/index.html");
+        registry.addViewController("/{x:[\\w\\-]+}")
+                .setViewName("forward:/index.html");
+        registry.addViewController("/{x:^(?!(?:api|hooks)$).*$}/**/{y:[\\w\\-]+}")
+                .setViewName("forward:/index.html");
     }
 }

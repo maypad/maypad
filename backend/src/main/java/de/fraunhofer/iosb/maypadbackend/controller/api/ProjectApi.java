@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.validation.Valid;
 import java.util.List;
 
-@RequestMapping("/projects")
+@RequestMapping("/api/projects")
 public interface ProjectApi {
     /**
      * Creates a new project with the parameters set in the CreateRequest.
