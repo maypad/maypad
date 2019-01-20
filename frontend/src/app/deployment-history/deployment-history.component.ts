@@ -17,8 +17,8 @@ export class DeploymentHistoryComponent implements OnInit {
 
   ngOnInit() {
     this.projId = parseInt(this.route.snapshot.paramMap.get('id'), 10);
-    this.route.data.subscribe((data: { deplyoments: Deployment[], branch: Branch }) => {
-      this.deployments = data.deplyoments;
+    this.route.data.subscribe((data: { deployments: Deployment[], branch: Branch }) => {
+      this.deployments = data.deployments;
       this.branch = data.branch;
       this.setBreadcrumbs();
     });

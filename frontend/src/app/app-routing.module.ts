@@ -20,7 +20,7 @@ const routes: Routes = [
   },
   {
     path: 'projects/:id/branches/:branch/deploymenthistory', component: DeploymentHistoryComponent,
-    resolve: { deplyoments: DhistoryResolverService, branch: BranchDetailResolverService }
+    resolve: { deployments: DhistoryResolverService, branch: BranchDetailResolverService }
   },
   {
     path: 'projects/:id/branches/:branch', component: BranchDetailComponent,
