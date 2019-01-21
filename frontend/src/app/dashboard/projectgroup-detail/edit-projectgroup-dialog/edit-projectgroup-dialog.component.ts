@@ -25,15 +25,13 @@ export class EditProjectgroupDialogComponent implements OnInit {
   }
 
   updateProjectgroup() {
-    if (this.newName === '') {
-      alert(`Error: Group name can't be empty`);
-      return;
-    }
     this.groupService.updateProjectgroup(this.projGroup.id, this.newName).subscribe(
       // In case of the backend not accepting the new name
       group => {
-        this.projGroup.name = group.name;
-        this.newName = group.name;
+        if (group) {
+          this.projGroup.name = group.name;
+          this.newName = group.name;
+        }
       }
     );
   }
