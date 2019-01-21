@@ -1,5 +1,6 @@
 package de.fraunhofer.iosb.maypadbackend.services.webhook;
 
+import de.fraunhofer.iosb.maypadbackend.model.webhook.Webhook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,4 +18,6 @@ public class WebhookService {
     @Autowired
     public WebhookService() {
     }
+
+    public void call(Webhook webhook) {}
 }
