@@ -54,7 +54,7 @@ public class Branch {
     @OneToMany(cascade = CascadeType.ALL)
     private List<Mail> mails;
     @ManyToMany(cascade = CascadeType.ALL)
-    private List<Branch> dependencies;
+    private List<DependencyDescriptor> dependencies;
 
     //build
     @OneToOne(cascade = CascadeType.ALL)

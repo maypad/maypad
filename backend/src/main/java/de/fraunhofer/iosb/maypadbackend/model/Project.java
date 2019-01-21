@@ -6,6 +6,7 @@ import de.fraunhofer.iosb.maypadbackend.model.webhook.InternalWebhook;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,6 +36,9 @@ public class Project {
     @Column(name = "id", updatable = false, nullable = false)
     private int id;
 
+    @Basic
+    private String name;
+
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastUpdate;
     @Enumerated(EnumType.STRING)
@@ -44,7 +48,7 @@ public class Project {
     @OneToOne(cascade = CascadeType.ALL)
     private Repository repository;
     @Column
-    private String repoUrl;
+    private String repositoryUrl;
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private ServiceAccount serviceAccount;
 
@@ -67,7 +71,7 @@ public class Project {
         this.lastUpdate = lastUpdate;
         this.buildStatus = buildStatus;
         this.repository = repository;
-        this.repoUrl = repoUrl;
+        this.repositoryUrl = repoUrl;
         this.serviceAccount = serviceAccount;
         this.refreshWebhook = refreshWebhook;
     }

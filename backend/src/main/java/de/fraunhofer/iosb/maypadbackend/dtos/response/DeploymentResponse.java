@@ -12,5 +12,5 @@ import java.util.Date;
 @Data
 public class DeploymentResponse {
     private Date timestamp;
-    private BuildResponse build;
+    private String type;
 }

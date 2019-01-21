@@ -34,6 +34,8 @@ public class Deployment {
     private Date timestamp;
     @OneToOne(cascade = CascadeType.ALL)
     private Build build;
+    @OneToOne(cascade = CascadeType.ALL)
+    private DeploymentType type;
 
 
     /**

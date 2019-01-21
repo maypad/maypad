@@ -133,7 +133,6 @@ public class ProjectService {
     public Project changeProject(int id, ChangeProjectRequest request) {
         Project project = getProject(id);
         ServiceAccount serviceAccount = getServiceAccount(request.getServiceAccountRequest());
-        project.setRepoUrl(request.getRepositoryUrl());
         project.setServiceAccount(serviceAccount);
         //TODO: Repo url ~> update Repo
         return saveProject(project);

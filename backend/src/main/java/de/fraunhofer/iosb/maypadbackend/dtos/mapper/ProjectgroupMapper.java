@@ -2,7 +2,6 @@ package de.fraunhofer.iosb.maypadbackend.dtos.mapper;
 
 import de.fraunhofer.iosb.maypadbackend.dtos.response.ProjectgroupResponse;
 import de.fraunhofer.iosb.maypadbackend.model.Projectgroup;
-
 import org.mapstruct.Mapper;
 
 import java.util.List;

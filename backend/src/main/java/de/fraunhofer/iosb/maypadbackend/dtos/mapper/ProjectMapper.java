@@ -2,7 +2,6 @@ package de.fraunhofer.iosb.maypadbackend.dtos.mapper;
 
 import de.fraunhofer.iosb.maypadbackend.dtos.response.ProjectResponse;
 import de.fraunhofer.iosb.maypadbackend.model.Project;
-
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -16,7 +15,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface ProjectMapper {
     @Mappings({
-            @Mapping(source = "refreshWebhook.url", target = "projectRefreshUrl")
+            @Mapping(source = "refreshWebhook.url", target = "refreshUrl")
     })
     public ProjectResponse toResponse(Project project);
 

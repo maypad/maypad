@@ -12,14 +12,13 @@ import lombok.Data;
 public class BranchResponse {
     private String name;
     private String readme;
-    private int[] maypadDependencyIds;
+    private CommitResponse lastCommit;
     private String[] members;
+    private String[] mails;
     private String buildWebhook;
     private String deploymentWebhook;
+    private String[] dependencies;
+    private Status buildStatus;
     private String buildSuccessUrl;
     private String buildFailureUrl;
-    private String[] mails;
-    private Status buildStatus;
-    private CommitResponse lastCommit;
-    private BuildResponse[] builds;
 }

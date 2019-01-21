@@ -9,6 +9,5 @@ import lombok.Data;
  */
 @Data
 public class ChangeProjectRequest {
-    private String repositoryUrl;
     private ServiceAccountRequest serviceAccountRequest;
 }

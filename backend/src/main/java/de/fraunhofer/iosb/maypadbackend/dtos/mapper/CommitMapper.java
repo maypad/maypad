@@ -2,7 +2,6 @@ package de.fraunhofer.iosb.maypadbackend.dtos.mapper;
 
 import de.fraunhofer.iosb.maypadbackend.dtos.response.CommitResponse;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Commit;
-
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
