@@ -8,7 +8,10 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,10 +19,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@Transactional
 public class ProjectgroupRepositoryTest {
 
     private final int N_PROJECTGROUPS = 3;
     private List<Projectgroup> projectgroups;
+
+    @PersistenceContext
+    EntityManager entityManager;
 
     @Autowired
     private ProjectgroupRepository repository;
@@ -28,7 +35,9 @@ public class ProjectgroupRepositoryTest {
     public void setup() {
         projectgroups = new ArrayList<Projectgroup>();
         for (int i = 0; i < N_PROJECTGROUPS; i++) {
-            projectgroups.add(new Projectgroup());
+            Projectgroup g = new Projectgroup();
+            entityManager.persist(g);
+            projectgroups.add(g);
         }
     }
 
@@ -36,7 +45,7 @@ public class ProjectgroupRepositoryTest {
     public void testGetById() {
         for (Projectgroup g : projectgroups) {
             int id = g.getId();
-            assertThat(repository.findProjectgroupById(id)).isEqualTo(g);
+            assertThat(repository.findProjectgroupById(id).get()).isEqualTo(g);
         }
     }
 
