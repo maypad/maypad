@@ -24,7 +24,7 @@ const routes: Routes = [
   },
   {
     path: 'projects/:id/branches/:branch', component: BranchDetailComponent,
-    resolve: { branch: BranchDetailResolverService }
+    resolve: { branch: BranchDetailResolverService, project: ProjectDetailResolverService }
   },
   {
     path: 'projects/:id', component: ProjectDetailComponent,
