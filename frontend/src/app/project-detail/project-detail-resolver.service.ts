@@ -3,7 +3,7 @@ import { Resolve, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@a
 import { Project } from '../model/project';
 import { ProjectService } from '../project.service';
 import { Observable, EMPTY } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -15,10 +15,14 @@ export class ProjectDetailResolverService implements Resolve<Project> {
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Project> {
     const id = route.paramMap.get('id');
     return this.projService.loadProject(parseInt(id, 10)).pipe(
-      catchError(() => {
-        // Maybe inform user that the project may not exist
-        this.router.navigateByUrl('/404');
-        return EMPTY;
+      map(proj => {
+        // Maybe inform user that the project may not exista
+        if (proj) {
+          return proj;
+        } else {
+          this.router.navigateByUrl('/404');
+          return null;
+        }
       })
     );
   }

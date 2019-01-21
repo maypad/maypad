@@ -6,7 +6,8 @@
   <div class="input-group mb-3">
     <div class="input-group-prepend"><span class="input-group-text" id="repoField" i18n="repo url|Project repository url">Repository
         URL</span></div>
-    <input type="text" class="form-control" [(ngModel)]="repoUrl" aria-describedby="repoField" placeholder="Git clone / SVN checkout URL" />
+    <input type="text" class="form-control" [(ngModel)]="repoUrl" aria-describedby="repoField" placeholder="Git clone / SVN checkout URL"
+      required />
   </div>
   <div class="dropdown mb-3 d-flex justify-content-end">
     <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
@@ -23,16 +24,16 @@
   <div class="input-group mb-3" [ngClass]="{ 'd-none': selectedIndex != 2 }">
     <div class="input-group-prepend"><span class="input-group-text" id="sshField" i18n="SSH-Key|Repo Auth: SSH-Key">SSH
         Key</span></div>
-    <input type="text" class="form-control" [(ngModel)]="sshKey" aria-describedby="sshField" />
+    <input type="text" class="form-control" [(ngModel)]="sshKey" aria-describedby="sshField" required />
   </div>
   <div [ngClass]="{ 'd-none': selectedIndex != 3 }">
     <div class="input-group mb-3">
       <div class="input-group-prepend"><span class="input-group-text" id="usernameField" i18n="Username|Repo Auth: service account username">Username</span></div>
-      <input type="text" class="form-control" [(ngModel)]="username" aria-describedby="usernameField" />
+      <input type="text" class="form-control" [(ngModel)]="username" aria-describedby="usernameField" required />
     </div>
     <div class="input-group mb-3">
       <div class="input-group-prepend"><span class="input-group-text" id="passwordField" i18n="Password|Repo Auth: service account password">Password</span></div>
-      <input type="text" class="form-control" [(ngModel)]="password" aria-describedby="passwordField" />
+      <input type="text" class="form-control" [(ngModel)]="password" aria-describedby="passwordField" required />
     </div>
   </div>
 </div>

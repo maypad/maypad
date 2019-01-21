@@ -22,9 +22,9 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'maypad-frontend'`, () => {
+  it(`should have as title 'MAYPAD'`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.debugElement.componentInstance;
-    expect(app.title).toEqual('maypad-frontend');
+    expect(app.title).toEqual('MAYPAD');
   });
 });
