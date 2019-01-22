@@ -2,6 +2,7 @@ package de.fraunhofer.iosb.maypadbackend.dtos.mapper;
 
 import de.fraunhofer.iosb.maypadbackend.dtos.response.ProjectResponse;
 import de.fraunhofer.iosb.maypadbackend.model.Project;
+import de.fraunhofer.iosb.maypadbackend.model.person.Person;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -21,4 +22,8 @@ public interface ProjectMapper {
     public ProjectResponse toResponse(Project project);
 
     public List<ProjectResponse> toResponseList(List<Project> projects);
+
+    default String map(Person person) {
+        return person.getName();
+    }
 }

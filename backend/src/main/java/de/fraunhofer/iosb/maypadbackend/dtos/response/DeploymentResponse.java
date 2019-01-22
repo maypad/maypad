@@ -1,5 +1,6 @@
 package de.fraunhofer.iosb.maypadbackend.dtos.response;
 
+import de.fraunhofer.iosb.maypadbackend.model.Status;
 import lombok.Data;
 
 import java.util.Date;
@@ -13,4 +14,5 @@ import java.util.Date;
 public class DeploymentResponse {
     private Date timestamp;
     private String type;
+    private Status status;
 }

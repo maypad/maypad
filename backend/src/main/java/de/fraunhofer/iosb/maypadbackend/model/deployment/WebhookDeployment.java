@@ -1,6 +1,8 @@
 package de.fraunhofer.iosb.maypadbackend.model.deployment;
 
 import de.fraunhofer.iosb.maypadbackend.model.webhook.ExternalWebhook;
+import de.fraunhofer.iosb.maypadbackend.services.deployment.DeploymentTypeExec;
+import de.fraunhofer.iosb.maypadbackend.services.deployment.WebhookDeploymentExecutor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -19,6 +21,7 @@ import javax.persistence.OneToOne;
 @Entity
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
+@DeploymentTypeExec(executor = WebhookDeploymentExecutor.class)
 public class WebhookDeployment extends DeploymentType {
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
