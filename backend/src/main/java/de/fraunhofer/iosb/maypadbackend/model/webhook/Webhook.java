@@ -1,6 +1,7 @@
 package de.fraunhofer.iosb.maypadbackend.model.webhook;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
@@ -24,6 +25,7 @@ import javax.persistence.InheritanceType;
 public abstract class Webhook {
 
     @Id
+    @EqualsAndHashCode.Exclude
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", updatable = false, nullable = false)
     private int id;

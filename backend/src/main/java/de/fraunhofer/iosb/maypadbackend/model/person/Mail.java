@@ -1,6 +1,7 @@
 package de.fraunhofer.iosb.maypadbackend.model.person;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
@@ -21,6 +22,7 @@ import javax.persistence.Id;
 public class Mail {
 
     @Id
+    @EqualsAndHashCode.Exclude
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", updatable = false, nullable = false)
     private int id;

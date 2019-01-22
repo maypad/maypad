@@ -1,6 +1,7 @@
 package de.fraunhofer.iosb.maypadbackend.model.repository;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.CascadeType;
@@ -30,6 +31,7 @@ import java.util.Map;
 public class Repository {
 
     @Id
+    @EqualsAndHashCode.Exclude
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", updatable = false, nullable = false)
     private int id;

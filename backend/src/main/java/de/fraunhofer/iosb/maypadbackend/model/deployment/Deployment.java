@@ -2,6 +2,7 @@ package de.fraunhofer.iosb.maypadbackend.model.deployment;
 
 import de.fraunhofer.iosb.maypadbackend.model.build.Build;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.CascadeType;
@@ -27,6 +28,7 @@ import java.util.Date;
 public class Deployment {
 
     @Id
+    @EqualsAndHashCode.Exclude
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", updatable = false, nullable = false)
     private int id;

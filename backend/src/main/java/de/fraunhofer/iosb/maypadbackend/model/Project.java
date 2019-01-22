@@ -4,6 +4,7 @@ import de.fraunhofer.iosb.maypadbackend.model.repository.Repository;
 import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.ServiceAccount;
 import de.fraunhofer.iosb.maypadbackend.model.webhook.InternalWebhook;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Basic;
@@ -32,6 +33,7 @@ import java.util.Date;
 public class Project {
 
     @Id
+    @EqualsAndHashCode.Exclude
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)
     private int id;
