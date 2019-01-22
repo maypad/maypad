@@ -30,4 +30,6 @@ public interface ServerConfig {
 
     public int getWebhookTokenLength();
 
+    public String getDomain();
+
 }

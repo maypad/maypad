@@ -1,4 +1,5 @@
 webServerPort: 1337
+domain: maypad.de
 reloadRepositoriesSeconds: 900
 
 scheduler:
