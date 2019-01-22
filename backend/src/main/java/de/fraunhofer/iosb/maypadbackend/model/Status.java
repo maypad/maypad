@@ -27,6 +27,10 @@ public enum Status {
     /**
      * The status of the process is unknown.
      */
-    UNKNOWN;
+    UNKNOWN,
+    /**
+     * The status of a process that has timed out.
+     */
+    TIMEOUT;
 
 }

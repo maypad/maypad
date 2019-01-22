@@ -10,6 +10,7 @@ import de.fraunhofer.iosb.maypadbackend.dtos.response.BuildResponse;
 import de.fraunhofer.iosb.maypadbackend.dtos.response.DeploymentResponse;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Branch;
 import de.fraunhofer.iosb.maypadbackend.services.ProjectService;
+import de.fraunhofer.iosb.maypadbackend.services.build.BuildService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,6 +24,7 @@ public class BranchController implements BranchApi {
     private BranchMapper branchMapper;
     private BuildMapper buildMapper;
     private DeploymentMapper deploymentMapper;
+    private BuildService buildService;
 
     /**
      * Constructor for BranchController.
@@ -30,14 +32,16 @@ public class BranchController implements BranchApi {
      * @param branchMapper the mapper used to map branches to branch-responses
      * @param buildMapper the mapper used to map builds to build-responses
      * @param deploymentMapper the mapper used to map deployments to deployment-responses
+     * @param buildService the service used to build branches
      */
     @Autowired
-    public BranchController(ProjectService projectService, BranchMapper branchMapper,
-                            BuildMapper buildMapper, DeploymentMapper deploymentMapper) {
+    public BranchController(ProjectService projectService, BranchMapper branchMapper, BuildMapper buildMapper,
+                            DeploymentMapper deploymentMapper, BuildService buildService) {
         this.projectService = projectService;
         this.branchMapper = branchMapper;
         this.buildMapper = buildMapper;
         this.deploymentMapper = deploymentMapper;
+        this.buildService = buildService;
     }
 
     @Override
@@ -63,8 +67,7 @@ public class BranchController implements BranchApi {
     @Override
     public void triggerBuild(int id, String ref, @Valid BuildRequest request) {
         Branch branch = projectService.getBranch(id, ref);
-
-        //TODO: Call BuildService
+        buildService.buildBranch(branch, request, "");
     }
 
     @Override
@@ -85,13 +88,13 @@ public class BranchController implements BranchApi {
     public void notifyBuildSuccess(int id, String ref, String token) {
         Branch branch = projectService.getBranch(id, ref);
 
-        //TODO: Call BuildService
+        //TODO: Call WebhookService
     }
 
     @Override
     public void notifyBuildFailure(int id, String ref, String token) {
         Branch branch = projectService.getBranch(id, ref);
 
-        //TODO: Call BuildService
+        //TODO: Call WebhookService
     }
 }
