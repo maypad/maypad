@@ -12,11 +12,14 @@ import { ProjectgroupService } from '../projectgroup.service';
 import { ProjectgroupServiceStub } from 'src/testing/projectgroup.service.stub';
 import { Projectgroup } from '../model/projectGroup';
 import * as get_projectgroups_response from 'sample-requests/get.projectgroups.response.json';
+import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
+import { of } from 'rxjs';
 
 describe('DashboardComponent', () => {
   let component: DashboardComponent;
   let fixture: ComponentFixture<DashboardComponent>;
   const response: Projectgroup[] = get_projectgroups_response['default'];
+  const snapshot = new ActivatedRouteSnapshot();
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -24,7 +27,14 @@ describe('DashboardComponent', () => {
         AddProjectgroupDialogComponent, ProjectListItemComponent,
         AddProjectDialogComponent, EditProjectgroupDialogComponent],
       imports: [FormsModule, RouterTestingModule],
-      providers: [{ provide: ProjectgroupService, useClass: ProjectgroupServiceStub }]
+      providers: [
+        { provide: ProjectgroupService, useClass: ProjectgroupServiceStub },
+        {
+          // Mock ActivatedRoute because a unit test can't have a "real" route
+          provide: ActivatedRoute, useClass: class {
+            snapshot = snapshot; data = of({ groups: get_projectgroups_response['default'] });
+          }
+        }]
     })
       .compileComponents();
   }));

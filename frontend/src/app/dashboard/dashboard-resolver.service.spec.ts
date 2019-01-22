@@ -4,7 +4,7 @@ import { DashboardResolverService } from './dashboard-resolver.service';
 import { ActivatedRouteSnapshot } from '@angular/router';
 import { ProjectgroupService } from '../projectgroup.service';
 import { ProjectgroupServiceStub } from 'src/testing/projectgroup.service.stub';
-import * as projectgroupsResponse from '../../sample-requests/get.projectgroups.response.json';
+import * as projectgroupsResponse from 'sample-requests/get.projectgroups.response.json';
 import { Projectgroup } from '../model/projectGroup';
 
 describe('DashboardResolverService', () => {
