@@ -1,18 +1,19 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BranchDetailComponent } from './branch-detail.component';
-import { ActivatedRouteStub } from 'src/testing/activated-route-stub';
-import { ActivatedRoute, convertToParamMap, ActivatedRouteSnapshot } from '@angular/router';
+import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { HeaderComponent } from './header/header.component';
 import { MarkdownModule, MarkdownService, MarkedOptions } from 'ngx-markdown';
 import { HttpClientModule } from '@angular/common/http';
 import * as branchesResponse from 'sample-requests/get.projects.id.branches.ref.response.json';
+import * as projectResponse from 'sample-requests/get.projects.id.response.json';
 import { of } from 'rxjs';
 
 describe('BranchDetailComponent', () => {
   let component: BranchDetailComponent;
   let fixture: ComponentFixture<BranchDetailComponent>;
   const branch = branchesResponse['default'];
+  const project = projectResponse['default'];
   const snapshot = new ActivatedRouteSnapshot();
 
   beforeEach(async(() => {
@@ -23,7 +24,7 @@ describe('BranchDetailComponent', () => {
         {
           // Mock ActivatedRoute because a unit test can't have a "real" route
           provide: ActivatedRoute, useClass: class {
-            snapshot = snapshot; data = of({ branch: branch });
+            snapshot = snapshot; data = of({ branch: branch, project: project });
           }
         },
         {
