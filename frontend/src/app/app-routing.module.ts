@@ -11,9 +11,13 @@ import { BuildHistoryComponent } from './build-history/build-history.component';
 import { BhistoryResolverService } from './build-history/bhistory-resolver.service';
 import { DhistoryResolverService } from './deployment-history/dhistory-resolver.service';
 import { BranchDetailResolverService } from './branch-detail/branch-detail-resolver.service';
+import { DashboardResolverService } from './dashboard/dashboard-resolver.service';
 
 const routes: Routes = [
-  { path: 'dashboard', component: DashboardComponent },
+  {
+    path: 'dashboard', component: DashboardComponent,
+    resolve: { groups: DashboardResolverService }
+  },
   {
     path: 'projects/:id/branches/:branch/buildhistory', component: BuildHistoryComponent,
     resolve: { builds: BhistoryResolverService, branch: BranchDetailResolverService }

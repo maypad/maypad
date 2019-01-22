@@ -1,6 +1,11 @@
 <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a routerLink="/">Dashboard</a></li>
+    <li class="breadcrumb-item">
+      <div class="container d-flex flex-row px-0">
+        <img src="/favicon.ico" class="mr-2 image">
+        <a routerLink="/">Dashboard</a>
+      </div>
+    </li>
     <li class=" breadcrumb-item" *ngFor="let crumb of breadcrumbs"><a routerLink={{crumb.path}}>{{crumb.name}}</a></li>
   </ol>
 </nav>

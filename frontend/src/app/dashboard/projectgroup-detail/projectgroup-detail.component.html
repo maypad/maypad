@@ -12,9 +12,6 @@
     </div>
   </div>
   <div class="collapse" id="collapse{{ projGroup.id }}">
-    <div *ngIf="!finishedLoading">
-      <a>Loading...</a>
-    </div>
     <app-project-list-item *ngFor="let proj of projGroup.projects; let last = last" [border]="!last" [project]="proj"></app-project-list-item>
   </div>
 </div>
