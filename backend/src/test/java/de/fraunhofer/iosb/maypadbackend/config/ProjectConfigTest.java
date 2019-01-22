@@ -2,6 +2,7 @@ package de.fraunhofer.iosb.maypadbackend.config;
 
 import de.fraunhofer.iosb.maypadbackend.config.project.ProjectConfig;
 import de.fraunhofer.iosb.maypadbackend.config.project.YamlProjectConfig;
+import de.fraunhofer.iosb.maypadbackend.config.project.data.BranchProperty;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,7 +49,16 @@ public class ProjectConfigTest {
         assertThat(projectConfig.getProjectName()).isEqualTo("cool_name");
         assertThat(projectConfig.getProjectDescription()).isEqualTo("lorem ipsum dolor sit amet");
         assertThat(projectConfig.getAddAllBranches()).isEqualTo(true);
-        assertThat(projectConfig.getBranchProperties()).isEqualTo(null);
+        assertThat(projectConfig.getBranchProperties().size()).isEqualTo(1);
+        BranchProperty branch = projectConfig.getBranchProperties().get(0);
+        assertThat(branch.getName()).isEqualTo("master");
+        assertThat(branch.getDescription()).isEqualTo("Lorem Ipsum");
+        assertThat(branch.getMembers().size()).isEqualTo(5);
+        assertThat(branch.getMails().size()).isEqualTo(2);
+        assertThat(branch.getBuild()).isEqualTo("https://greatBuild.com/12345abc");
+        assertThat(branch.getDeployment().getDeploymentName()).isEqualTo("Great-Deployment");
+        assertThat(branch.getDeployment().getUrl()).isEqualTo("https://greatDeployment.com/54321abcd");
+        assertThat(branch.getDependsOn().size()).isEqualTo(2);
     }
 
 

@@ -3,3 +3,21 @@ projectDescription: lorem ipsum dolor sit amet
 allBranches: true
 
 branches:
+  - name: master
+    description: Lorem Ipsum # optional
+    members: # optional
+      - Max
+      - Daniel
+      - Lukas
+      - Jonas
+      - Julian
+    mails: # optional
+      - example.mail@gmail.com
+      - mail.example@protonmail.com
+    build: https://greatBuild.com/12345abc # optional
+    deployment: # optional
+      deploymentName: Great-Deployment
+      url: https://greatDeployment.com/54321abcd
+    dependsOn: # optional, format: <projectID>@<branchName>
+      - 2:master
+      - 5:master
