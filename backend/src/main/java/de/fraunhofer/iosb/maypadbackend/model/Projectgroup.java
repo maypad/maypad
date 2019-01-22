@@ -1,6 +1,7 @@
 package de.fraunhofer.iosb.maypadbackend.model;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.CascadeType;
@@ -29,6 +30,7 @@ import java.util.List;
 public class Projectgroup {
 
     @Id
+    @EqualsAndHashCode.Exclude
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", updatable = false, nullable = false)
     private int id;
