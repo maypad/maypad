@@ -4,6 +4,7 @@ import { Projectgroup } from '../model/projectGroup';
 import { AddProjectgroupDialogComponent } from './add-projectgroup-dialog/add-projectgroup-dialog.component';
 import { ProjectgroupService } from '../projectgroup.service';
 import { DashboardService } from './dashboard.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -13,17 +14,15 @@ import { DashboardService } from './dashboard.service';
 export class DashboardComponent implements OnInit {
   @ViewChild('addGroupDialog') modal: AddProjectgroupDialogComponent;
   projectGroups: Projectgroup[];
-  finishedLoading = false;
   constructor(private crumbs: BreadcrumbService,
-    private groupService: ProjectgroupService,
+    private route: ActivatedRoute,
     private dashService: DashboardService) { }
 
   ngOnInit() {
     this.crumbs.setBreadcrumbs([]);
-    this.groupService.loadProjectgroups().subscribe(
-      groups => {
-        this.projectGroups = groups;
-        this.finishedLoading = true;
+    this.route.data.subscribe(
+      (data: { groups: Projectgroup[] }) => {
+        this.projectGroups = data.groups;
       }
     );
     this.dashService.subjectNewGroup.subscribe(group => { this.projectGroups.push(group); });

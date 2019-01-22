@@ -3,11 +3,6 @@
     <button class="btn btn-secondary" data-toggle="modal" data-target="#addGroupModal" i18n="Add projectgroup">Add
       Projectgroup</button>
   </div>
-  <div *ngIf="!finishedLoading">
-    <h4>
-      Loading...
-    </h4>
-  </div>
   <app-projectgroup-detail *ngFor="let group of projectGroups" [projGroup]="group"></app-projectgroup-detail>
 </div>
 <div class="modal fade" #addGroupModal (focusout)="clearInput($event)" id="addGroupModal" tabindex="-1" role="dialog">
