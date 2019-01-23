@@ -29,7 +29,8 @@ public class Commit {
 
     @Id
     @EqualsAndHashCode.Exclude
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @EqualsAndHashCode.Exclude
     @Column(name = "id", updatable = false, nullable = false)
     private int id;
     @Column

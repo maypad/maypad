@@ -47,6 +47,10 @@ public class Project {
     private Date lastUpdate;
     @Enumerated(EnumType.STRING)
     private Status buildStatus;
+    @Column
+    private String name;
+    @Column
+    private String desciption;
 
     //repository
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -108,8 +112,8 @@ public class Project {
      * @return Name of this project
      */
     public String getName() {
-        if (repositoryStatus != Status.SUCCESS) {
-            return repositoryStatus.getName();
+        if (repository != null && repository.getRepositoryStatus() != Status.SUCCESS) {
+            return repository.getRepositoryStatus().getName();
         }
         return name;
     }
