@@ -1,13 +1,18 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { BranchService } from './branch.service';
-import { TestBed, fakeAsync } from '@angular/core/testing';
-import { environment } from '../environments/environment';
-import { BuildStatus } from './model/buildStatus';
-import * as get_projects_id_branches_ref_builds_response from '../../sample-requests/get.projects.id.branches.ref.builds.response.json';
-import * as get_projects_id_branches_ref_deployments_r from '../../sample-requests/get.projects.id.branches.ref.deployments.response.json';
-import * as get_projects_id_branches_ref_response from '../../sample-requests/get.projects.id.branches.ref.response.json';
-import * as post_projects_id_branches_ref_builds_request from '../../sample-requests/post.projects.id.branches.ref.builds.request.json';
-import * as post_projects_id_branches_ref_deployments_r from '../../sample-requests/post.projects.id.branches.ref.deployments.request.json';
+import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {BranchService} from './branch.service';
+import {fakeAsync, TestBed} from '@angular/core/testing';
+import {environment} from '../environments/environment';
+import {BuildStatus} from './model/buildStatus';
+import * as get_projects_id_branches_ref_builds_response
+  from '../../sample-requests/get.projects.id.branches.ref.builds.response.json';
+import * as get_projects_id_branches_ref_deployments_r
+  from '../../sample-requests/get.projects.id.branches.ref.deployments.response.json';
+import * as get_projects_id_branches_ref_response
+  from '../../sample-requests/get.projects.id.branches.ref.response.json';
+import * as post_projects_id_branches_ref_builds_request
+  from '../../sample-requests/post.projects.id.branches.ref.builds.request.json';
+import * as post_projects_id_branches_ref_deployments_r
+  from '../../sample-requests/post.projects.id.branches.ref.deployments.request.json';
 
 
 describe('Service: BranchService', () => {
