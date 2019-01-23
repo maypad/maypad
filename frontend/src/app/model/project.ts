@@ -1,11 +1,11 @@
-import { ServiceAccount } from './serviceAccount';
-import { BuildStatus } from './buildStatus';
-import { Branch } from './branch';
+import {ServiceAccount} from './serviceAccount';
+import {BuildStatus} from './buildStatus';
+import {Branch} from './branch';
 
 export class Project {
     name: string;
     id: number;
-    repositoryUrl: string;
+  repositoryUrl: string;
     branches: Branch[];
     serviceAccount: ServiceAccount;
     status: BuildStatus;

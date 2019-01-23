@@ -1,5 +1,5 @@
-import { BuildStatus } from './buildStatus';
-import { Commit } from './commit';
+import {BuildStatus} from './buildStatus';
+import {Commit} from './commit';
 
 export class Branch {
     name: string;
@@ -10,8 +10,8 @@ export class Branch {
     dependencies: string[];
     readme: string;
     buildWebhook: string;
-    buildSuccessUrl: string;
-    buildFailUrl: string;
+  buildSuccessUrl: string;
+  buildFailUrl: string;
     tags: string[];
     status: BuildStatus;
     lastCommit: Commit;
