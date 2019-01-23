@@ -9,6 +9,6 @@ import lombok.Data;
  */
 @Data
 public class ServiceAccountResponse {
-    private String userName;
+    private String username;
     private String key;
 }
