@@ -1,7 +1,6 @@
 package de.fraunhofer.iosb.maypadbackend.model.repository;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
