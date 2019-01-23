@@ -19,9 +19,4 @@ public class BranchProperty {
     private DeploymentProperty deployment;
     private List<String> dependsOn;
 
-    @Data
-    private class DeploymentProperty {
-        private String deploymentName;
-        private String url;
-    }
 }
