@@ -1,11 +1,12 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { ProjectgroupService } from './projectgroup.service';
-import { TestBed, fakeAsync } from '@angular/core/testing';
-import { environment } from '../environments/environment';
-import { BuildStatus } from './model/buildStatus';
-import { UserServiceAccount, KeyServiceAccount } from './model/serviceAccount';
+import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {ProjectgroupService} from './projectgroup.service';
+import {fakeAsync, TestBed} from '@angular/core/testing';
+import {environment} from '../environments/environment';
+import {BuildStatus} from './model/buildStatus';
+import {KeyServiceAccount, UserServiceAccount} from './model/serviceAccount';
 import * as get_projectgroups_response from '../../sample-requests/get.projectgroups.response.json';
-import * as get_projectgroups_id_projects_response from '../../sample-requests/get.projectgroups.id.projects.response.json';
+import * as get_projectgroups_id_projects_response
+  from '../../sample-requests/get.projectgroups.id.projects.response.json';
 import * as post_projects_response from '../../sample-requests/post.projects.response.json';
 import * as post_projects_request from '../../sample-requests/post.projects.request.json';
 import * as post_projectgroups_response from '../../sample-requests/post.projectgroups.response.json';

@@ -1,9 +1,9 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { ProjectService } from './project.service';
-import { TestBed, fakeAsync } from '@angular/core/testing';
-import { environment } from '../environments/environment';
-import { BuildStatus } from './model/buildStatus';
-import { UserServiceAccount } from './model/serviceAccount';
+import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {ProjectService} from './project.service';
+import {fakeAsync, TestBed} from '@angular/core/testing';
+import {environment} from '../environments/environment';
+import {BuildStatus} from './model/buildStatus';
+import {UserServiceAccount} from './model/serviceAccount';
 import * as get_projects_id_response from '../../sample-requests/get.projects.id.response.json';
 import * as get_projects_id_branches_response from '../../sample-requests/get.projects.id.branches.response.json';
 import * as put_projects_id_response from '../../sample-requests/put.projects.id.response.json';

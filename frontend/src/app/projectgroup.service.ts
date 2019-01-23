@@ -1,11 +1,11 @@
-import { Injectable } from '@angular/core';
-import { ApiService } from './api.service';
-import { Projectgroup } from './model/projectGroup';
-import { Project } from './model/project';
-import { Observable } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
-import { KeyServiceAccount, ServiceAccount, UserServiceAccount } from './model/serviceAccount';
-import { BuildStatus } from './model/buildStatus';
+import {Injectable} from '@angular/core';
+import {ApiService} from './api.service';
+import {Projectgroup} from './model/projectGroup';
+import {Project} from './model/project';
+import {Observable} from 'rxjs';
+import {catchError, map} from 'rxjs/operators';
+import {KeyServiceAccount, ServiceAccount, UserServiceAccount} from './model/serviceAccount';
+import {BuildStatus} from './model/buildStatus';
 
 
 @Injectable({
