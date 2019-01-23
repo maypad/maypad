@@ -1,6 +1,5 @@
 package de.fraunhofer.iosb.maypadbackend.services.reporefresh;
 
-import de.fraunhofer.iosb.maypadbackend.config.project.ProjectConfig;
 import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Commit;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Tag;
@@ -38,21 +37,13 @@ public class SvnRepoManager extends RepoManager {
      * Switches the branch of a repository .
      *
      * @param name Name of the branch
+     * @return true, if the switch to other branch was successfully, else false
      */
     @Override
-    public void switchBranch(String name) {
-
+    public boolean switchBranch(String name) {
+        return true;
     }
 
-    /**
-     * Get the readme file of branch.
-     *
-     * @return Input of readme file
-     */
-    @Override
-    public String getReadme() {
-        return null;
-    }
 
     /**
      * Get all tags of a branch.
@@ -76,19 +67,12 @@ public class SvnRepoManager extends RepoManager {
 
     /**
      * Clones the repository using the repository URL stored in the project.
-     */
-    @Override
-    protected void cloneRepository() {
-
-    }
-
-    /**
-     * Returns a configuration that contains all values of the project configuration from the repository.
      *
-     * @return Projectconfig of the project
+     * @return True in success, else false
      */
     @Override
-    protected ProjectConfig getProjectConfig() {
-        return null;
+    protected boolean cloneRepository() {
+        return true;
     }
+
 }

@@ -1,10 +1,17 @@
 package de.fraunhofer.iosb.maypadbackend.services.reporefresh;
 
 import de.fraunhofer.iosb.maypadbackend.config.project.ProjectConfig;
+import de.fraunhofer.iosb.maypadbackend.config.project.YamlProjectConfig;
 import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Commit;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Tag;
+import de.fraunhofer.iosb.maypadbackend.util.FileUtil;
+import de.fraunhofer.iosb.maypadbackend.util.Tuple;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -16,6 +23,7 @@ import java.util.List;
 public abstract class RepoManager {
 
     private Project project;
+    private Logger logger = LoggerFactory.getLogger(RepoManager.class);
 
     /**
      * Constructor, prepare the RepoManager.
@@ -37,15 +45,9 @@ public abstract class RepoManager {
      * Switches the branch of a repository .
      *
      * @param name Name of the branch
+     * @return true, if the switch to other branch was successfully, else false
      */
-    public abstract void switchBranch(String name);
-
-    /**
-     * Get the readme file of branch.
-     *
-     * @return Input of readme file
-     */
-    public abstract String getReadme();
+    public abstract boolean switchBranch(String name);
 
     /**
      * Get all tags of a branch.
@@ -62,25 +64,70 @@ public abstract class RepoManager {
     public abstract Commit getLastCommit();
 
     /**
-     * Check if there are changes in the repository and update the project accordingly.
+     * Clones the repository using the repository URL stored in the project.
      *
-     * @param project Project for which the (local) repository should be managed
+     * @return True in success, else false
      */
-    public void refreshRepository(Project project) {
+    protected abstract boolean cloneRepository();
+
+    /**
+     * Check if there are changes in the repository and update the project accordingly.
+     */
+    public void refreshRepository() {
 
     }
 
     /**
-     * Clones the repository using the repository URL stored in the project.
+     * Get the project of this repomanager.
+     *
+     * @return Project of this repomanager
      */
-    protected abstract void cloneRepository();
+    public Project getProject() {
+        return project;
+    }
 
     /**
-     * Returns a configuration that contains all values of the project configuration from the repository.
+     * Get the repomanager logger.
      *
-     * @return Projectconfig of the project
+     * @return Logger
      */
-    protected abstract ProjectConfig getProjectConfig();
+    public Logger getLogger() {
+        return logger;
+    }
 
+    /**
+     * Returns a configuration with path that contains all values of the project configuration from the repository.
+     *
+     * @return Tuple of projectconfig and path to config
+     */
+    public Tuple<ProjectConfig, File> getProjectConfig() {
+        File mapaydConfigPath = new File(getProjectRootDir().getAbsolutePath() + File.separator + "maypad.yaml");
+        if (mapaydConfigPath.exists() && mapaydConfigPath.canRead()) {
+            try {
+                return new Tuple<>(new YamlProjectConfig(mapaydConfigPath), mapaydConfigPath);
+            } catch (IOException e) {
+                logger.error("Projectconfiguration at " + mapaydConfigPath.getAbsolutePath() + " hasn't valid YAML syntax");
+            }
+        }
+        return null;
+    }
 
+    /**
+     * Get the readme file of branch.
+     *
+     * @return Input of readme file
+     */
+    public String getReadme() {
+        String content = FileUtil.getFileContent(new File(getProjectRootDir() + File.separator + "README.md"));
+        return content == null ? "" : content;
+    }
+
+    /**
+     * Get the path to the root dir of the project.
+     *
+     * @return File to the projectroot
+     */
+    protected File getProjectRootDir() {
+        return project.getRepository().getRootFolder();
+    }
 }
