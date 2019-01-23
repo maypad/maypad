@@ -172,9 +172,9 @@ public class ProjectService {
         if (request.getKey() != null
                 && request.getKey().isPresent()) {
             serviceAccount = new KeyServiceAccount(request.getKey().get());
-        } else if (request.getUserName() != null && request.getPassword() != null
-                && request.getUserName().isPresent() && request.getPassword().isPresent()) {
-            serviceAccount = new UserServiceAccount(request.getUserName().get(),
+        } else if (request.getUsername() != null && request.getPassword() != null
+                && request.getUsername().isPresent() && request.getPassword().isPresent()) {
+            serviceAccount = new UserServiceAccount(request.getUsername().get(),
                     request.getPassword().get());
         }
         return serviceAccount;
