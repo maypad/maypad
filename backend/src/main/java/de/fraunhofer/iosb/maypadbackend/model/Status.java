@@ -15,7 +15,12 @@ public enum Status {
     /**
      * The process was completed incorrectly.
      */
-    FAILED,
+    FAILED {
+        @Override
+        public String getName() {
+            return "Error";
+        }
+    },
     /**
      * The process has not been completed yet.
      */
@@ -29,8 +34,15 @@ public enum Status {
      */
     UNKNOWN,
     /**
+     * Currently create / init something.
+     */
+    CREATING,
+    /**
      * The status of a process that has timed out.
      */
     TIMEOUT;
 
+    public String getName() {
+        return this.toString().substring(0, 1).toUpperCase() + this.toString().substring(1);
+    }
 }

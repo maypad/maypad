@@ -30,9 +30,18 @@ public class WebhookDeployment extends DeploymentType {
         this.deploymentWebhook = deploymentWebhook;
     }
 
+    /**
+     * Constructor for WebhookDeployment.
+     * @param deploymentWebhook the webhook used for deploying
+     * @param name Name of the deployment
+     */
+    public WebhookDeployment(ExternalWebhook deploymentWebhook, String name) {
+        super(name);
+        this.deploymentWebhook = deploymentWebhook;
+    }
+
     @Override
     public String toString() {
         return deploymentWebhook.getUrl();
     }
-
 }

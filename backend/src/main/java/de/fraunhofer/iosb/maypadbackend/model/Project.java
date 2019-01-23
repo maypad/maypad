@@ -45,6 +45,10 @@ public class Project {
     private Date lastUpdate;
     @Enumerated(EnumType.STRING)
     private Status buildStatus;
+    @Column
+    private String name;
+    @Column
+    private String desciption;
 
     //repository
     @OneToOne(cascade = CascadeType.ALL)
@@ -95,5 +99,17 @@ public class Project {
      */
     public Project(String repoUrl, ServiceAccount serviceAccount) {
         this(new Date(), Status.UNKNOWN, null, repoUrl, serviceAccount, null);
+    }
+
+    /**
+     * Get the name of this project. If this project is in error, so return the error as name.
+     *
+     * @return Name of this project
+     */
+    public String getName() {
+        if (repository != null && repository.getRepositoryStatus() != Status.SUCCESS) {
+            return repository.getRepositoryStatus().getName();
+        }
+        return name;
     }
 }

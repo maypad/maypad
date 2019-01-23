@@ -1,6 +1,7 @@
 package de.fraunhofer.iosb.maypadbackend.model.repository;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.EqualsAndHashCode;
 
 import javax.persistence.CascadeType;
@@ -19,6 +20,7 @@ import javax.persistence.OneToOne;
  */
 @Data
 @Entity
+@NoArgsConstructor
 public class Tag {
 
     @Id
@@ -33,4 +35,14 @@ public class Tag {
     @OneToOne(cascade = CascadeType.ALL)
     private Commit commit;
 
+    /**
+     * Constructor for a Tag.
+     *
+     * @param name   Name of the tag
+     * @param commit Commit for this tag
+     */
+    public Tag(String name, Commit commit) {
+        this.name = name;
+        this.commit = commit;
+    }
 }

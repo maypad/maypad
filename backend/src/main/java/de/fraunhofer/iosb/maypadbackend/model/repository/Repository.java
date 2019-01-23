@@ -1,5 +1,6 @@
 package de.fraunhofer.iosb.maypadbackend.model.repository;
 
+import de.fraunhofer.iosb.maypadbackend.model.Status;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -39,10 +40,16 @@ public class Repository {
     private int id;
 
     @Column
-    private File rootFolder; //TODO: File <-> Path convert
+    private File rootFolder; //TODO: need to save in DB?
+
+    @Enumerated(EnumType.STRING)
+    private Status repositoryStatus;
 
     @Enumerated(EnumType.STRING)
     private RepositoryType repositoryType;
+
+    @Column
+    private String maypadConfigHash = null;
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<Tag> tags;
