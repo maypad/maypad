@@ -101,6 +101,8 @@ public class GitRepoManager extends RepoManager {
      */
     @Override
     public boolean switchBranch(String name) {
+        gitPull();
+        return true;
         //Git git = getGit();
         /*try {
             //git.checkout().setName(name).call(); //TODO
@@ -112,8 +114,8 @@ public class GitRepoManager extends RepoManager {
             e.printStackTrace();
         }*/
         //TODO!!!
-        gitPull();
-        return false;
+
+        // return false;
     }
 
     /**
@@ -215,10 +217,10 @@ public class GitRepoManager extends RepoManager {
     @Override
     protected boolean cloneRepository() {
         try {
-            Git git = Git.cloneRepository().setURI(getProject().getRepoUrl()).setDirectory(getProject().getRepository()
+            Git git = Git.cloneRepository().setURI(getProject().getRepositoryUrl()).setDirectory(getProject().getRepository()
                     .getRootFolder()).call();
         } catch (GitAPIException e) {
-            getLogger().warn("Can't access to repo " + getProject().getRepoUrl());
+            getLogger().warn("Can't access to repo " + getProject().getRepositoryUrl());
             e.printStackTrace();
             return false;
         }
