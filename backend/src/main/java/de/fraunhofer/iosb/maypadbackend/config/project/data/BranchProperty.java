@@ -3,7 +3,6 @@ package de.fraunhofer.iosb.maypadbackend.config.project.data;
 import lombok.Data;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Class to store Branch properties as listed in Maypad YAML-File.
@@ -19,4 +18,5 @@ public class BranchProperty {
     private String build;
     private DeploymentProperty deployment;
     private List<String> dependsOn;
+
 }
