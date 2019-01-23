@@ -43,6 +43,11 @@ public enum RepositoryType {
         public boolean isUrlBelongToRepotype(String url) {
             return url.matches("svn://.+/.+");
         }
+
+        @Override
+        public boolean isUrlBelongToRepotype(String url) {
+            return url.matches("svn://.+/.+");
+        }
     },
 
     /**
@@ -52,6 +57,11 @@ public enum RepositoryType {
         @Override
         public NullRepoManager toRepoManager(Project project) {
             return new NullRepoManager(project);
+        }
+
+        @Override
+        public boolean isUrlBelongToRepotype(String url) {
+            return false;
         }
 
         @Override
