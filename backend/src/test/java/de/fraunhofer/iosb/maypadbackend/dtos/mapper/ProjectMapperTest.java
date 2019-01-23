@@ -21,6 +21,7 @@ public class ProjectMapperTest {
 
     private static final String projectRefreshUrl = "https://maypad.de/hook/437284683242498";
     private static final String projectRepoUrl = "https://github.com/juliantodt/maypad.git";
+    private static final String projectName = "test project";
     private static final Date lastUpdate = new Date();
     private static final int projectId = 8;
     private static final Status buildStatus = Status.SUCCESS;
@@ -31,10 +32,13 @@ public class ProjectMapperTest {
     @Before
     public void setup() {
         projectMapper = Mappers.getMapper(ProjectMapper.class);
-        testProject = new Project(lastUpdate, buildStatus, new Repository(), projectRepoUrl,
+        Repository repo = new Repository();
+        repo.setRepositoryStatus(Status.UNKNOWN);
+        testProject = new Project(lastUpdate, buildStatus, repo, projectRepoUrl,
                 new KeyServiceAccount(), new InternalWebhook(projectRefreshUrl,
                 "437284683242498", WebhookType.REFRESH));
         testProject.setId(projectId);
+        testProject.setName(projectName);
     }
 
     @Test
