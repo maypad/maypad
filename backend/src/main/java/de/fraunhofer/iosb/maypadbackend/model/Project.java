@@ -47,10 +47,6 @@ public class Project {
     private Date lastUpdate;
     @Enumerated(EnumType.STRING)
     private Status buildStatus;
-    @Column
-    private String name;
-    @Column
-    private String desciption;
 
     //repository
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
