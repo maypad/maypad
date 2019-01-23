@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,17 +37,16 @@ public class Project {
     @Column(name = "id", updatable = false, nullable = false)
     private int id;
 
-    @Basic
+    @Column
     private String name;
+    @Column
+    private String desciption;
+
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastUpdate;
     @Enumerated(EnumType.STRING)
     private Status buildStatus;
-    @Column
-    private String name;
-    @Column
-    private String desciption;
 
     //repository
     @OneToOne(cascade = CascadeType.ALL)

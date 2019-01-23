@@ -232,8 +232,8 @@ public class RepoService {
      */
     @Async
     public void initProject(Project project) {
-        if (project == null) {
-            logger.error("Wanted to init a null project");
+        if (project == null || project.getRepositoryUrl() == null) {
+            logger.error("Wanted to init a null project or an url is missing");
             return;
         }
         logger.info("Start init project with id " + project.getId());
@@ -268,7 +268,7 @@ public class RepoService {
             repository.setRootFolder(file);
         }
 
-        RepositoryType repositoryType = getCorrectRepositoryType(project.getRepoUrl());
+        RepositoryType repositoryType = getCorrectRepositoryType(project.getRepositoryUrl());
         repository.setRepositoryType(repositoryType);
 
         //clone
