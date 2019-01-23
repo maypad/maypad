@@ -13,4 +13,20 @@ import javax.persistence.Entity;
 @Data
 @Entity
 public class ExternalWebhook extends Webhook {
+
+    /**
+     * Constructor for Webhook.
+     */
+    public ExternalWebhook() {
+
+    }
+
+    /**
+     * Constructor for Webhook.
+     *
+     * @param url the URL of the webhook.
+     */
+    public ExternalWebhook(String url) {
+        super(url);
+    }
 }
