@@ -17,6 +17,11 @@ import javax.persistence.Entity;
 @Entity
 public class ExternalWebhook extends Webhook {
 
+    /**
+     * Constructor for Webhook.
+     *
+     * @param url the URL of the webhook.
+     */
     public ExternalWebhook(String url) {
         super(url);
     }

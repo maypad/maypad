@@ -1,6 +1,7 @@
 package de.fraunhofer.iosb.maypadbackend.model.deployment;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.EqualsAndHashCode;
 
 import javax.persistence.Column;
@@ -20,6 +21,7 @@ import javax.persistence.InheritanceType;
 @Data
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@NoArgsConstructor
 public abstract class DeploymentType {
 
     @Id
@@ -30,4 +32,12 @@ public abstract class DeploymentType {
     @Column
     private String name;
 
+    /**
+     * Constructor for DeploymentType.
+     *
+     * @param name Name of the delpyment
+     */
+    public DeploymentType(String name) {
+        this.name = name;
+    }
 }
