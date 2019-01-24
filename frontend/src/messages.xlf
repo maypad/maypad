@@ -13,7 +13,7 @@
       </trans-unit>
       <trans-unit id="128b80409bd662e13de9506d4fa032ea3650f3bd" datatype="html">
         <source>Repository
-        URL</source>
+        Url</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dashboard/projectgroup-detail/add-project-dialog/add-project-dialog.component.html</context>
           <context context-type="linenumber">7</context>

@@ -58,19 +58,19 @@ describe('Service: ProjectgroupService', () => {
         expect(data[0].id).toEqual(2);
         expect(data[0].name).toEqual('One Test Project');
         expect(data[0].status).toEqual(BuildStatus.SUCCESS);
-        expect(data[0].repositoryURL).toEqual('https://git.maypad.de/one-test-project.git');
+        expect(data[0].repositoryUrl).toEqual('https://git.maypad.de/one-test-project.git');
         expect(data[0].serviceAccount).toEqual(null);
 
         expect(data[1].id).toEqual(5);
         expect(data[1].name).toEqual('Another Test Project');
         expect(data[1].status).toEqual(BuildStatus.FAILED);
-        expect(data[1].repositoryURL).toEqual('https://git.maypad.de/another-test-project.git');
+        expect(data[1].repositoryUrl).toEqual('https://git.maypad.de/another-test-project.git');
         expect((<UserServiceAccount>data[1].serviceAccount).username).toEqual('maypad-git');
 
         expect(data[2].id).toEqual(6);
         expect(data[2].name).toEqual('Yet Another Test Project');
         expect(data[2].status).toEqual(BuildStatus.RUNNING);
-        expect(data[2].repositoryURL).toEqual('https://git.maypad.de/yet-another-test-project.git');
+        expect(data[2].repositoryUrl).toEqual('https://git.maypad.de/yet-another-test-project.git');
         expect((<KeyServiceAccount>data[2].serviceAccount).sshKey).toEqual('djnsvkgfbjsngjkbgjbkluaernl...');
       });
 
@@ -89,7 +89,7 @@ describe('Service: ProjectgroupService', () => {
         expect(data.id).toEqual(2);
         expect(data.name).toEqual('');
         expect(data.status).toEqual(BuildStatus.UNKNOWN);
-        expect(data.repositoryURL).toEqual('https://git.maypad.de/one-test-project.git');
+        expect(data.repositoryUrl).toEqual('https://git.maypad.de/one-test-project.git');
         expect((<UserServiceAccount>data.serviceAccount).username).toEqual('maypad-git');
       });
 

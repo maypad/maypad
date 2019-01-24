@@ -60,7 +60,7 @@ export class ProjectgroupService {
     const url = `${this.api.backendUrl}projects`;
     const project = new Project();
     project.groupId = id;
-    project.repositoryURL = repoUrl;
+    project.repositoryUrl = repoUrl;
     project.serviceAccount = serviceAccount;
 
     return this.api.http.post<Project>(url, project, this.api.httpOptions)

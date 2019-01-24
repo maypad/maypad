@@ -5,7 +5,7 @@ import { Branch } from './branch';
 export class Project {
     name: string;
     id: number;
-    repositoryURL: string;
+    repositoryUrl: string;
     branches: Branch[];
     serviceAccount: ServiceAccount;
     status: BuildStatus;
