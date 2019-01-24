@@ -1,0 +1,23 @@
+webServerPort: 8080
+reloadRepositoriesSeconds: 900
+
+scheduler:
+  poolSize: 4
+
+webhook:
+  tokenLength: 24
+
+maximumRefreshRequests:
+  enabled: true
+  seconds: 3600
+  maximumRequests: 100
+
+logLevel: INFO #ERROR, WARN, INFO, DEBUG
+repositoryStoragePath: /home/maypad/repositories
+
+mysql:
+  user: maypad
+  password: maypaddb
+  database: maypad
+  host: maypad-database
+  port: 3306

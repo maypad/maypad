@@ -9,6 +9,6 @@ cd ../backend
 mvn install $2
 
 cd ..
-docker build -t maypad:latest .
+docker build --no-cache -t maypad:latest .
 
-echo -e "\e[95m RUN MAYPAD via 'docker-compose up'\e[0m"
+echo -e '\033[95mRUN MAYPAD via "docker-compose up"\033[0m'

@@ -308,3 +308,6 @@ TSWLatexianTemp*
 
 # standalone packages
 *.sta
+
+# maypad config
+config.yaml
