@@ -17,6 +17,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.PostConstruct;
 import java.security.SecureRandom;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -62,7 +63,7 @@ public class WebhookService {
         int tokenLength = serverConfig.getWebhookTokenLength();
         do {
             for (int i = 0; i < tokenLength; i++) {
-                buf[i] = tokenChars.charAt(rnd.nextInt(tokenLength));
+                buf[i] = tokenChars.charAt(rnd.nextInt(tokenChars.length()));
             }
         } while (mappedHooks.containsKey(new String(buf)));
         return new String(buf);
