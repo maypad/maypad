@@ -20,7 +20,7 @@ public enum RepositoryType {
      */
     GIT {
         @Override
-        public GitRepoManager toRepoManager(Project project) {
+        public RepoManager toRepoManager(Project project) {
             return new GitRepoManager(project);
         }
 
@@ -35,18 +35,14 @@ public enum RepositoryType {
      */
     SVN {
         @Override
-        public SvnRepoManager toRepoManager(Project project) {
+        public RepoManager toRepoManager(Project project) {
             return new SvnRepoManager(project);
         }
 
         @Override
         public boolean isUrlBelongToRepotype(String url) {
-            return url.matches("svn://.+/.+");
-        }
+            return url.matches("(.*):\\/\\/(.*)\\/");
 
-        @Override
-        public boolean isUrlBelongToRepotype(String url) {
-            return url.matches("svn://.+/.+");
         }
     },
 
@@ -55,13 +51,8 @@ public enum RepositoryType {
      */
     NONE {
         @Override
-        public NullRepoManager toRepoManager(Project project) {
+        public RepoManager toRepoManager(Project project) {
             return new NullRepoManager(project);
-        }
-
-        @Override
-        public boolean isUrlBelongToRepotype(String url) {
-            return false;
         }
 
         @Override

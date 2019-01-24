@@ -158,11 +158,19 @@ public class SvnRepoManager extends RepoManager {
                     SVNDepth.INFINITY, // How far to clone the history tree
                     true
             );
+            switchBranch("trunk");
             return true;
         } catch (SVNException ex) {
             logger.error(ex.getMessage());
             return false;
         }
+    }
+
+    private boolean checkFolderStructure() {
+        File trunk = new File(projectRoot + "/trunk/");
+        File tags = new File(projectRoot + "/tags");
+        File branches = new File(projectRoot + "/branches/");
+        return trunk.exists() && tags.exists() && branches.exists();
     }
 
     private class RecentCommitHandler implements ISVNLogEntryHandler {
