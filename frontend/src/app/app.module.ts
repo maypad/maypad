@@ -28,8 +28,6 @@ import { HeaderComponent } from './branch-detail/header/header.component';
 // Needed to access jquery & bootstrap specific functions
 import * as $ from 'jquery';
 import * as bootstrap from 'bootstrap';
-// Notification library
-declare var hullabaloo: any;
 
 @NgModule({
     declarations: [

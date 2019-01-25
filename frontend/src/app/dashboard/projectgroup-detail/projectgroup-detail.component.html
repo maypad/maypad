@@ -2,9 +2,10 @@
   <div class="d-flex flex-row justify-content-between">
     <a class="groupCollapse" data-toggle="collapse" href="#collapse{{ projGroup.id }}" role="button" aria-expanded="true"
       attr.aria-controls="collapse{{ projGroup.id }}">
-      <div class="container d-flex flex-row">
+      <div class="container d-flex flex-row justify-content-between">
         <i class="fa mt-2 mr-2"></i>
-        <h4 class="blackText">{{ projGroup.name }}</h4>
+        <h4 class="blackText mr-2">{{ projGroup.name }}</h4>
+        <span class="dot dot-{{ projGroup.status }} mt-2"></span>
       </div>
     </a>
     <div>

@@ -14,8 +14,8 @@ export class ApiService {
   };
 
   constructor(
-      public http: HttpClient,
-  ) {}
+    public http: HttpClient,
+  ) { }
 
   handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
@@ -29,7 +29,11 @@ export class ApiService {
   }
 
   private errorLog(message: string) {
-    alert(message); // TODO: Somehow make this better. Show the error somewhere or smth.
+    const hulla = new hullabaloo();
+    hulla.options.align = 'center';
+    hulla.options.width = 500;
+    hulla.options.offset = { from: 'top', amount: 30 };
+    hulla.send(message, 'danger');
   }
 }
 

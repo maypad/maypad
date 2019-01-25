@@ -13,6 +13,7 @@ import { ActivatedRoute } from '@angular/router';
 export class DashboardComponent implements OnInit {
   @ViewChild('addGroupDialog') modal: AddProjectgroupDialogComponent;
   projectGroups: Projectgroup[];
+  showAll = true;
 
   constructor(private crumbs: BreadcrumbService,
     private route: ActivatedRoute,
@@ -37,7 +38,13 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  toggleGroups(action) {
-    $('.collapse').collapse(action);
+  toggleGroups() {
+    if (this.showAll) {
+      $('.collapse').collapse('hide');
+      this.showAll = !this.showAll;
+    } else {
+      $('.collapse').collapse('show');
+      this.showAll = !this.showAll;
+    }
   }
 }
