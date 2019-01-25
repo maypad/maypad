@@ -32,7 +32,7 @@ describe('Service: ProjectService', () => {
         expect(data.id).toEqual(2);
         expect(data.name).toEqual('One Test Project');
         expect(data.status).toEqual(BuildStatus.SUCCESS);
-        expect(data.repositoryURL).toEqual('https://git.maypad.de/one-test-project.git');
+        expect(data.repositoryUrl).toEqual('https://git.maypad.de/one-test-project.git');
         expect((<UserServiceAccount>data.serviceAccount).username).toEqual('maypad-git');
       });
 
@@ -58,9 +58,9 @@ describe('Service: ProjectService', () => {
         expect(data[0].lastCommit.timestamp).toEqual('Wed Jan 2 14:37:30 2019 +0100');
         expect(data[0].members).toEqual(['Developer One', 'Developer Two']);
         expect(data[0].mails).toEqual(['developer.one@maypad.de', 'developer.two@maypad.de']);
-        expect(data[0].buildSuccessURL).toEqual('https://maypad.de/projects/1/branches/master/'
+        expect(data[0].buildSuccessUrl).toEqual('https://maypad.de/projects/1/branches/master/'
           + 'builds/success?token=djhbvjskbfavhbkdfbvlfbva');
-        expect(data[0].buildFailURL).toEqual('https://maypad.de/projects/1/branches/master/builds/fail?token=jhdsbfajdbfhjbhvjdafb');
+        expect(data[0].buildFailUrl).toEqual('https://maypad.de/projects/1/branches/master/builds/fail?token=jhdsbfajdbfhjbhvjdafb');
         expect(data[0].dependencies).toEqual(['3:master', '12:dev', '24:master']);
         expect(data[0].deployment).toEqual('webhook: https://ship.maypad.de/hook?token=vjfsdbjhkvlfavhkl');
         expect(data[0].buildWebhook).toEqual('https://git.maypad.de/pipeline-hook?token=kjadbhjasebjkdsa');
@@ -76,9 +76,9 @@ describe('Service: ProjectService', () => {
         expect(data[1].lastCommit.timestamp).toEqual('Wed Jan 2 14:39:32 2019 +0100');
         expect(data[1].members).toEqual(['Developer One', 'Developer Two']);
         expect(data[1].mails).toEqual(['developer.one@maypad.de', 'developer.two@maypad.de']);
-        expect(data[1].buildSuccessURL).toEqual('https://maypad.de/projects/1/branches/dev/'
+        expect(data[1].buildSuccessUrl).toEqual('https://maypad.de/projects/1/branches/dev/'
           + 'builds/success?token=adjvnfjkvadnfjkvnkjsfd');
-        expect(data[1].buildFailURL).toEqual('https://maypad.de/projects/1/branches/dev/builds/fail?token=sajkvdbfdjkvnfjksvnjkfdv');
+        expect(data[1].buildFailUrl).toEqual('https://maypad.de/projects/1/branches/dev/builds/fail?token=sajkvdbfdjkvnfjksvnjkfdv');
         expect(data[1].dependencies).toEqual(['3:dev', '12:testing', '24:dev']);
         expect(data[1].deployment).toEqual('webhook: https://ship.maypad.de/hook?token=jabjdksvnkf');
         expect(data[1].buildWebhook).toEqual('https://git.maypad.de/pipeline-hook?token=sadjkcndfjkvfkv');
@@ -99,7 +99,7 @@ describe('Service: ProjectService', () => {
         expect(data.id).toEqual(2);
         expect(data.name).toEqual('One Test Project');
         expect(data.status).toEqual(BuildStatus.SUCCESS);
-        expect(data.repositoryURL).toEqual('https://git.maypad.de/one-test-project.git');
+        expect(data.repositoryUrl).toEqual('https://git.maypad.de/one-test-project.git');
         expect((<UserServiceAccount>data.serviceAccount).username).toEqual('maypad-git');
       });
 
