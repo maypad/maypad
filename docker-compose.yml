@@ -16,5 +16,7 @@ services:
     image: maypad
     container_name: maypad-app
     restart: always
+    volumes:
+    - ./config.yaml:/usr/share/maypad/config.yaml
     ports:
     - 8080:8080
