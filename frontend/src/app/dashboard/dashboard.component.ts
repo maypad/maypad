@@ -32,11 +32,9 @@ export class DashboardComponent implements OnInit {
         this.projectGroups.splice(index, 1);
       }
     });
-  }
-
-  clearInput(event: FocusEvent) {
-    if (event.relatedTarget == null) {
+    $('#addGroupModal').on('hidden.bs.modal', () => {
+      console.log('clear group add');
       this.modal.clearInput();
-    }
+    });
   }
 }

@@ -12,8 +12,6 @@ export class HeaderComponent implements OnInit {
     @Input() projId: number;
     @Input() branch: Branch;
     @ViewChild('rebuild') rebuild: ElementRef;
-    alertType: string;
-    showAlert = false;
     constructor(private branchService: BranchService) { }
 
     ngOnInit() { }
@@ -49,7 +47,10 @@ export class HeaderComponent implements OnInit {
     }
 
     alert(type: string) {
-        this.alertType = type;
-        this.showAlert = true;
+        const hulla = new hullabaloo();
+        hulla.options.align = 'center';
+        hulla.options.width = 350;
+        hulla.options.offset = { from: 'top', amount: 30 };
+        hulla.send(`The ${type} has been started.`, 'info');
     }
 }

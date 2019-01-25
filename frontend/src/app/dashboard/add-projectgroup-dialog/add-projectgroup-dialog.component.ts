@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { ProjectgroupService } from 'src/app/projectgroup.service';
 import { Router } from '@angular/router';
 import { DashboardService } from '../dashboard.service';
@@ -12,7 +12,8 @@ export class AddProjectgroupDialogComponent implements OnInit {
   groupName = '';
   constructor(private groupService: ProjectgroupService,
     private router: Router,
-    private dashService: DashboardService) { }
+    private dashService: DashboardService,
+    private ref: ChangeDetectorRef) { }
 
   ngOnInit() {
   }
@@ -29,5 +30,7 @@ export class AddProjectgroupDialogComponent implements OnInit {
 
   clearInput() {
     this.groupName = '';
+    // Force manual refresh
+    this.ref.detectChanges();
   }
 }

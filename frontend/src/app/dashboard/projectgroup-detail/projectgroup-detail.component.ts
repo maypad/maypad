@@ -17,13 +17,13 @@ export class ProjectgroupDetailComponent implements OnInit {
   constructor(private groupService: ProjectgroupService) { }
 
   ngOnInit() {
-  }
-
-  clearInput(event: FocusEvent) {
-    if (event.relatedTarget == null) {
+    this.loadGroup();
+    $(`#addProjectModal${this.projGroup.id}`).on('hidden.bs.modal', () => {
       this.addModal.clearInput();
+    });
+    $(`#editProjectgroupModal${this.projGroup.id}`).on('hidden.bs.modal', () => {
       this.editModal.clearInput();
-    }
+    });
   }
 
   loadGroup() {

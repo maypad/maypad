@@ -1,11 +1,21 @@
 <div class="container w-50 d-flex flex-column">
-  <div class="d-flex justify-content-end pb-3">
+  <div *ngIf="projectGroups.length > 0" class="d-flex justify-content-between pb-3">
+    <h3>Projectgroups</h3>
     <button class="btn btn-secondary" data-toggle="modal" data-target="#addGroupModal" i18n="Add projectgroup">Add
       Projectgroup</button>
   </div>
-  <app-projectgroup-detail *ngFor="let group of projectGroups" [projGroup]="group"></app-projectgroup-detail>
+  <div *ngIf="projectGroups.length > 0">
+    <app-projectgroup-detail *ngFor="let group of projectGroups" [projGroup]="group"></app-projectgroup-detail>
+  </div>
+  <div *ngIf="!projectGroups.length" class="container">
+    <h5 class="text-center">No projectgroup has been created yet</h5>
+    <div class="row justify-content-center">
+      <button class="btn btn-secondary" data-toggle="modal" data-target="#addGroupModal" i18n="Add projectgroup">Add
+        Projectgroup</button>
+    </div>
+  </div>
 </div>
-<div class="modal fade" #addGroupModal (focusout)="clearInput($event)" id="addGroupModal" tabindex="-1" role="dialog">
+<div class="modal fade" #addGroupModal id="addGroupModal" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <app-add-projectgroup-dialog #addGroupDialog>

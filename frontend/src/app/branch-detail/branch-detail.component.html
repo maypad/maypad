@@ -14,7 +14,7 @@
                 <li *ngFor="let dep of branch.dependencies;"> {{ dep }}</li>
             </ul>
         </li>
-        <li>
+        <li *ngIf="branch.lastCommit">
             <b i18n="Last commit">Last Commit:</b>
             <ul class="mt-1">
                 <li><b i18n="Commit hash">Hash: </b>

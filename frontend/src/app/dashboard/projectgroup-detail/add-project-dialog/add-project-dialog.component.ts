@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, Input } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Input, ChangeDetectorRef } from '@angular/core';
 import { Projectgroup } from 'src/app/model/projectGroup';
 import { ProjectgroupService } from 'src/app/projectgroup.service';
 import { ServiceAccount } from 'src/app/model/serviceAccount';
@@ -22,7 +22,9 @@ export class AddProjectDialogComponent implements OnInit {
   */
   selectedIndex = 1;
 
-  constructor(private groupService: ProjectgroupService) { }
+  constructor(
+    private groupService: ProjectgroupService,
+    private ref: ChangeDetectorRef) { }
 
   ngOnInit() { }
 
@@ -31,6 +33,7 @@ export class AddProjectDialogComponent implements OnInit {
     this.sshKey = '';
     this.username = '';
     this.password = '';
+    this.ref.detectChanges();
   }
 
   setSelected(num) {
@@ -61,5 +64,12 @@ export class AddProjectDialogComponent implements OnInit {
       proj => { this.projGroup.projects.push(proj); }
     );
     this.clearInput();
+    $(`#collapse${this.projGroup.id}`).collapse('show');
+
+    const hulla = new hullabaloo();
+    hulla.options.align = 'center';
+    hulla.options.width = 400;
+    hulla.options.offset = { from: 'top', amount: 30 };
+    hulla.send('The project is now being processed.', 'info');
   }
 }

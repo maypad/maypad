@@ -5,11 +5,18 @@
       Project</button>
   </div>
 
-  <app-branch-list-item *ngFor="let branch of branches;" [branch]="branch">
-  </app-branch-list-item>
+  <div *ngIf="branches.length > 0">
+    <app-branch-list-item *ngFor="let branch of branches;" [branch]="branch">
+    </app-branch-list-item>
+  </div>
+  <div *ngIf="!branches.length " class="container">
+    <h5 class="text-center">
+      No branch has been added yet. Please check your project configuration.
+    </h5>
+  </div>
 </div>
 
-<div class="modal fade" id="editProjectModal" (blur)="clearInput($event)" tabindex="0" role="dialog">
+<div class="modal fade" id="editProjectModal" tabindex="0" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content" tabindex="1">
       <app-edit-project-dialog [project]="project" #editDialog>
