@@ -36,6 +36,9 @@ module.exports = function (config) {
         flags: ['--no-sandbox']
       }
     },
-    singleRun: false
+    singleRun: false,
+    files: [
+      { pattern: '../node_modules/jquery/dist/jquery.min.js', watched: false },
+    ]
   });
 };
