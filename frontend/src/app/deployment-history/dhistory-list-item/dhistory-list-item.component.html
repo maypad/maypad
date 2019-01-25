@@ -2,5 +2,5 @@
   <span>Type: {{ deployment.type }}</span>
   <span>Time: {{ deployment.timestamp | date : 'H:mm:ss, d/M/yy (z)'}}</span>
   <span>Branch: {{ deployment.branchName }}</span>
-  <span *ngIf="deployment.build">Commit: <<span>{{ deployment.build.commit.hash.substr(0, 7) }}</span>></span>
+  <span *ngIf="deployment.build.commit.hash">Commit: <<span>{{ deployment.build.commit.hash.substr(0, 7) }}</span>></span>
 </div>
