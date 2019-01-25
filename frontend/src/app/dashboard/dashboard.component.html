@@ -1,14 +1,18 @@
 <div class="container w-50 d-flex flex-column">
   <div *ngIf="projectGroups.length > 0" class="d-flex justify-content-between pb-3">
     <h3>Projectgroups</h3>
-    <button class="btn btn-secondary" data-toggle="modal" data-target="#addGroupModal" i18n="Add projectgroup">Add
-      Projectgroup</button>
+    <div>
+      <button class="btn btn-secondary mr-2" (click)="toggleGroups('show')" i18n="Show all projectgroups">Show All</button>
+      <button class="btn btn-secondary mr-2" (click)="toggleGroups('hide')" i18n="Hide all projectgroups">Hide All</button>
+      <button class="btn btn-primary" data-toggle="modal" data-target="#addGroupModal" i18n="Add projectgroup">Add
+        Projectgroup</button>
+    </div>
   </div>
   <div *ngIf="projectGroups.length > 0">
     <app-projectgroup-detail *ngFor="let group of projectGroups" [projGroup]="group"></app-projectgroup-detail>
   </div>
   <div *ngIf="!projectGroups.length" class="container">
-    <h5 class="text-center">No projectgroup has been created yet</h5>
+    <h5 class="text-center" i18n="No projectgroup">No projectgroup has been created yet</h5>
     <div class="row justify-content-center">
       <button class="btn btn-secondary" data-toggle="modal" data-target="#addGroupModal" i18n="Add projectgroup">Add
         Projectgroup</button>

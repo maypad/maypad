@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, RouterStateSnapshot, Resolve } from '@angular/router';
 import { Deployment } from '../model/deployment';
 import { Observable } from 'rxjs';
 import { BranchService } from '../branch.service';
@@ -7,7 +7,7 @@ import { BranchService } from '../branch.service';
 @Injectable({
   providedIn: 'root'
 })
-export class DhistoryResolverService {
+export class DhistoryResolverService implements Resolve<Deployment[]> {
 
   constructor(private branchService: BranchService) { }
 
