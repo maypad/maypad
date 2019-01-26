@@ -2,7 +2,9 @@ package de.fraunhofer.iosb.maypadbackend.model.repository;
 
 import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.services.reporefresh.GitRepoManager;
+import de.fraunhofer.iosb.maypadbackend.services.reporefresh.NullRepoManager;
 import de.fraunhofer.iosb.maypadbackend.services.reporefresh.RepoManager;
+import de.fraunhofer.iosb.maypadbackend.services.reporefresh.SvnRepoManager;
 
 /**
  * Types of a version control system.
@@ -33,8 +35,8 @@ public enum RepositoryType {
      */
     SVN {
         @Override
-        public GitRepoManager toRepoManager(Project project) {
-            return new GitRepoManager(project);
+        public SvnRepoManager toRepoManager(Project project) {
+            return new SvnRepoManager(project);
         }
 
         @Override
@@ -48,8 +50,8 @@ public enum RepositoryType {
      */
     NONE {
         @Override
-        public GitRepoManager toRepoManager(Project project) {
-            return new GitRepoManager(project);
+        public NullRepoManager toRepoManager(Project project) {
+            return new NullRepoManager(project);
         }
 
         @Override

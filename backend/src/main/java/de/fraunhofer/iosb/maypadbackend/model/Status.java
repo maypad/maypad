@@ -15,12 +15,11 @@ public enum Status {
     /**
      * The process was completed incorrectly.
      */
-    FAILED {
-        @Override
-        public String getName() {
-            return "Error";
-        }
-    },
+    FAILED,
+    /**
+     * The process ended in an error.
+     */
+    ERROR,
     /**
      * The process has not been completed yet.
      */
@@ -36,7 +35,12 @@ public enum Status {
     /**
      * Currently create / init something.
      */
-    CREATING,
+    INIT {
+        @Override
+        public String getName() {
+            return "Initialize";
+        }
+    },
     /**
      * The status of a process that has timed out.
      */

@@ -1,6 +1,7 @@
 package de.fraunhofer.iosb.maypadbackend.model.webhook;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
@@ -17,6 +18,7 @@ import javax.persistence.Enumerated;
 @Data
 @NoArgsConstructor
 @Entity
+@EqualsAndHashCode(callSuper = true)
 public class InternalWebhook extends Webhook {
 
     @Column
