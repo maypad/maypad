@@ -8,6 +8,7 @@ import de.fraunhofer.iosb.maypadbackend.model.repository.Branch;
 import de.fraunhofer.iosb.maypadbackend.model.webhook.InternalWebhook;
 import de.fraunhofer.iosb.maypadbackend.model.webhook.Webhook;
 import de.fraunhofer.iosb.maypadbackend.model.webhook.WebhookType;
+import de.fraunhofer.iosb.maypadbackend.repositories.ProjectRepository;
 import de.fraunhofer.iosb.maypadbackend.services.build.BuildService;
 import de.fraunhofer.iosb.maypadbackend.services.reporefresh.RepoService;
 import org.slf4j.Logger;
@@ -19,7 +20,9 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.PostConstruct;
 import java.security.SecureRandom;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,6 +34,7 @@ public class WebhookService {
     private ServerConfig serverConfig;
     private BuildService buildService;
     private RepoService repoService;
+    private ProjectRepository projectRepository;
     private char[] buf;
 
     private static final String tokenChars
@@ -47,13 +51,16 @@ public class WebhookService {
      * @param serverConfig the server configuration
      * @param buildService the BuildService used to build projects
      * @param repoService the RepoService used to update repositories
+     * @param projectRepository the ProjectRepository used to access projects
      */
     @Lazy
     @Autowired
-    public WebhookService(ServerConfig serverConfig, BuildService buildService, RepoService repoService) {
+    public WebhookService(ServerConfig serverConfig, BuildService buildService, RepoService repoService,
+                          ProjectRepository projectRepository) {
         this.serverConfig = serverConfig;
         this.buildService = buildService;
         this.repoService = repoService;
+        this.projectRepository = projectRepository;
 
         buf = new char[serverConfig.getWebhookTokenLength()];
 
@@ -148,6 +155,20 @@ public class WebhookService {
             mappedHooks.get(token).handle();
         } else {
             throw new InvalidTokenException("INVALID_TOKEN", String.format("The token %s is invalid.", token));
+        }
+    }
+
+    @PostConstruct
+    private void initMapping() {
+        List<Project> projects = projectRepository.findAll();
+        for (Project project : projects) {
+            mappedHooks.put(project.getRefreshWebhook().getToken(), new RefreshWebhookHandler(project, repoService));
+            for (Map.Entry<String, Branch> entry : project.getRepository().getBranches().entrySet()) {
+                mappedHooks.put(entry.getValue().getBuildFailureWebhook().getToken(),
+                        new BuildWebhookHandler(entry.getValue(), Status.FAILED, buildService));
+                mappedHooks.put(entry.getValue().getBuildSuccessWebhook().getToken(),
+                        new BuildWebhookHandler(entry.getValue(), Status.SUCCESS, buildService));
+            }
         }
     }
 }
