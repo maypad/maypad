@@ -4,6 +4,7 @@ import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Commit;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Tag;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -13,6 +14,16 @@ import java.util.List;
  * @version 1.0
  */
 public class SvnRepoManager extends RepoManager {
+
+    /**
+     * Constructor, prepare the SvnRepoManager.
+     *
+     * @param project        Project for which the svn-repository is to be managed
+     * @param projectRootDir The root directory for the repo files
+     */
+    public SvnRepoManager(Project project, File projectRootDir) {
+        super(project, projectRootDir);
+    }
 
     /**
      * Constructor, prepare the SvnRepoManager.
