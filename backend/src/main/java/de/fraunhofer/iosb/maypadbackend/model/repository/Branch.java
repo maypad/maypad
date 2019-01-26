@@ -21,10 +21,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import java.util.List;
+import java.util.Set;
 
 /**
  * A branch within a {@link Repository}.
@@ -39,7 +38,7 @@ public class Branch {
 
     @Id
     @EqualsAndHashCode.Exclude
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)
     private int id;
 
@@ -50,30 +49,30 @@ public class Branch {
     private String description;
     @Column
     private String readme;
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Commit lastCommit;
 
     //maypad-data
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Person> members;
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Mail> mails;
-    @ManyToMany(cascade = CascadeType.ALL)
-    private List<DependencyDescriptor> dependencies;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<Person> members;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<Mail> mails;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<DependencyDescriptor> dependencies;
 
     //build
     @OneToOne(cascade = CascadeType.ALL)
     private BuildType buildType;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Build> builds;
+    private Set<Build> builds;
     @Enumerated(EnumType.STRING)
     private Status buildStatus;
 
     //deployment
     @OneToOne(cascade = CascadeType.ALL)
     private DeploymentType deploymentType;
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Deployment> deployments;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<Deployment> deployments;
 
     //webhooks
     @OneToOne(cascade = CascadeType.ALL)
@@ -88,30 +87,14 @@ public class Branch {
      * @param branch Other Branch
      */
     public void compareAndUpdate(Branch branch) {
-        updateList(members, branch.getMembers());
-        updateList(mails, branch.getMails());
-        updateList(dependencies, branch.getDependencies());
+        Util.updateSet(members, branch.getMembers());
+        Util.updateSet(mails, branch.getMails());
+        Util.updateSet(dependencies, branch.getDependencies());
         if (!buildType.equals(branch.getBuildType())) {
             buildType = branch.getBuildType();
         }
         if (!deploymentType.equals(branch.getDeploymentType())) {
             deploymentType = branch.getDeploymentType();
-        }
-    }
-
-    /**
-     * Update a list with data from a new list.
-     *
-     * @param oldList Current list
-     * @param newList Data in List
-     * @param <T>     Type in list
-     */
-    private <T> void updateList(List<T> oldList, List<T> newList) {
-        oldList.retainAll(newList);
-        for (T item : newList) {
-            if (!oldList.contains(item)) {
-                oldList.add(item);
-            }
         }
     }
 

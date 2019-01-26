@@ -13,7 +13,7 @@ import org.mapstruct.Mappings;
 import org.mapstruct.Named;
 
 import java.util.List;
-
+import java.util.Set;
 
 
 /**
@@ -43,12 +43,13 @@ public interface BranchMapper {
      */
     @Named("toDependencies")
     default String[] toDependencies(Branch branch) {
-        List<DependencyDescriptor> dependencies = branch.getDependencies();
+        Set<DependencyDescriptor> dependencies = branch.getDependencies();
         String[] dependenciesArr = new String[dependencies.size()];
-        for (int i = 0; i < dependencies.size(); i++) {
-            DependencyDescriptor d = dependencies.get(i);
+        int i = 0;
+        for (DependencyDescriptor d : dependencies) {
             String dep = d.getProjectId() + ":" + d.getBranchName();
             dependenciesArr[i] = dep;
+            i++;
         }
         return dependenciesArr;
     }
@@ -61,10 +62,12 @@ public interface BranchMapper {
      */
     @Named("toMembers")
     default String[] toMembers(Branch branch) {
-        List<Person> members = branch.getMembers();
+        Set<Person> members = branch.getMembers();
         String[] membersArr = new String[members.size()];
-        for (int i = 0; i < members.size(); i++) {
-            membersArr[i] = members.get(i).getName();
+        int i = 0;
+        for (Person person : members) {
+            membersArr[i] = person.getName();
+            i++;
         }
         return membersArr;
     }
@@ -77,10 +80,12 @@ public interface BranchMapper {
      */
     @Named("toMails")
     default String[] toMails(Branch branch) {
-        List<Mail> mails = branch.getMails();
+        Set<Mail> mails = branch.getMails();
         String[] mailsArr = new String[mails.size()];
-        for (int i = 0; i < mails.size(); i++) {
-            mailsArr[i] = mails.get(i).getMailAddress();
+        int i = 0;
+        for (Mail mail : mails) {
+            mailsArr[i] = mail.getMailAddress();
+            i++;
         }
         return mailsArr;
     }
