@@ -1,22 +1,30 @@
 package de.fraunhofer.iosb.maypadbackend.services.reporefresh;
 
+import de.fraunhofer.iosb.maypadbackend.config.project.YamlProjectConfig;
+import de.fraunhofer.iosb.maypadbackend.config.server.ServerConfig;
 import de.fraunhofer.iosb.maypadbackend.config.server.YamlServerConfig;
 import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.person.Author;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Branch;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Commit;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Tag;
+import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.KeyServiceAccount;
+import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.UserServiceAccount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.tmatesoft.svn.core.ISVNLogEntryHandler;
 import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNLogEntry;
 import org.tmatesoft.svn.core.SVNURL;
+import org.tmatesoft.svn.core.auth.BasicAuthenticationManager;
+import org.tmatesoft.svn.core.auth.ISVNAuthenticationManager;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,9 +37,14 @@ import java.util.List;
 public class SvnRepoManager extends RepoManager {
 
     private SVNClientManager svnClientManager = SVNClientManager.newInstance();
+    private ISVNAuthenticationManager authManager;
     private Logger logger = LoggerFactory.getLogger(SvnRepoManager.class);
+    private YamlProjectConfig projConfig;
 
     private String projectRoot;
+
+    @Autowired
+    ServerConfig config;
 
     /**
      * Constructor, prepare the SvnRepoManager.
@@ -51,6 +64,18 @@ public class SvnRepoManager extends RepoManager {
     public SvnRepoManager(Project project) {
         super(project);
         projectRoot = project.getRepository().getRootFolder().getAbsolutePath();
+        if (project.getServiceAccount() != null) {
+            if (project.getServiceAccount() instanceof KeyServiceAccount) {
+                KeyServiceAccount sA = (KeyServiceAccount)project.getServiceAccount();
+                File sshFile = getSshFile();
+                int sshPort = (getSshKey() == -1) ? 22 : getSshKey();
+                authManager = new BasicAuthenticationManager("", sshFile, "", sshPort);
+            } else if (project.getServiceAccount() instanceof UserServiceAccount) {
+                UserServiceAccount sA = (UserServiceAccount)project.getServiceAccount();
+                authManager = new BasicAuthenticationManager(sA.getUsername(), sA.getPassword());
+            }
+            svnClientManager.setAuthenticationManager(authManager);
+        }
     }
 
     /**
@@ -80,10 +105,12 @@ public class SvnRepoManager extends RepoManager {
     @Override
     public boolean switchBranch(String name) {
         if (name.equals("trunk")) {
-            this.getProject().getRepository().setRootFolder(new File(projectRoot + "/trunk/"));
+            String trunkPath = projConfig.getSvnTrunkDirectory();
+            this.getProject().getRepository().setRootFolder(new File(projectRoot + "/" + trunkPath));
             return true;
         } else {
-            File branchFolder = new File(projectRoot + "/branches/" + name);
+            String branchPath = projConfig.getSvnBranchDirectory();
+            File branchFolder = new File(projectRoot + "/" + branchPath + "/" + name);
             if (!branchFolder.isDirectory() || !branchFolder.exists()) {
                 logger.error("Branch of name " + name + " doesn't exist");
                 logger.error("Not found in directory " + branchFolder.getAbsolutePath());
@@ -102,9 +129,8 @@ public class SvnRepoManager extends RepoManager {
      */
     @Override
     public List<Tag> getTags() {
-        File tagFolder = new File(
-                this.getProject().getRepository().getRootFolder().getAbsolutePath() + "/tags/"
-        );
+        String tagPath = projConfig.getSvnTagsDirectory();
+        File tagFolder = new File(projectRoot + "/" + tagPath);
         String[] tagList = tagFolder.list();
         List<Tag> tags = new ArrayList<Tag>();
         for (String t : tagList) {
@@ -158,6 +184,11 @@ public class SvnRepoManager extends RepoManager {
                     SVNDepth.INFINITY, // How far to clone the history tree
                     true
             );
+            try {
+                projConfig = new YamlProjectConfig(this.getProject().getRepository().getRootFolder());
+            } catch (IOException ex) {
+                logger.error(ex.getMessage());
+            }
             switchBranch("trunk");
             return true;
         } catch (SVNException ex) {
