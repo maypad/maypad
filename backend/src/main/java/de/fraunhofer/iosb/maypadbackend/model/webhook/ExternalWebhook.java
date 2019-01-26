@@ -13,6 +13,7 @@ import javax.persistence.Entity;
  * @version 1.0
  */
 @Data
+@NoArgsConstructor
 @Entity
 public class ExternalWebhook extends Webhook {
 

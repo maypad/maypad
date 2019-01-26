@@ -4,6 +4,7 @@ import de.fraunhofer.iosb.maypadbackend.model.webhook.ExternalWebhook;
 import de.fraunhofer.iosb.maypadbackend.services.build.BuildTypeExec;
 import de.fraunhofer.iosb.maypadbackend.services.build.WebhookBuildExecutor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -16,6 +17,7 @@ import javax.persistence.OneToOne;
  * @version 1.0
  */
 @Data
+@NoArgsConstructor
 @Entity
 @BuildTypeExec(executor = WebhookBuildExecutor.class)
 public class WebhookBuild extends BuildType {
@@ -23,4 +25,8 @@ public class WebhookBuild extends BuildType {
     @OneToOne(cascade = CascadeType.ALL)
     private ExternalWebhook buildWebhook;
 
+
+    public WebhookBuild(ExternalWebhook buildWebhook) {
+        this.buildWebhook = buildWebhook;
+    }
 }
