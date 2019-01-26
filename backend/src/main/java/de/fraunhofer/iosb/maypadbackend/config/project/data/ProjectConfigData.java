@@ -14,5 +14,7 @@ public class ProjectConfigData {
     private boolean allBranches;
     private List<BranchProperty> branches;
     private String repoWebsiteUrl;
-
+    private String svnTrunkDirectory;
+    private String svnBranchDirectory;
+    private String svnTagsDirectory;
 }

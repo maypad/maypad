@@ -21,7 +21,6 @@ public class YamlServerConfig implements ServerConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(YamlServerConfig.class);
 
-
     @Value("${webServerPort:${MAYPAD_WEBSERVER_PORT:-1}}")
     private int webServerPort;
     @Value("${reloadRepositoriesSeconds:${MAYPAD_RELOAD_REPOSITORIES_SECONDS:900}}")

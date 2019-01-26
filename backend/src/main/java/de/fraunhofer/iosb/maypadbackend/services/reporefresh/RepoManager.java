@@ -169,5 +169,14 @@ public abstract class RepoManager {
         return projectRootDir;
     }
 
+    protected int getSshKey() {
+        try {
+            String[] spl = project.getRepositoryUrl().split(":");
+            return Integer.parseInt(spl[spl.length - 1]);
+        } catch (Exception e) {
+            logger.error("Couldn't get SSH-Port from url.");
+            return -1;
+        }
+    }
 
 }
