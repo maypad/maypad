@@ -43,8 +43,9 @@ public class BuildService {
 
     /**
      * Constructor for BuildService.
+     *
      * @param projectService the ProjectService used to access projects
-     * @param executors a collection of all BuildTypeExecutor beans
+     * @param executors      a collection of all BuildTypeExecutor beans
      */
     @Autowired
     public BuildService(ProjectService projectService, BranchRepository branchRepository,
@@ -57,8 +58,9 @@ public class BuildService {
 
     /**
      * Triggers a build for the given branch.
-     * @param branch the branch the should be built
-     * @param request the request that contains the build parameters
+     *
+     * @param branch    the branch the should be built
+     * @param request   the request that contains the build parameters
      * @param buildName the name of the build type (currently not used)
      */
     public void buildBranch(Branch branch, BuildRequest request, String buildName) {
@@ -67,9 +69,10 @@ public class BuildService {
 
     /**
      * Triggers a build for the given branch.
-     * @param branch the branch the should be build
+     *
+     * @param branch           the branch the should be build
      * @param withDependencies if the dependencies should be build
-     * @param buildName the name of the build type (currently not used)
+     * @param buildName        the name of the build type (currently not used)
      */
     public void buildBranch(Branch branch, boolean withDependencies, String buildName) {
         if (runningBuilds.containsKey(branch)) {
@@ -99,6 +102,7 @@ public class BuildService {
 
     /**
      * Returns the latest build of a given branch.
+     *
      * @param branch the branch
      * @return the latest build on the given branch
      */
@@ -107,12 +111,13 @@ public class BuildService {
         if (buildCount == 0) {
             throw new NotFoundException("NO_BUILD", String.format("There's no build for branch %s.", branch.getName()));
         }
-        return branch.getBuilds().get(branch.getBuilds().size() - 1);
+        return branch.getBuilds().stream().skip(branch.getBuilds().size() - 1).findFirst().get();
     }
 
     /**
      * Updates the status of a running build for the given branch, if there is a running build. If status is RUNNING no
      * update is required.
+     *
      * @param branch the branch
      * @param status the new status
      */

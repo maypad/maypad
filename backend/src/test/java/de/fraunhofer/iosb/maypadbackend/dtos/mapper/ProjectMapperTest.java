@@ -33,7 +33,6 @@ public class ProjectMapperTest {
     public void setup() {
         projectMapper = Mappers.getMapper(ProjectMapper.class);
         Repository repo = new Repository();
-        repo.setRepositoryStatus(Status.UNKNOWN);
         testProject = new Project(lastUpdate, buildStatus, repo, projectRepoUrl,
                 new KeyServiceAccount(), new InternalWebhook(projectRefreshUrl,
                 "437284683242498", WebhookType.REFRESH));
