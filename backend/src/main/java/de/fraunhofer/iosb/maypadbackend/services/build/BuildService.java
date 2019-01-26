@@ -113,7 +113,7 @@ public class BuildService {
         if (buildCount == 0) {
             throw new NotFoundException("NO_BUILD", String.format("There's no build for branch %s.", branch.getName()));
         }
-        return branch.getBuilds().get(branch.getBuilds().size() - 1);
+        return branch.getBuilds().stream().skip(branch.getBuilds().size() - 1).findFirst().get();
     }
 
     private Build getBuild(Branch branch, int buildId) {
