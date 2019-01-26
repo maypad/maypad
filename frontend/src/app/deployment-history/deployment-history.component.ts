@@ -3,6 +3,7 @@ import { Deployment } from '../model/deployment';
 import { Branch } from '../model/branch';
 import { ActivatedRoute } from '@angular/router';
 import { BreadcrumbService } from '../breadcrumb.service';
+import { Project } from '../model/project';
 
 @Component({
   selector: 'app-deployment-history',
@@ -12,23 +13,23 @@ import { BreadcrumbService } from '../breadcrumb.service';
 export class DeploymentHistoryComponent implements OnInit {
   deployments: Deployment[];
   branch: Branch;
-  projId: number;
+  project: Project;
   constructor(private route: ActivatedRoute, private crumbs: BreadcrumbService) { }
 
   ngOnInit() {
-    this.projId = parseInt(this.route.snapshot.paramMap.get('id'), 10);
-    this.route.data.subscribe((data: { deployments: Deployment[], branch: Branch }) => {
+    this.route.data.subscribe((data: { deployments: Deployment[], branch: Branch, project: Project }) => {
       this.deployments = data.deployments;
       this.branch = data.branch;
+      this.project = data.project;
       this.setBreadcrumbs();
     });
   }
 
   setBreadcrumbs() {
     this.crumbs.setBreadcrumbs([
-      { name: this.branch.projectName, path: '/projects/' + this.projId },
-      { name: this.branch.name, path: '/projects/' + this.projId + '/branches/' + this.branch.name },
-      { name: 'Deployment History', path: '/projects/' + this.projId + '/branches/' + this.branch.name + '/deploymenthistory' }
+      { name: this.project.name, path: '/projects/' + this.project.id },
+      { name: this.branch.name, path: '/projects/' + this.project.id + '/branches/' + this.branch.name },
+      { name: 'Deployment History', path: '/projects/' + this.project.id + '/branches/' + this.branch.name + '/deploymenthistory' }
     ]);
   }
 }

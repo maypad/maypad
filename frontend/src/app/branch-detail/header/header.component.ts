@@ -58,12 +58,4 @@ export class HeaderComponent implements OnInit {
         hulla.options.offset = { from: 'top', amount: 30 };
         hulla.send(msg, 'info');
     }
-
-    refreshBranch() {
-        this.branchService.refreshBranch(this.projId, this.branch.name).subscribe(res => {
-            if (res) {
-                this.showAlert('A branch refresh has been initiated.');
-            }
-        });
-    }
 }

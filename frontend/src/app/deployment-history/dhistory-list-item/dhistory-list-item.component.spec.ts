@@ -32,6 +32,5 @@ describe('DhistoryListItemComponent', () => {
     const elements: NodeListOf<Element> = nativeElement.querySelectorAll('span');
 
     expect(elements[0].textContent).toBe('Type: ' + deployment.type);
-    expect(elements[2].textContent).toBe('Branch: ' + deployment.branchName);
   });
 });

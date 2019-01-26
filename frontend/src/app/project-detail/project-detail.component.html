@@ -1,8 +1,12 @@
 <div class="container d-flex flex-column w-50">
   <div class="container d-flex flex-row justify-content-between mb-4">
     <h2>{{project.name}}</h2>
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editProjectModal" i18n="Edit project">Edit
-      Project</button>
+    <div>
+      <button type="button" class="btn btn-primary mr-2" (click)="refreshProject()" i18n="Refresh Project">Refresh
+        Project</button>
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editProjectModal" i18n="Edit project">Edit
+        Project</button>
+    </div>
   </div>
 
   <div *ngIf="branches.length > 0">

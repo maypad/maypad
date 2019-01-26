@@ -8,6 +8,7 @@ import { HttpClientModule } from '@angular/common/http';
 import * as branchesResponse from 'sample-requests/get.projects.id.branches.ref.response.json';
 import * as projectResponse from 'sample-requests/get.projects.id.response.json';
 import { of } from 'rxjs';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('BranchDetailComponent', () => {
   let component: BranchDetailComponent;
@@ -34,7 +35,7 @@ describe('BranchDetailComponent', () => {
           provide: MarkedOptions, useValue: {}
         }
       ],
-      imports: [MarkdownModule, HttpClientModule]
+      imports: [MarkdownModule, HttpClientModule, RouterTestingModule]
     })
       .compileComponents();
   }));

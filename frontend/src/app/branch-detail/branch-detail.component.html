@@ -2,46 +2,56 @@
 </app-branch-header>
 <div class="container w-50 mt-3">
     <ul>
-        <li>
+        <li *ngIf="branch.members.length > 0">
             <b i18n="Members">Members:</b>
             <ul class="mt-1">
                 <li *ngFor="let member of branch.members;">{{member}}</li>
             </ul>
         </li>
-        <li>
+        <li *ngIf="branch.dependencies.length > 0">
             <b i18n="Dependencies">Dependencies:</b>
             <ul class="mt-1">
-                <li *ngFor="let dep of branch.dependencies;"> {{ dep }}</li>
+                <li *ngFor="let dep of branch.dependencies;">
+                    <a routerLink="/projects/{{ dep.split(':', 2)[0] }}/branches/{{ dep.split(':', 2)[1] }}">
+                        (#{{ dep.split(':', 2)[0] }}) {{ dep.split(':', 2)[1] }}</a>
+                </li>
             </ul>
         </li>
         <li *ngIf="branch.lastCommit">
             <b i18n="Last commit">Last Commit:</b>
             <ul class="mt-1">
                 <li><b i18n="Commit hash">Hash: </b>
-                    {{ branch.lastCommit.hash.substr(0, 7) }}
+                    {{ branch.lastCommit.commitIdentifier.substr(0, 7) }}
                 </li>
                 <li><b i18n="Commit author">Author: </b>{{ branch.lastCommit.author }}</li>
-                <li><b i18n="Commit Message">Message: </b>{{ branch.lastCommit.message }}</li>
+                <li><b i18n="Commit Message">Message: </b>{{ branch.lastCommit.commitMessage }}</li>
                 <li><b i18n="Timestamp">Timestamp: </b>{{ branch.lastCommit.timestamp }}</li>
             </ul>
         </li>
-        <li>
-            <b i18n="Deplyoment">Deployment:</b> {{ branch.deployment }}
+        <li *ngIf="branch.mails.length > 0">
+            <b i18n="Mails">Mails:</b>
+            <ul class="mt-1">
+                <li *ngFor="let mail of branch.mails;"> {{ mail }}</li>
+            </ul>
         </li>
-        <li>
+        <li *ngIf="branch.deploymentWebhook">
+            <b i18n="Deplyoment">Deployment:</b> {{ branch.deploymentWebhook }}
+        </li>
+        <li *ngIf="branch.buildWebhook">
             <b>Build Webhook:</b> {{ branch.buildWebhook }}
         </li>
-        <li>
+        <li *ngIf="branch.buildSuccessUrl">
             <b>Build Success Url:</b> {{ branch.buildSuccessUrl }}
         </li>
-        <li>
+        <li *ngIf="branch.buildFailUrl">
             <b>Build Fail Url:</b> {{ branch.buildFailUrl }}
         </li>
         <li>
             <a class="font-weight-bold" routerLink="buildhistory" i18n="Build history">Build History</a>
         </li>
         <li>
-            <a class="font-weight-bold" routerLink="deploymenthistory" i18n="Deplyoment history">Deployment History</a>
+            <a class="font-weight-bold" routerLink="deploymenthistory" i18n="Deplyoment history">Deployment
+                History</a>
         </li>
     </ul>
     <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#readmeCollapse" aria-expanded="false"

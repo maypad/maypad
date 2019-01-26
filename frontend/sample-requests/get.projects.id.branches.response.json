@@ -4,9 +4,9 @@
         "name":"master",
         "readme":"# MAYPAD\nDocumentation: [https://github.com/juliantodt/maypad-docs](https://github.com/juliantodt/maypad-docs)",
         "lastCommit":{
-            "hash":"e37ab2d1f1eddc11b1b6531372569793bd110b83",
+            "commitIdentifier":"e37ab2d1f1eddc11b1b6531372569793bd110b83",
             "timestamp":"Wed Jan 2 14:37:30 2019 +0100",
-            "message":"Fix various bugs",
+            "commitMessage":"Fix various bugs",
             "author":"Developer One <developer.one@maypad.de>"
         },
         "members":[
@@ -18,7 +18,7 @@
             "developer.two@maypad.de"
         ],
         "buildWebhook":"https://git.maypad.de/pipeline-hook?token=kjadbhjasebjkdsa",
-        "deployment":"webhook: https://ship.maypad.de/hook?token=vjfsdbjhkvlfavhkl",
+        "deploymentWebhook":"webhook: https://ship.maypad.de/hook?token=vjfsdbjhkvlfavhkl",
         "dependencies":[
             "3:master",
             "12:dev",
@@ -33,9 +33,9 @@
         "name":"dev",
         "readme":"# MAYPAD\nDocumentation: [https://github.com/juliantodt/maypad-docs](https://github.com/juliantodt/maypad-docs)",
         "lastCommit":{
-            "hash":"e37ab2d1f1eddc11b1b6531372569793bd110b83",
+            "commitIdentifier":"e37ab2d1f1eddc11b1b6531372569793bd110b83",
             "timestamp":"Wed Jan 2 14:39:32 2019 +0100",
-            "message":"Fix typo",
+            "commitMessage":"Fix typo",
             "author":"Developer One <developer.one@maypad.de>"
         },
         "members":[
@@ -47,7 +47,7 @@
             "developer.two@maypad.de"
         ],
         "buildWebhook":"https://git.maypad.de/pipeline-hook?token=sadjkcndfjkvfkv",
-        "deployment":"webhook: https://ship.maypad.de/hook?token=jabjdksvnkf",
+        "deploymentWebhook":"webhook: https://ship.maypad.de/hook?token=jabjdksvnkf",
         "dependencies":[
             "3:dev",
             "12:testing",
