@@ -40,4 +40,10 @@ public interface ProjectConfig {
      */
     List<BranchProperty> getBranchProperties();
 
+    String getSvnTrunkDirectory();
+    String getSvnBranchDirectory();
+    String getSvnTagsDirectory();
+
+
+
 }
