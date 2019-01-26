@@ -25,7 +25,7 @@ export class HeaderComponent implements OnInit {
                 console.error(error);
                 alert(`Deployment couldn't be started. see console for error log.`);
             },
-            () => { this.alert('deployment'); }
+            () => { this.triggerAlert('deployment'); }
         );
     }
 
@@ -38,7 +38,7 @@ export class HeaderComponent implements OnInit {
                 console.error(error);
                 alert(`Build couldn't be started. see console for error log.`);
             },
-            () => { this.alert('build'); }
+            () => { this.triggerAlert('build'); }
         );
     }
 
@@ -46,11 +46,24 @@ export class HeaderComponent implements OnInit {
         this.triggerDeploy(true);
     }
 
-    alert(type: string) {
+    triggerAlert(type: string) {
+        const message = `The ${type} has been started.`;
+        this.showAlert(message);
+    }
+
+    showAlert(msg: string) {
         const hulla = new hullabaloo();
         hulla.options.align = 'center';
         hulla.options.width = 350;
         hulla.options.offset = { from: 'top', amount: 30 };
-        hulla.send(`The ${type} has been started.`, 'info');
+        hulla.send(msg, 'info');
+    }
+
+    refreshBranch() {
+        this.branchService.refreshBranch(this.projId, this.branch.name).subscribe(res => {
+            if (res) {
+                this.showAlert('A branch refresh has been initiated.');
+            }
+        });
     }
 }
