@@ -12,8 +12,6 @@ export class HeaderComponent implements OnInit {
     @Input() projId: number;
     @Input() branch: Branch;
     @ViewChild('rebuild') rebuild: ElementRef;
-    alertType: string;
-    showAlert = false;
     constructor(private branchService: BranchService) { }
 
     ngOnInit() { }
@@ -27,7 +25,7 @@ export class HeaderComponent implements OnInit {
                 console.error(error);
                 alert(`Deployment couldn't be started. see console for error log.`);
             },
-            () => { this.alert('deployment'); }
+            () => { this.triggerAlert('deployment'); }
         );
     }
 
@@ -40,7 +38,7 @@ export class HeaderComponent implements OnInit {
                 console.error(error);
                 alert(`Build couldn't be started. see console for error log.`);
             },
-            () => { this.alert('build'); }
+            () => { this.triggerAlert('build'); }
         );
     }
 
@@ -48,8 +46,24 @@ export class HeaderComponent implements OnInit {
         this.triggerDeploy(true);
     }
 
-    alert(type: string) {
-        this.alertType = type;
-        this.showAlert = true;
+    triggerAlert(type: string) {
+        const message = `The ${type} has been started.`;
+        this.showAlert(message);
+    }
+
+    showAlert(msg: string) {
+        const hulla = new hullabaloo();
+        hulla.options.align = 'center';
+        hulla.options.width = 350;
+        hulla.options.offset = { from: 'top', amount: 30 };
+        hulla.send(msg, 'info');
+    }
+
+    refreshBranch() {
+        this.branchService.refreshBranch(this.projId, this.branch.name).subscribe(res => {
+            if (res) {
+                this.showAlert('A branch refresh has been initiated.');
+            }
+        });
     }
 }

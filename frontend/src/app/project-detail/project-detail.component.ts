@@ -17,19 +17,22 @@ export class ProjectDetailComponent implements OnInit {
   constructor(private route: ActivatedRoute, private crumbs: BreadcrumbService) { }
 
   ngOnInit() {
+    $('#editProjectModal').on('hidden.bs.modal', () => {
+      // Clear input
+      this.editDialog.initServiceMethod();
+    });
     this.route.data.subscribe(
       (data: { project: Project, branches: Branch[] }) => {
         this.project = data.project;
-        this.crumbs.setBreadcrumbs([{ name: this.project.name, path: 'projects/' + this.project.id }]);
+        this.crumbs.setBreadcrumbs([
+          {
+            name: this.project.name ? this.project.name : 'Error',
+            path: 'projects/' + this.project.id
+          }
+        ]);
         this.branches = data.branches;
       }
     );
-  }
-
-  clearInput(event: FocusEvent) {
-    if (event.relatedTarget == null) {
-      this.editDialog.initServiceMethod();
-    }
   }
 
 }

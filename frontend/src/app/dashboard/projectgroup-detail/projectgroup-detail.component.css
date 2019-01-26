@@ -5,3 +5,11 @@
 .groupCollapse:hover {
   color: black;
 }
+
+[data-toggle="collapse"] .fa:before {   
+  content: "\f13a";
+}
+
+[data-toggle="collapse"].collapsed .fa:before {
+  content: "\f138";
+}

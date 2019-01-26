@@ -25,6 +25,9 @@ import { EditProjectDialogComponent } from './project-detail/edit-project-dialog
 import { BhistoryListItemComponent } from './build-history/bhistory-list-item/bhistory-list-item.component';
 import { DhistoryListItemComponent } from './deployment-history/dhistory-list-item/dhistory-list-item.component';
 import { HeaderComponent } from './branch-detail/header/header.component';
+// Needed to access jquery & bootstrap specific functions
+import * as $ from 'jquery';
+import * as bootstrap from 'bootstrap';
 
 @NgModule({
     declarations: [

@@ -5,7 +5,8 @@
   <div class="container d-flex flex-row">
     <span class="mr-1 text-dark">Build Status:</span>
     <span class="dot dot-{{ branch.status }} mt-1 mr-2"></span>
-    <span class="text-dark">Last Commit({{ branch.lastCommit.hash.substr(0, 7) }}): {{ branch.lastCommit.timestamp |
+    <span class="text-dark" *ngIf="branch.lastCommit">Last Commit({{ branch.lastCommit.hash.substr(0, 7) }}): {{
+      branch.lastCommit.timestamp |
       date : 'H:mm:ss, d/M/yy (z)' }}</span>
   </div>
 </a>

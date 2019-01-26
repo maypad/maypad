@@ -60,6 +60,6 @@ describe('DashboardComponent', () => {
 
   it('should create button', () => {
     const nativeElement: HTMLElement = fixture.nativeElement;
-    expect(nativeElement.querySelector('button').textContent).toBe('Add Projectgroup');
+    expect(nativeElement.querySelector('button').textContent).toBe('Toggle All');
   });
 });

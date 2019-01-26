@@ -1,8 +1,12 @@
 <div class="container py-2 border-bottom border-dark">
   <div class="d-flex flex-row justify-content-between">
-    <a class="groupCollapse" data-toggle="collapse" href="#collapse{{ projGroup.id }}" role="button" aria-expanded="false"
-      (click)="loadGroup()" attr.aria-controls="collapse{{ projGroup.id }}">
-      <h4 class="blackText">{{ projGroup.name }}</h4>
+    <a class="groupCollapse" data-toggle="collapse" href="#collapse{{ projGroup.id }}" role="button" aria-expanded="true"
+      attr.aria-controls="collapse{{ projGroup.id }}">
+      <div class="container d-flex flex-row justify-content-between">
+        <i class="fa mt-2 mr-2"></i>
+        <h4 class="blackText mr-2">{{ projGroup.name }}</h4>
+        <span class="dot dot-{{ projGroup.status }} mt-2"></span>
+      </div>
     </a>
     <div>
       <button class="btn btn-primary mr-2" data-toggle="modal" attr.data-target="#editProjectgroupModal{{ projGroup.id }}"
@@ -11,12 +15,12 @@
         Project</button>
     </div>
   </div>
-  <div class="collapse" id="collapse{{ projGroup.id }}">
+  <div class="collapse show" id="collapse{{ projGroup.id }}">
     <app-project-list-item *ngFor="let proj of projGroup.projects; let last = last" [border]="!last" [project]="proj"></app-project-list-item>
   </div>
 </div>
 
-<div class="modal fade" id="addProjectModal{{ projGroup.id }}" (blur)="clearInput($event)" tabindex="0" role="dialog">
+<div class="modal fade" id="addProjectModal{{ projGroup.id }}" tabindex="0" role="dialog">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content" tabindex="1">
       <app-add-project-dialog #addProjectDialog{{projGroup.id}} [projGroup]="projGroup"> </app-add-project-dialog>
@@ -24,7 +28,7 @@
   </div>
 </div>
 
-<div class="modal fade" id="editProjectgroupModal{{ projGroup.id }}" (blur)="clearInput($event)" tabindex="0" role="dialog">
+<div class="modal fade" id="editProjectgroupModal{{ projGroup.id }}" tabindex="0" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content" tabindex="1">
       <app-edit-projectgroup-dialog #editProjectgroupDialog{{projGroup.id}} [projGroup]="projGroup">

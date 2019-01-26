@@ -1,8 +1,7 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { BreadcrumbService } from '../breadcrumb.service';
 import { Projectgroup } from '../model/projectGroup';
 import { AddProjectgroupDialogComponent } from './add-projectgroup-dialog/add-projectgroup-dialog.component';
-import { ProjectgroupService } from '../projectgroup.service';
 import { DashboardService } from './dashboard.service';
 import { ActivatedRoute } from '@angular/router';
 
@@ -14,6 +13,8 @@ import { ActivatedRoute } from '@angular/router';
 export class DashboardComponent implements OnInit {
   @ViewChild('addGroupDialog') modal: AddProjectgroupDialogComponent;
   projectGroups: Projectgroup[];
+  showAll = true;
+
   constructor(private crumbs: BreadcrumbService,
     private route: ActivatedRoute,
     private dashService: DashboardService) { }
@@ -32,11 +33,18 @@ export class DashboardComponent implements OnInit {
         this.projectGroups.splice(index, 1);
       }
     });
+    $('#addGroupModal').on('hidden.bs.modal', () => {
+      this.modal.clearInput();
+    });
   }
 
-  clearInput(event: FocusEvent) {
-    if (event.relatedTarget == null) {
-      this.modal.clearInput();
+  toggleGroups() {
+    if (this.showAll) {
+      $('.collapse').collapse('hide');
+      this.showAll = !this.showAll;
+    } else {
+      $('.collapse').collapse('show');
+      this.showAll = !this.showAll;
     }
   }
 }

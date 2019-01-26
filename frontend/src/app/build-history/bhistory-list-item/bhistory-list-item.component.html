@@ -4,5 +4,5 @@
     <span class="dot ml-1 mt-1 dot-{{ build.status }}"></span>
   </div>
   <span>Time: {{ build.timestamp | date : 'H:mm:ss, d/M/yy (z)'}}</span>
-  <span>Commit: <<span>{{ build.commit.hash.substr(0, 7) }}</span>></span>
+  <span *ngIf="build.commit.hash">Commit: <<span>{{ build.commit.hash.substr(0, 7) }}</span>></span>
 </div>
