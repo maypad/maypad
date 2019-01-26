@@ -15,6 +15,7 @@ import javax.persistence.Entity;
 @Data
 @NoArgsConstructor
 @Entity
+@EqualsAndHashCode(callSuper = true)
 public class ExternalWebhook extends Webhook {
 
     /**

@@ -1,6 +1,7 @@
 package de.fraunhofer.iosb.maypadbackend.model.person;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.CascadeType;
@@ -16,9 +17,10 @@ import javax.persistence.OneToOne;
 @Data
 @NoArgsConstructor
 @Entity
+@EqualsAndHashCode(callSuper = true)
 public class Author extends Person {
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Mail mail;
 
     /**
