@@ -7,6 +7,9 @@ import de.fraunhofer.iosb.maypadbackend.model.repository.Commit;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Tag;
 import de.fraunhofer.iosb.maypadbackend.util.FileUtil;
 import de.fraunhofer.iosb.maypadbackend.util.Tuple;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +27,20 @@ public abstract class RepoManager {
 
     private Project project;
     private Logger logger = LoggerFactory.getLogger(RepoManager.class);
+    @Setter
+    @Getter(AccessLevel.PROTECTED)
+    private File projectRootDir;
+
+    /**
+     * Constructor, prepare the RepoManager.
+     *
+     * @param project        Project for which the repository is to be managed
+     * @param projectRootDir The root directory for the repo files
+     */
+    public RepoManager(Project project, File projectRootDir) {
+        this.project = project;
+        this.projectRootDir = projectRootDir;
+    }
 
     /**
      * Constructor, prepare the RepoManager.
@@ -123,11 +140,12 @@ public abstract class RepoManager {
     }
 
     /**
-     * Get the path to the root dir of the project.
-     *
-     * @return File to the projectroot
+     * asd.
+     * @return asd.
      */
-    protected File getProjectRootDir() {
-        return project.getRepository().getRootFolder();
+    protected File getSshFile() {
+        //TODO
+        return null;
     }
+
 }

@@ -24,6 +24,16 @@ public class NullRepoManager extends RepoManager {
     /**
      * Constructor, prepare the NullRepoManager.
      *
+     * @param project        Project for which this null-repository is to be managed
+     * @param projectRootDir The root directory for the repo files
+     */
+    public NullRepoManager(Project project, File projectRootDir) {
+        super(project, projectRootDir);
+    }
+
+    /**
+     * Constructor, prepare the NullRepoManager.
+     *
      * @param project Project for which this null-repository is to be managed
      */
     public NullRepoManager(Project project) {

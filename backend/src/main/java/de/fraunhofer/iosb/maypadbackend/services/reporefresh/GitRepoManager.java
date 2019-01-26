@@ -1,17 +1,30 @@
 package de.fraunhofer.iosb.maypadbackend.services.reporefresh;
 
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
 import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.person.Author;
 import de.fraunhofer.iosb.maypadbackend.model.person.Mail;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Commit;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Tag;
+import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.KeyServiceAccount;
+import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.ServiceAccount;
+import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.UserServiceAccount;
+import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.transport.JschConfigSessionFactory;
+import org.eclipse.jgit.transport.OpenSshConfig;
+import org.eclipse.jgit.transport.SshTransport;
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import org.eclipse.jgit.util.FS;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -37,11 +50,20 @@ public class GitRepoManager extends RepoManager {
             try {
                 localGit = Git.open(getProjectRootDir());
             } catch (IOException e) {
-                e.printStackTrace();
                 getLogger().error("Can't read local repo from " + getProjectRootDir().getAbsolutePath());
             }
         }
         return localGit;
+    }
+
+    /**
+     * Constructor, prepare the GitRepoManager.
+     *
+     * @param project        Project for which the git-repository is to be managed
+     * @param projectRootDir The root directory for the repo files
+     */
+    public GitRepoManager(Project project, File projectRootDir) {
+        super(project, projectRootDir);
     }
 
     /**
@@ -87,7 +109,6 @@ public class GitRepoManager extends RepoManager {
         try {
             branches = git.branchList().setListMode(mode).call();
         } catch (GitAPIException e) {
-            e.printStackTrace();
             getLogger().error("Can't read branches from local repo " + getProjectRootDir().getAbsolutePath());
         }
         return branches;
@@ -102,20 +123,34 @@ public class GitRepoManager extends RepoManager {
     @Override
     public boolean switchBranch(String name) {
         gitPull();
-        return true;
-        //Git git = getGit();
-        /*try {
-            //git.checkout().setName(name).call(); //TODO
-            git.checkout().setName(name);
+        String currentBranch = getCurrentBranch();
+        if (currentBranch != null && currentBranch.equals(name)) {
+            gitPull();
+            return true;
+        }
+
+        Git git = getGit();
+        boolean createBranch = true;
+        Ref ref = null;
+        try {
+            ref = git.getRepository().exactRef("refs/heads/" + name);
+        } catch (IOException e) {
+            getLogger().error("Can't get possible local branch with name " + name + " from " + getProjectRootDir().getAbsolutePath());
+            return false;
+        }
+        if (ref != null) {
+            createBranch = false;
+        }
+
+        try {
+            git.checkout().setName(name).setCreateBranch(createBranch).call();
             gitPull();
             return true;
         } catch (GitAPIException e) {
-            getLogger().warn("Can't switch to branch " + name + " in repo " + getProject().getRepoUrl());
-            e.printStackTrace();
-        }*/
-        //TODO!!!
+            getLogger().warn("Can't switch to branch " + name + " in repo " + getProject().getRepositoryUrl());
+        }
 
-        // return false;
+        return false;
     }
 
     /**
@@ -132,7 +167,6 @@ public class GitRepoManager extends RepoManager {
             refs = git.tagList().call();
         } catch (GitAPIException e) {
             getLogger().error("Can't get tags from " + getProjectRootDir().getAbsolutePath());
-            e.printStackTrace();
             return tags;
         }
 
@@ -142,7 +176,7 @@ public class GitRepoManager extends RepoManager {
             try {
                 commit = revWalk.parseCommit(ref.getObjectId().toObjectId());
             } catch (IOException e) {
-                e.printStackTrace();
+                getLogger().warn("Can't get tag of branch " + ref.getName() + " in " + getProjectRootDir().getAbsolutePath());
             }
 
             tags.add(new Tag(ref.getName(), getCommit(commit)));
@@ -158,6 +192,31 @@ public class GitRepoManager extends RepoManager {
      */
     @Override
     public Commit getLastCommit() {
+        return getLastCommitByBranch(null);
+    }
+
+
+    /**
+     * Get the last Commit of the current selected branch.
+     *
+     * @return Last commit
+     */
+    public Commit getLastCommitByBranch() {
+        String currentBranch = getCurrentBranch();
+        if (currentBranch == null) {
+            return getDefaultCommit();
+        }
+        return getLastCommitByBranch(currentBranch);
+    }
+
+    /**
+     * Get the last Commit of the current given branch.
+     *
+     * @param branchname Branch of the last commit. If null, all branches were checked.
+     * @return Last commit
+     */
+    public Commit getLastCommitByBranch(String branchname) {
+        boolean allBranches = branchname == null;
         List<Ref> branches = getBranches(ListBranchCommand.ListMode.REMOTE);
         if (branches == null) {
             return getDefaultCommit();
@@ -167,11 +226,14 @@ public class GitRepoManager extends RepoManager {
         RevCommit revCommit = null;
         RevWalk walk = new RevWalk(git.getRepository());
         for (Ref branch : branches) {
+            if (!allBranches && !branch.getName().equals(branchname)) {
+                continue;
+            }
             RevCommit commit = null;
             try {
                 commit = walk.parseCommit(branch.getObjectId());
             } catch (IOException e) {
-                e.printStackTrace();
+                getLogger().warn("Can't get last commit of branch " + branch.getName() + " in " + getProjectRootDir().getAbsolutePath());
             }
             if (commit == null) {
                 continue;
@@ -182,30 +244,29 @@ public class GitRepoManager extends RepoManager {
             if (commit.getAuthorIdent().getWhen().compareTo(revCommit.getAuthorIdent().getWhen()) > 0) {
                 revCommit = commit;
             }
+            //branch was found, so we don't need to check other Branches, if we won't check all branches
+            if (!allBranches) {
+                break;
+            }
         }
 
         return getCommit(revCommit);
     }
 
     /**
-     * Get the last Commit of the current selected branch.
+     * Get the current (local) branch.
      *
-     * @return Last commit
+     * @return Name of the local branch
      */
-    public Commit getLastCommitByBranch() {
-        //TODO
-        return getDefaultCommit();
-    }
-
-    /**
-     * Get the last Commit of the current given branch.
-     *
-     * @param branch Branch of the last commit
-     * @return Last commit
-     */
-    public Commit getLastCommitByBranch(String branch) {
-        switchBranch(branch);
-        return getLastCommit();
+    private String getCurrentBranch() {
+        try {
+            String currentBranch = getGit().getRepository().getBranch();
+            getLogger().info("Get last commit of current (local) branch: " + currentBranch);
+            return currentBranch;
+        } catch (IOException e) {
+            getLogger().error("Can't detect current (local) branch");
+        }
+        return null;
     }
 
 
@@ -217,11 +278,10 @@ public class GitRepoManager extends RepoManager {
     @Override
     protected boolean cloneRepository() {
         try {
-            Git git = Git.cloneRepository().setURI(getProject().getRepositoryUrl()).setDirectory(getProject().getRepository()
-                    .getRootFolder()).call();
+            getAuth(Git.cloneRepository().setURI(getProject().getRepositoryUrl()).setDirectory(getProjectRootDir())).call();
         } catch (GitAPIException e) {
-            getLogger().warn("Can't access to repo " + getProject().getRepositoryUrl());
             e.printStackTrace();
+            getLogger().warn("Can't access to repo " + getProject().getRepositoryUrl());
             return false;
         }
         return true;
@@ -256,11 +316,51 @@ public class GitRepoManager extends RepoManager {
     }
 
     /**
-     * "git pull".
+     * Do a "git pull".
      */
     private void gitPull() {
         Git git = getGit();
-        git.pull();
+        try {
+            git.pull().call();
+        } catch (GitAPIException e) {
+            getLogger().error("Can't pull project with id " + getProject().getId());
+        }
+    }
+
+    /**
+     * Add the correct Auth to the clone Command.
+     *
+     * @param command Clone command
+     * @return Clonecommand with added Auth
+     */
+    private CloneCommand getAuth(CloneCommand command) {
+        ServiceAccount serviceAccount = getProject().getServiceAccount();
+        if (serviceAccount != null) {
+            if (serviceAccount instanceof UserServiceAccount) {
+                UserServiceAccount userServiceAccount = (UserServiceAccount) serviceAccount;
+                command.setCredentialsProvider(new UsernamePasswordCredentialsProvider(userServiceAccount.getUsername(),
+                        userServiceAccount.getPassword()));
+            } else if (serviceAccount instanceof KeyServiceAccount) {
+                KeyServiceAccount keyServiceAccount = (KeyServiceAccount) serviceAccount;
+                command.setTransportConfigCallback(transport -> {
+                    SshTransport sshTransport = (SshTransport) transport;
+                    sshTransport.setSshSessionFactory(new JschConfigSessionFactory() {
+                        @Override
+                        protected void configure(OpenSshConfig.Host host, Session session) {
+                            session.setConfig("StrictHostKeyChecking", "no");
+                        }
+
+                        @Override
+                        protected JSch createDefaultJSch(FS fs) throws JSchException {
+                            JSch jsch = super.createDefaultJSch(fs);
+                            //TODO
+                            return jsch;
+                        }
+                    });
+                });
+            }
+        }
+        return command;
     }
 
 }
