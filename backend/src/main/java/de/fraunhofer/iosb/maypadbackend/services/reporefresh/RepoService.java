@@ -10,6 +10,7 @@ import de.fraunhofer.iosb.maypadbackend.model.deployment.WebhookDeployment;
 import de.fraunhofer.iosb.maypadbackend.model.person.Mail;
 import de.fraunhofer.iosb.maypadbackend.model.person.Person;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Branch;
+import de.fraunhofer.iosb.maypadbackend.model.repository.DependencyDescriptor;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Repository;
 import de.fraunhofer.iosb.maypadbackend.model.repository.RepositoryType;
 import de.fraunhofer.iosb.maypadbackend.model.webhook.ExternalWebhook;
@@ -29,7 +30,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,7 +51,7 @@ public class RepoService {
     private ProjectService projectService;
     private ServerConfig serverConfig;
     private BranchRepository branchRepository;
-    private Set<Project> lockedProjects;
+    private Set<Integer> lockedProjects;
     private Logger logger = LoggerFactory.getLogger(RepoService.class);
 
 
@@ -70,11 +71,15 @@ public class RepoService {
     }
 
     private synchronized boolean repoLock(Project project) {
-        if (lockedProjects.contains(project)) {
+        if (lockedProjects.contains(project.getId())) {
             return true;
         }
-        lockedProjects.add(project);
+        lockedProjects.add(project.getId());
         return false;
+    }
+
+    private synchronized void removeLock(Project project) {
+        lockedProjects.remove(project.getId());
     }
 
     /**
@@ -89,30 +94,36 @@ public class RepoService {
             return;
         }
 
-        //TODO
-        /*if (repoLock(project)) {
-            logger.info("Project with id " + project.getId() + "is currently updated");
+        project = projectService.getProject(project.getId());
+
+        if (repoLock(project)) {
+            logger.info("Project with id " + project.getId() + " is currently updated");
             return;
-        }*/
+        }
 
         if (project.getRepository() == null || project.getRepository().getRepositoryType() == RepositoryType.NONE) {
             initProject(project);
+            //lock will be remoced after init
             return;
         }
         logger.info("Start refresh project with id " + project.getId());
 
         RepoManager repoManager = project.getRepository().getRepositoryType().toRepoManager(project);
+        repoManager.setProjectRootDir(projectService.getRepoDir(project.getId()));
+        repoManager.switchBranch("master");
 
         //compare Maypad config hash
         Tuple<ProjectConfig, File> projectConfigData = repoManager.getProjectConfig();
         if (projectConfigData == null) {
             logger.error("No maypad configuration were found in project with id " + project.getId());
+            removeLock(project);
             return;
         }
 
         String hash = FileUtil.calcSha256(projectConfigData.getValue());
         if (hash == null) {
             logger.error("Can't read maypad config with projectid " + project.getId());
+            removeLock(project);
             return;
         }
 
@@ -146,7 +157,7 @@ public class RepoService {
                         branch = new Branch();
                         branch.setName(branchname);
                         branch.setBuildStatus(Status.UNKNOWN);
-                        branch.setDependencies(null);
+                        branch.setDependencies(new LinkedHashSet<>());
                         project.getRepository().getBranches().put(branchname, branchRepository.saveAndFlush(branch));
                     } else {
                         //update existing branch. Now it is a maypad_all branch
@@ -188,27 +199,20 @@ public class RepoService {
         //update repo data from projects
         for (Branch branch : project.getRepository().getBranches().values()) {
             if (!repoManager.switchBranch(branch.getName())) {
+                logger.info("Can't switch to branch " + branch.getName());
                 continue;
             }
-            boolean somethingChanged = false;
             //last branch commit
-            //TODO
-            /*
-             * ONLY FOR DEMO!!!
-             */
             branch.setLastCommit(repoManager.getLastCommit());
-            somethingChanged = true;
 
             //readme
             String readme = repoManager.getReadme();
             if (!readme.equals(branch.getReadme())) {
                 branch.setReadme(readme);
-                somethingChanged = true;
             }
 
-            if (somethingChanged) {
-                branchRepository.saveAndFlush(branch);
-            }
+            branchRepository.saveAndFlush(branch);
+            removeLock(project);
 
         }
 
@@ -218,8 +222,9 @@ public class RepoService {
         //tags
         //TODO
 
+
         project.setLastUpdate(new Date());
-        project.getRepository().setRepositoryStatus(Status.SUCCESS);
+        project.setRepositoryStatus(Status.SUCCESS);
 
         projectService.saveProject(project);
         logger.info("Project with id " + project.getId() + " has refreshed.");
@@ -232,8 +237,8 @@ public class RepoService {
      */
     @Async
     public void initProject(Project project) {
-        if (project == null || project.getRepositoryUrl() == null) {
-            logger.error("Wanted to init a null project or an url is missing");
+        if (project == null) {
+            logger.error("Wanted to init a null project");
             return;
         }
         logger.info("Start init project with id " + project.getId());
@@ -252,7 +257,7 @@ public class RepoService {
         if (!FileUtil.hasWriteAccess(parentDir)) {
             logger.error("Can't read / write to " + parentDir.getAbsolutePath());
             initNullRepository(repository);
-            repository.setRepositoryStatus(Status.FAILED);
+            project.setRepositoryStatus(Status.FAILED);
             return;
         }
         File file = new File(parentDir.getAbsolutePath() + File.separator + project.getId());
@@ -261,28 +266,27 @@ public class RepoService {
         } else if (!file.mkdirs()) {
             logger.error("Can't create directories for " + file.getAbsolutePath());
             initNullRepository(repository);
-            repository.setRepositoryStatus(Status.FAILED);
+            project.setRepositoryStatus(Status.FAILED);
             return;
         }
-        if (!file.equals(repository.getRootFolder())) {
-            repository.setRootFolder(file);
-        }
-
         RepositoryType repositoryType = getCorrectRepositoryType(project.getRepositoryUrl());
+        if (repositoryType == RepositoryType.NONE) {
+            logger.warn("URL is missing or invalid for project with id " + project.getId());
+        }
         repository.setRepositoryType(repositoryType);
 
         //clone
         RepoManager repoManager = repositoryType.toRepoManager(project);
-        if (!repoManager.cloneRepository()) {
-            repository.setRepositoryStatus(Status.FAILED);
-        } else {
-            repository.setRepositoryStatus(Status.SUCCESS);
+        repoManager.setProjectRootDir(projectService.getRepoDir(project.getId()));
+        boolean cloneSuccess = repoManager.cloneRepository();
+        if (!cloneSuccess) {
+            project.setRepositoryStatus(Status.FAILED);
         }
 
-        projectService.saveProject(project);
+        project = projectService.saveProject(project);
 
         //if repo isn't null, so we can refresh the data. Preventing call this method twice.
-        if (repositoryType != RepositoryType.NONE) {
+        if (repositoryType != RepositoryType.NONE && cloneSuccess) {
             refreshProject(project);
         }
     }
@@ -299,7 +303,8 @@ public class RepoService {
         if (project == null) {
             return false;
         }
-        return FileUtil.deleteAllFiles(project.getRepository().getRootFolder());
+        projectService.deleteProject(project.getId());
+        return FileUtil.deleteAllFiles(projectService.getRepoDir(project.getId()));
 
     }
 
@@ -316,7 +321,7 @@ public class RepoService {
         branch.setMails(null);
         branch.setBuildType(null);
         branch.setDeploymentType(null);
-        branch.setDependencies(null);
+        branch.setDependencies(new LinkedHashSet<>());
     }
 
     private Branch buildBranchModelFromConfig(BranchProperty branchProperty) {
@@ -325,7 +330,7 @@ public class RepoService {
         branch.setDescription(branchProperty.getDescription() != null ? branchProperty.getDescription() : "");
 
         //members
-        List<Person> members = new LinkedList<>();
+        Set<Person> members = new LinkedHashSet<>();
         if (branchProperty.getMembers() != null) {
             for (String member : branchProperty.getMembers()) {
                 members.add(new Person(member));
@@ -334,7 +339,7 @@ public class RepoService {
         branch.setMembers(members);
 
         //mails
-        List<Mail> mails = new LinkedList<>();
+        Set<Mail> mails = new LinkedHashSet<>();
         if (branchProperty.getMails() != null) {
             for (String mail : branchProperty.getMails()) {
                 mails.add(new Mail(mail));
@@ -356,14 +361,35 @@ public class RepoService {
         }
 
         //dependencies
-        //TODO!!!!!!!!
-        branch.setDependencies(null);
+        Set<DependencyDescriptor> dependencies = new LinkedHashSet<>();
+        if (branchProperty.getDependsOn() != null) {
+            for (String dependOn : branchProperty.getDependsOn()) {
+                String[] dependParts = dependOn.split(":");
+                if (dependParts.length != 2) {
+                    logger.warn("Invalid dependency " + dependOn + " on branch " + branch.getName());
+                    continue;
+                }
+                int projectid;
+                try {
+                    projectid = Integer.parseInt(dependParts[0]);
+                } catch (NumberFormatException e) {
+                    logger.warn("Invalid projectnumber " + dependOn + " on branch " + branch.getName());
+                    continue;
+                }
+                dependencies.add(new DependencyDescriptor(projectid, dependParts[1]));
+            }
+        }
+
+        branch.setDependencies(dependencies);
 
         return branch;
 
     }
 
     private RepositoryType getCorrectRepositoryType(String url) {
+        if (url == null) {
+            return RepositoryType.NONE;
+        }
         for (RepositoryType repositoryType : RepositoryType.values()) {
             if (repositoryType.isUrlBelongToRepotype(url)) {
                 return repositoryType;
