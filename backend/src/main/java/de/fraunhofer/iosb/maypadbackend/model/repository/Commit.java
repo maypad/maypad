@@ -29,7 +29,7 @@ public class Commit {
 
     @Id
     @EqualsAndHashCode.Exclude
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)
     private int id;
     @Column
@@ -38,7 +38,7 @@ public class Commit {
     private String commitIdentifier;
     @Temporal(TemporalType.TIMESTAMP)
     private Date timestamp;
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Author author;
 
     /**

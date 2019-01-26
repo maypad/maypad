@@ -1,6 +1,7 @@
 package de.fraunhofer.iosb.maypadbackend.model.deployment;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,6 +15,7 @@ import java.io.File;
  */
 @Data
 @Entity
+@EqualsAndHashCode(callSuper = true)
 public class ScriptDeployment extends DeploymentType {
 
     @Column

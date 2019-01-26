@@ -49,15 +49,17 @@ public class Project {
     private Status buildStatus;
 
     //repository
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Repository repository;
     @Column
     private String repositoryUrl;
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private ServiceAccount serviceAccount;
+    @Enumerated(EnumType.STRING)
+    private Status repositoryStatus;
 
     //webhooks
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private InternalWebhook refreshWebhook;
 
     /**
@@ -78,6 +80,7 @@ public class Project {
         this.repositoryUrl = repoUrl;
         this.serviceAccount = serviceAccount;
         this.refreshWebhook = refreshWebhook;
+        this.repositoryStatus = Status.INIT;
     }
 
     /**
@@ -105,8 +108,8 @@ public class Project {
      * @return Name of this project
      */
     public String getName() {
-        if (repository != null && repository.getRepositoryStatus() != Status.SUCCESS) {
-            return repository.getRepositoryStatus().getName();
+        if (repositoryStatus != Status.SUCCESS) {
+            return repositoryStatus.getName();
         }
         return name;
     }
