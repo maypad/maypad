@@ -10,6 +10,8 @@ import de.fraunhofer.iosb.maypadbackend.model.webhook.Webhook;
 import de.fraunhofer.iosb.maypadbackend.model.webhook.WebhookType;
 import de.fraunhofer.iosb.maypadbackend.services.build.BuildService;
 import de.fraunhofer.iosb.maypadbackend.services.reporefresh.RepoService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +19,9 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.PostConstruct;
 import java.security.SecureRandom;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -36,6 +38,8 @@ public class WebhookService {
     private static final SecureRandom rnd = new SecureRandom();
     private static final String hookPath = "/hooks/";
 
+    private static final Logger logger = LoggerFactory.getLogger(WebhookService.class);
+
 
 
     /**
@@ -44,8 +48,9 @@ public class WebhookService {
      * @param buildService the BuildService used to build projects
      * @param repoService the RepoService used to update repositories
      */
+    @Lazy
     @Autowired
-    public WebhookService(ServerConfig serverConfig, @Lazy BuildService buildService, RepoService repoService) {
+    public WebhookService(ServerConfig serverConfig, BuildService buildService, RepoService repoService) {
         this.serverConfig = serverConfig;
         this.buildService = buildService;
         this.repoService = repoService;
@@ -111,13 +116,27 @@ public class WebhookService {
     }
 
     /**
-     * Calls the given webhook.
+     * Calls the given webhook and returns the ResponseEntity with the given type.
      * @param webhook the webhook that should be called
+     * @param responseType the type of the ResponseEntity
+     * @param uriVariables the variables to expand the url of the given webhook
+     * @return Future of ResponseEntity
      */
     @Async
-    public void call(Webhook webhook) {
+    public <T> CompletableFuture<ResponseEntity<T>> call(Webhook webhook, Class<T> responseType, Object... uriVariables) {
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.getForEntity(webhook.getUrl(), String.class);
+        ResponseEntity<T> response = restTemplate.getForEntity(webhook.getUrl(), responseType, uriVariables);
+        return CompletableFuture.completedFuture(response);
+    }
+
+    /**
+     * Calls the given webhook and returns the ReponseEntity as String.
+     * @param webhook the webhook that should be called
+     * @return Future of ResponseEntity
+     */
+    @Async
+    public CompletableFuture<ResponseEntity<String>> call(Webhook webhook) {
+        return call(webhook, String.class);
     }
 
     /**

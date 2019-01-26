@@ -13,6 +13,8 @@ import de.fraunhofer.iosb.maypadbackend.services.ProjectService;
 import de.fraunhofer.iosb.maypadbackend.util.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.aop.framework.Advised;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
@@ -180,7 +182,9 @@ public class BuildService {
                 Class<? extends BuildTypeExecutor> execClass = typeClass.getAnnotation(BuildTypeExec.class).executor();
 
                 for (BuildTypeExecutor exec : executors) {
-                    if (exec.getClass() == execClass) {
+                    if (exec.getClass() == execClass
+                            || (AopUtils.isJdkDynamicProxy(exec)
+                                    && ((Advised)exec).getTargetSource().getTargetClass() == execClass)) {
                         logger.debug("Mapped " + typeClass.getName() + " to " + exec.getClass().getName());
                         buildTypeMappings.put(typeClass, exec);
                         break;

@@ -1,6 +1,8 @@
 package de.fraunhofer.iosb.maypadbackend.model.webhook;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 
@@ -13,4 +15,8 @@ import javax.persistence.Entity;
 @Data
 @Entity
 public class ExternalWebhook extends Webhook {
+
+    public ExternalWebhook(String url) {
+        super(url);
+    }
 }
