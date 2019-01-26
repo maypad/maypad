@@ -1,5 +1,6 @@
 package de.fraunhofer.iosb.maypadbackend.services;
 
+import de.fraunhofer.iosb.maypadbackend.config.server.ServerConfig;
 import de.fraunhofer.iosb.maypadbackend.dtos.request.ChangeProjectRequest;
 import de.fraunhofer.iosb.maypadbackend.dtos.request.CreateProjectRequest;
 import de.fraunhofer.iosb.maypadbackend.dtos.request.ServiceAccountRequest;
@@ -17,6 +18,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -35,6 +37,7 @@ public class ProjectService {
     private ProjectgroupService projectgroupService;
     private SchedulerService schedulerService;
     private ProjectRepository projectRepository;
+    private ServerConfig serverConfig;
 
     /**
      * Constructor for ProjectService.
@@ -43,14 +46,16 @@ public class ProjectService {
      * @param projectgroupService Service for projectgroups
      * @param schedulerService    Service for scheduled tasks
      * @param projectRepository   Repository for database access
+     * @param serverConfig        Serverconfiguration
      */
     @Autowired
     public ProjectService(WebhookService webhookService, ProjectgroupService projectgroupService,
-                          SchedulerService schedulerService, ProjectRepository projectRepository) {
+                          SchedulerService schedulerService, ProjectRepository projectRepository, ServerConfig serverConfig) {
         this.webhookService = webhookService;
         this.projectgroupService = projectgroupService;
         this.schedulerService = schedulerService;
         this.projectRepository = projectRepository;
+        this.serverConfig = serverConfig;
     }
 
     /**
@@ -76,6 +81,7 @@ public class ProjectService {
     public Project create(CreateProjectRequest request) {
         ServiceAccount serviceAccount = getServiceAccount(request.getServiceAccountRequest());
         Project project = saveProject(new Project(request.getRepositoryUrl(), serviceAccount));
+
         addProjectToProjectgroup(request.getGroupId(), project);
         return project;
     }
@@ -121,6 +127,29 @@ public class ProjectService {
      */
     public Branch getBranch(int id, String ref) {
         return getProject(id).getRepository().getBranches().get(ref);
+    }
+
+    /**
+     * Get the directory for the repo files for a project.
+     *
+     * @param project The project
+     * @return The directory for the repo files
+     */
+    public File getRepoDir(Project project) {
+        if (project == null) {
+            return null;
+        }
+        return getRepoDir(project.getId());
+    }
+
+    /**
+     * Get the directory for the repo files for a project with the id.
+     *
+     * @param id The id of a project
+     * @return The directory for the repo files
+     */
+    public File getRepoDir(int id) {
+        return new File(serverConfig.getRepositoryStoragePath() + File.separator + id);
     }
 
     /**
