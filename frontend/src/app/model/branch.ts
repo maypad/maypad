@@ -3,7 +3,6 @@ import { Commit } from './commit';
 
 export class Branch {
     name: string;
-    projectName: string;
     deployment: string;
     members: string[];
     mails: string[];

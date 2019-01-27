@@ -53,12 +53,6 @@ export class BranchService {
       );
   }
 
-  refreshBranch(projId: number, branch: string): Observable<{}> {
-    const url = `${this.api.backendUrl}projects/${projId}/refresh`;
-    return this.api.http.post(url, '', this.api.httpOptions)
-      .pipe(catchError(this.api.handleError('refreshBranch')));
-  }
-
   triggerBuild(projId: number, branch: string, withDependencies = false): Observable<{}> {
     const url = `${this.api.backendUrl}projects/${projId}/branches/${branch}/builds`;
     const body = JSON.stringify({ 'withDependencies': withDependencies });

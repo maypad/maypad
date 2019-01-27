@@ -2,6 +2,7 @@ import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 import { Branch } from 'src/app/model/branch';
 import { BranchService } from 'src/app/branch.service';
 import { stripGeneratedFileSuffix } from '@angular/compiler/src/aot/util';
+import { NotificationService } from 'src/app/notification.service';
 
 @Component({
     selector: 'app-branch-header',
@@ -12,7 +13,10 @@ export class HeaderComponent implements OnInit {
     @Input() projId: number;
     @Input() branch: Branch;
     @ViewChild('rebuild') rebuild: ElementRef;
-    constructor(private branchService: BranchService) { }
+    constructor(
+        private branchService: BranchService,
+        private notification: NotificationService
+    ) { }
 
     ngOnInit() { }
 
@@ -23,7 +27,7 @@ export class HeaderComponent implements OnInit {
             x => { },
             error => {
                 console.error(error);
-                alert(`Deployment couldn't be started. see console for error log.`);
+                this.notification.send(`Deployment couldn't be started. see console for error log.`, 'danger');
             },
             () => { this.triggerAlert('deployment'); }
         );
@@ -36,7 +40,7 @@ export class HeaderComponent implements OnInit {
             x => { },
             error => {
                 console.error(error);
-                alert(`Build couldn't be started. see console for error log.`);
+                this.notification.send(`Build couldn't be started. see console for error log.`, 'danger');
             },
             () => { this.triggerAlert('build'); }
         );
@@ -52,18 +56,6 @@ export class HeaderComponent implements OnInit {
     }
 
     showAlert(msg: string) {
-        const hulla = new hullabaloo();
-        hulla.options.align = 'center';
-        hulla.options.width = 350;
-        hulla.options.offset = { from: 'top', amount: 30 };
-        hulla.send(msg, 'info');
-    }
-
-    refreshBranch() {
-        this.branchService.refreshBranch(this.projId, this.branch.name).subscribe(res => {
-            if (res) {
-                this.showAlert('A branch refresh has been initiated.');
-            }
-        });
+        this.notification.send(msg, 'info');
     }
 }

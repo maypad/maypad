@@ -5,14 +5,17 @@ import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { of } from 'rxjs';
 import * as deploymentsResponse from 'sample-requests/get.projects.id.branches.ref.deployments.response.json';
 import * as branchResponse from 'sample-requests/get.projects.id.branches.ref.response.json';
+import * as projectResponse from 'sample-requests/get.projects.id.response.json';
 import { DhistoryListItemComponent } from './dhistory-list-item/dhistory-list-item.component';
 import { Deployment } from '../model/deployment';
+import { Project } from '../model/project';
 
 describe('DeploymentHistoryComponent', () => {
   let component: DeploymentHistoryComponent;
   let fixture: ComponentFixture<DeploymentHistoryComponent>;
   const deployments: Deployment[] = deploymentsResponse['default'];
   const branch = branchResponse['default'];
+  const project = projectResponse['default'];
   const snapshot = new ActivatedRouteSnapshot();
 
   beforeEach(async(() => {
@@ -22,7 +25,7 @@ describe('DeploymentHistoryComponent', () => {
       providers: [
         {
           provide: ActivatedRoute, useClass: class {
-            snapshot = snapshot; data = of({ deployments: deployments, branch: branch });
+            snapshot = snapshot; data = of({ deployments: deployments, branch: branch, project: Project });
           }
         }
       ]

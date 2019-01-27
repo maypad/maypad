@@ -33,9 +33,9 @@ public class Commit {
     @Column(name = "id", updatable = false, nullable = false)
     private int id;
     @Column
-    private String commitMessage;
+    private String message;
     @Column
-    private String commitIdentifier;
+    private String identifier;
     @Temporal(TemporalType.TIMESTAMP)
     private Date timestamp;
     @OneToOne(cascade = CascadeType.ALL)
@@ -43,14 +43,14 @@ public class Commit {
 
     /**
      * Constructor for Commit.
-     * @param commitMessage the Commit-Message
-     * @param commitIdentifier the Commit-Identifier (hash for git)
+     * @param message the Commit-Message
+     * @param identifier the Commit-Identifier (hash for git)
      * @param timestamp the exact time of the commit
      * @param author the commit author
      */
-    public Commit(String commitMessage, String commitIdentifier, Date timestamp, Author author) {
-        this.commitMessage = commitMessage;
-        this.commitIdentifier = commitIdentifier;
+    public Commit(String message, String identifier, Date timestamp, Author author) {
+        this.message = message;
+        this.identifier = identifier;
         this.timestamp = timestamp;
         this.author = author;
     }

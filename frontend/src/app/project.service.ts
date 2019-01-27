@@ -81,5 +81,11 @@ export class ProjectService {
         catchError(this.api.handleError<Project>('updateServiceAccount'))
       );
   }
+
+  refreshProject(projId: number): Observable<{}> {
+    const url = `${this.api.backendUrl}projects/${projId}/refresh`;
+    return this.api.http.post(url, '', this.api.httpOptions)
+      .pipe(catchError(this.api.handleError('refreshBranch')));
+  }
 }
 

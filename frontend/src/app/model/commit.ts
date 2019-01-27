@@ -1,5 +1,5 @@
 export class Commit {
-    hash: string;
+    identifier: string;
     author: string;
     message: string;
     timestamp: string;

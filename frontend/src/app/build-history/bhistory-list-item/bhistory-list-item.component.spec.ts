@@ -31,6 +31,6 @@ describe('BhistoryListItemComponent', () => {
     const nativeElement: HTMLElement = fixture.nativeElement;
     const elements: NodeListOf<Element> = nativeElement.querySelectorAll('span');
 
-    expect(elements[3].textContent).toBe('Commit: <' + build.commit.hash.substr(0, 7) + '>');
+    expect(elements[3].textContent).toBe('Commit: <' + build.commit.identifier.substr(0, 7) + '>');
   });
 });

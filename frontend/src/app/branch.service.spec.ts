@@ -33,9 +33,7 @@ describe('Service: BranchService', () => {
         expect(data.length).toEqual(4);
 
         for (let i = 0; i++; i < 4) {
-          expect(data[i].projectName).toEqual('One Test Project');
-          expect(data[i].branchName).toEqual('master');
-          expect(data[i].commit.hash).toEqual('e37ab2d1f1eddc11b1b6531372569793bd110b83');
+          expect(data[i].commit.identifier).toEqual('e37ab2d1f1eddc11b1b6531372569793bd110b83');
           expect(data[i].commit.message).toEqual('Fix various bugs');
           expect(data[i].commit.author).toEqual('Developer One <developer.one@maypad.de>');
         }
@@ -69,8 +67,6 @@ describe('Service: BranchService', () => {
         expect(data.length).toEqual(3);
 
         for (let i = 0; i++; i < 3) {
-          expect(data[i].projectName).toEqual('One Test Project');
-          expect(data[i].branchName).toEqual('master');
           expect(data[i].type).toEqual('webhook');
         }
 
@@ -88,14 +84,13 @@ describe('Service: BranchService', () => {
   it('loads a specific branch',
     fakeAsync(() => {
       service.loadBranch(2, 'master').subscribe((data) => {
-        expect(data.projectName).toEqual('One Test Project');
         expect(data.name).toEqual('master');
         expect(data.readme).toEqual('# MAYPAD\nDocumentation: [https://github.com/juliantodt/'
           + 'maypad-docs](https://github.com/juliantodt/maypad-docs)');
         expect(data.status).toEqual(BuildStatus.SUCCESS);
         expect(data.lastCommit.author).toEqual('Developer One <developer.one@maypad.de>');
         expect(data.lastCommit.message).toEqual('Fix various bugs');
-        expect(data.lastCommit.hash).toEqual('e37ab2d1f1eddc11b1b6531372569793bd110b83');
+        expect(data.lastCommit.identifier).toEqual('e37ab2d1f1eddc11b1b6531372569793bd110b83');
         expect(data.lastCommit.timestamp).toEqual('Wed Jan 2 14:37:30 2019 +0100');
         expect(data.members).toEqual(['Developer One', 'Developer Two']);
         expect(data.mails).toEqual(['developer.one@maypad.de', 'developer.two@maypad.de']);
@@ -110,16 +105,6 @@ describe('Service: BranchService', () => {
       const req = httpTestingController.expectOne(`${environment.baseUrl}projects/2/branches/master`);
       expect(req.request.method).toEqual('GET');
       req.flush(get_projects_id_branches_ref_response['default']);
-    })
-  );
-
-  it('refresh a branch',
-    fakeAsync(() => {
-      service.refreshBranch(2, 'master').subscribe();
-
-      const req = httpTestingController.expectOne(`${environment.baseUrl}projects/2/refresh`);
-      expect(req.request.method).toEqual('POST');
-      req.flush(null, { status: 202, statusText: 'Accepted' });
     })
   );
 

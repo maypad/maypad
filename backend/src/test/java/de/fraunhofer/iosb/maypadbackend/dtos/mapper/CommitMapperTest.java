@@ -36,8 +36,8 @@ public class CommitMapperTest {
         CommitResponse response = commitMapper.toResponse(testCommit);
 
         assertThat(response).isNotNull();
-        assertThat(response.getCommitMessage()).isEqualTo(commitMessage);
-        assertThat(response.getCommitIdentifier()).isEqualTo(commitIdentifier);
+        assertThat(response.getMessage()).isEqualTo(commitMessage);
+        assertThat(response.getIdentifier()).isEqualTo(commitIdentifier);
         assertThat(response.getAuthor()).isEqualTo(commitAuthor.getMail().getMailAddress());
         assertThat(response.getTimestamp()).isEqualTo(commitTimestamp);
     }

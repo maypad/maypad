@@ -4,6 +4,7 @@ import { BreadcrumbService } from '../breadcrumb.service';
 import { Project } from '../model/project';
 import { Branch } from '../model/branch';
 import { EditProjectDialogComponent } from './edit-project-dialog/edit-project-dialog.component';
+import { ProjectService } from '../project.service';
 
 @Component({
   selector: 'app-project-detail',
@@ -14,7 +15,10 @@ export class ProjectDetailComponent implements OnInit {
   @ViewChild('editDialog') editDialog: EditProjectDialogComponent;
   project: Project;
   branches: Branch[];
-  constructor(private route: ActivatedRoute, private crumbs: BreadcrumbService) { }
+  constructor(
+    private route: ActivatedRoute,
+    private crumbs: BreadcrumbService,
+    private projectService: ProjectService) { }
 
   ngOnInit() {
     $('#editProjectModal').on('hidden.bs.modal', () => {
@@ -35,4 +39,16 @@ export class ProjectDetailComponent implements OnInit {
     );
   }
 
+  refreshProject() {
+    this.projectService.refreshProject(this.project.id).subscribe(
+      res => {
+        if (res) {
+          const hulla = new hullabaloo();
+          hulla.options.align = 'center';
+          hulla.options.width = 400;
+          hulla.options.offset = { from: 'top', amount: 30 };
+          hulla.send('The project is now being refreshed.', 'info');
+        }
+      });
+  }
 }

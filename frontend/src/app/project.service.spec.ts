@@ -47,14 +47,13 @@ describe('Service: ProjectService', () => {
       service.loadBranches(2).subscribe((data) => {
         expect(data.length).toEqual(2);
 
-        expect(data[0].projectName).toEqual('One Test Project');
         expect(data[0].name).toEqual('master');
         expect(data[0].readme).toEqual('# MAYPAD\nDocumentation: [https://github.com/juliantodt/'
-         + 'maypad-docs](https://github.com/juliantodt/maypad-docs)');
+          + 'maypad-docs](https://github.com/juliantodt/maypad-docs)');
         expect(data[0].status).toEqual(BuildStatus.SUCCESS);
         expect(data[0].lastCommit.author).toEqual('Developer One <developer.one@maypad.de>');
         expect(data[0].lastCommit.message).toEqual('Fix various bugs');
-        expect(data[0].lastCommit.hash).toEqual('e37ab2d1f1eddc11b1b6531372569793bd110b83');
+        expect(data[0].lastCommit.identifier).toEqual('e37ab2d1f1eddc11b1b6531372569793bd110b83');
         expect(data[0].lastCommit.timestamp).toEqual('Wed Jan 2 14:37:30 2019 +0100');
         expect(data[0].members).toEqual(['Developer One', 'Developer Two']);
         expect(data[0].mails).toEqual(['developer.one@maypad.de', 'developer.two@maypad.de']);
@@ -65,14 +64,13 @@ describe('Service: ProjectService', () => {
         expect(data[0].deployment).toEqual('webhook: https://ship.maypad.de/hook?token=vjfsdbjhkvlfavhkl');
         expect(data[0].buildWebhook).toEqual('https://git.maypad.de/pipeline-hook?token=kjadbhjasebjkdsa');
 
-        expect(data[1].projectName).toEqual('One Test Project');
         expect(data[1].name).toEqual('dev');
         expect(data[1].readme).toEqual('# MAYPAD\nDocumentation: [https://github.com/juliantodt/'
           + 'maypad-docs](https://github.com/juliantodt/maypad-docs)');
         expect(data[1].status).toEqual(BuildStatus.RUNNING);
         expect(data[1].lastCommit.author).toEqual('Developer One <developer.one@maypad.de>');
         expect(data[1].lastCommit.message).toEqual('Fix typo');
-        expect(data[1].lastCommit.hash).toEqual('e37ab2d1f1eddc11b1b6531372569793bd110b83');
+        expect(data[1].lastCommit.identifier).toEqual('e37ab2d1f1eddc11b1b6531372569793bd110b83');
         expect(data[1].lastCommit.timestamp).toEqual('Wed Jan 2 14:39:32 2019 +0100');
         expect(data[1].members).toEqual(['Developer One', 'Developer Two']);
         expect(data[1].mails).toEqual(['developer.one@maypad.de', 'developer.two@maypad.de']);
@@ -107,6 +105,16 @@ describe('Service: ProjectService', () => {
       expect(req.request.method).toEqual('PUT');
       expect(JSON.parse(JSON.stringify(req.request.body))).toEqual(put_projects_id_request['default']);
       req.flush(put_projects_id_response['default']);
+    })
+  );
+
+  it('refresh a branch',
+    fakeAsync(() => {
+      service.refreshProject(2).subscribe();
+
+      const req = httpTestingController.expectOne(`${environment.baseUrl}projects/2/refresh`);
+      expect(req.request.method).toEqual('POST');
+      req.flush(null, { status: 202, statusText: 'Accepted' });
     })
   );
 });

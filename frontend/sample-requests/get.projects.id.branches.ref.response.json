@@ -3,7 +3,7 @@
     "name":"master",
     "readme":"# MAYPAD\nDocumentation: [https://github.com/juliantodt/maypad-docs](https://github.com/juliantodt/maypad-docs)",
     "lastCommit":{
-        "hash":"e37ab2d1f1eddc11b1b6531372569793bd110b83",
+        "identifier":"e37ab2d1f1eddc11b1b6531372569793bd110b83",
         "timestamp":"Wed Jan 2 14:37:30 2019 +0100",
         "message":"Fix various bugs",
         "author":"Developer One <developer.one@maypad.de>"

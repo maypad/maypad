@@ -11,8 +11,8 @@ import java.util.Date;
  */
 @Data
 public class CommitResponse {
-    private String commitIdentifier;
+    private String identifier;
     private String author;
-    private String commitMessage;
+    private String message;
     private Date timestamp;
 }
