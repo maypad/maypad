@@ -43,7 +43,7 @@ public class SvnRepoManager extends RepoManager {
 
     private static SvnRepoManager instance = null;
 
-    private final String projectRoot;
+    private String projectRoot;
 
     @Autowired
     ServerConfig config;
@@ -65,7 +65,6 @@ public class SvnRepoManager extends RepoManager {
      */
     private SvnRepoManager(Project project) {
         super(project);
-        projectRoot = project.getRepository().getRootFolder().getAbsolutePath();
         logger.info("Cloned project into " + projectRoot);
         if (project.getServiceAccount() != null) {
             if (project.getServiceAccount() instanceof KeyServiceAccount) {
@@ -97,6 +96,7 @@ public class SvnRepoManager extends RepoManager {
     public List<String> getBranchNames() {
         File branchesFolder = new File(projectRoot + "/branches/");
         String[] branchList = branchesFolder.list();
+        if (branchList == null) { return new ArrayList<String>(); }
         List<String> branches = new ArrayList<String>();
         for (String b : branchList) {
             if (new File(b).isDirectory()) {
@@ -116,17 +116,17 @@ public class SvnRepoManager extends RepoManager {
     public boolean switchBranch(String name) {
         if (name.equals("trunk")) {
             String trunkPath = projConfig.getSvnTrunkDirectory();
-            this.getProject().getRepository().setRootFolder(new File(projectRoot + "/" + trunkPath));
+            projectRoot = this.getProjectRootDir().getAbsolutePath() + "/" + trunkPath;
             return true;
         } else {
             String branchPath = projConfig.getSvnBranchDirectory();
-            File branchFolder = new File(projectRoot + "/" + branchPath + "/" + name);
+            File branchFolder = new File(this.getProjectRootDir().getAbsolutePath() + "/" + branchPath + "/" + name);
             if (!branchFolder.isDirectory() || !branchFolder.exists()) {
                 logger.error("Branch of name " + name + " doesn't exist");
                 logger.error("Not found in directory " + branchFolder.getAbsolutePath());
                 return false;
             }
-            this.getProject().getRepository().setRootFolder(branchFolder);
+            projectRoot = branchFolder.getAbsolutePath();
             return true;
         }
     }
@@ -162,7 +162,7 @@ public class SvnRepoManager extends RepoManager {
         try {
             RecentCommitHandler rcm = new RecentCommitHandler();
             svnClientManager.getLogClient().doLog(
-                    new File[] { this.getProject().getRepository().getRootFolder() },
+                    new File[] { this.getProjectRootDir() },
                     SVNRevision.HEAD,
                     SVNRevision.HEAD,
                     true,
@@ -188,7 +188,7 @@ public class SvnRepoManager extends RepoManager {
             SVNURL url = SVNURL.parseURIEncoded(this.getProject().getRepositoryUrl());
             svnClientManager.getUpdateClient().doCheckout(
                     url, // Clone URL
-                    this.getProject().getRepository().getRootFolder(), // Folder to clone into
+                    this.getProjectRootDir(), // Folder to clone into
                     SVNRevision.HEAD,
                     SVNRevision.HEAD, // What revision to clone (head == latest revision)
                     SVNDepth.INFINITY, // How far to clone the history tree
@@ -204,9 +204,15 @@ public class SvnRepoManager extends RepoManager {
     }
 
     @Override
+    public File getCurrentBranchLocation() {
+        return new File(projectRoot);
+    }
+
+
+    @Override
     public Tuple<ProjectConfig, File> getProjectConfig() {
         try {
-            File f = new File(projectRoot + "/maypad.yaml");
+            File f = new File(this.getProjectRootDir().getAbsolutePath() + "/maypad.yaml");
             logger.info("Searching for config at " + f.getAbsolutePath());
             return new Tuple<ProjectConfig, File>(new YamlProjectConfig(f), f);
         } catch (IOException ex) {
