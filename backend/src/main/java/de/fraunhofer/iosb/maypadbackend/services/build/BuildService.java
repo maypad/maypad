@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
-import org.springframework.core.type.filter.AssignableTypeFilter;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -40,7 +39,7 @@ public class BuildService {
     private Map<Tuple<Integer, String>, Integer> runningBuilds;
 
     private static final long buildTimeoutSeconds = 21600; //6h
-    private static final long checkTimeoutInterval = 5000/*30000*/; //in ms
+    private static final long checkTimeoutInterval = 30000; //in ms
 
     /**
      * Constructor for BuildService.
