@@ -183,6 +183,15 @@ public abstract class RepoManager {
     }
 
     /**
+     * Get the locaion root dir of the current branch.
+     *
+     * @return File to the location
+     */
+    public File getCurrentBranchLocation() {
+        return projectRootDir;
+    }
+
+    /**
      * Delete the SSH key file, if exists.
      */
     protected void deleteSshFile() {
