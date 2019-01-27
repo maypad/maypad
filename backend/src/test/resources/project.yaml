@@ -16,8 +16,9 @@ branches:
       - mail.example@protonmail.com
     build: https://greatBuild.com/12345abc # optional
     deployment: # optional
-      deploymentName: Great-Deployment
-      url: https://greatDeployment.com/54321abcd
+      type: webhook
+      name: Great-Deployment
+      arguments: https://greatDeployment.com/54321abcd
     dependsOn: # optional, format: <projectID>@<branchName>
       - 2:master
       - 5:master

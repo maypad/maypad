@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class DeploymentProperty {
-    private String deploymentName;
-    private String url;
+    private String type;
+    private String name;
+    private String arguments;
 }
