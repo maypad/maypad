@@ -34,8 +34,8 @@
                 <li *ngFor="let mail of branch.mails;"> {{ mail }}</li>
             </ul>
         </li>
-        <li *ngIf="branch.deploymentWebhook">
-            <b i18n="Deplyoment">Deployment:</b> {{ branch.deploymentWebhook }}
+        <li *ngIf="branch.deployment">
+            <b i18n="Deplyoment">Deployment:</b> {{ branch.deployment }}
         </li>
         <li *ngIf="branch.buildWebhook">
             <b>Build Webhook:</b> {{ branch.buildWebhook }}

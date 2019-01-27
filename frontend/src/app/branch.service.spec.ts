@@ -98,7 +98,7 @@ describe('Service: BranchService', () => {
           + 'builds/success?token=djhbvjskbfavhbkdfbvlfbva');
         expect(data.buildFailUrl).toEqual('https://maypad.de/projects/1/branches/master/builds/fail?token=jhdsbfajdbfhjbhvjdafb');
         expect(data.dependencies).toEqual(['3:master', '12:dev', '24:master']);
-        expect(data.deploymentWebhook).toEqual('webhook: https://ship.maypad.de/hook?token=vjfsdbjhkvlfavhkl');
+        expect(data.deployment).toEqual('webhook: https://ship.maypad.de/hook?token=vjfsdbjhkvlfavhkl');
         expect(data.buildWebhook).toEqual('https://git.maypad.de/pipeline-hook?token=kjadbhjasebjkdsa');
       });
 

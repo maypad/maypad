@@ -61,7 +61,7 @@ describe('Service: ProjectService', () => {
           + 'builds/success?token=djhbvjskbfavhbkdfbvlfbva');
         expect(data[0].buildFailUrl).toEqual('https://maypad.de/projects/1/branches/master/builds/fail?token=jhdsbfajdbfhjbhvjdafb');
         expect(data[0].dependencies).toEqual(['3:master', '12:dev', '24:master']);
-        expect(data[0].deploymentWebhook).toEqual('webhook: https://ship.maypad.de/hook?token=vjfsdbjhkvlfavhkl');
+        expect(data[0].deployment).toEqual('webhook: https://ship.maypad.de/hook?token=vjfsdbjhkvlfavhkl');
         expect(data[0].buildWebhook).toEqual('https://git.maypad.de/pipeline-hook?token=kjadbhjasebjkdsa');
 
         expect(data[1].name).toEqual('dev');
@@ -78,7 +78,7 @@ describe('Service: ProjectService', () => {
           + 'builds/success?token=adjvnfjkvadnfjkvnkjsfd');
         expect(data[1].buildFailUrl).toEqual('https://maypad.de/projects/1/branches/dev/builds/fail?token=sajkvdbfdjkvnfjksvnjkfdv');
         expect(data[1].dependencies).toEqual(['3:dev', '12:testing', '24:dev']);
-        expect(data[1].deploymentWebhook).toEqual('webhook: https://ship.maypad.de/hook?token=jabjdksvnkf');
+        expect(data[1].deployment).toEqual('webhook: https://ship.maypad.de/hook?token=jabjdksvnkf');
         expect(data[1].buildWebhook).toEqual('https://git.maypad.de/pipeline-hook?token=sadjkcndfjkvfkv');
       });
 

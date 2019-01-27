@@ -17,7 +17,7 @@
         "developer.two@maypad.de"
     ],
     "buildWebhook":"https://git.maypad.de/pipeline-hook?token=kjadbhjasebjkdsa",
-    "deploymentWebhook":"webhook: https://ship.maypad.de/hook?token=vjfsdbjhkvlfavhkl",
+    "deployment":"webhook: https://ship.maypad.de/hook?token=vjfsdbjhkvlfavhkl",
     "dependencies":[
         "3:master",
         "12:dev",
