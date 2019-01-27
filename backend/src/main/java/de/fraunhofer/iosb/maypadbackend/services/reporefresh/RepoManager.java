@@ -102,6 +102,7 @@ public abstract class RepoManager {
      */
     public Tuple<ProjectConfig, File> getProjectConfig() {
         File mapaydConfigPath = new File(getProjectRootDir().getAbsolutePath() + File.separator + "maypad.yaml");
+        logger.info(mapaydConfigPath.getAbsolutePath());
         if (mapaydConfigPath.exists() && mapaydConfigPath.canRead()) {
             try {
                 return new Tuple<>(new YamlProjectConfig(mapaydConfigPath), mapaydConfigPath);

@@ -1,15 +1,15 @@
 package de.fraunhofer.iosb.maypadbackend.services.reporefresh;
 
+import de.fraunhofer.iosb.maypadbackend.config.project.ProjectConfig;
 import de.fraunhofer.iosb.maypadbackend.config.project.YamlProjectConfig;
 import de.fraunhofer.iosb.maypadbackend.config.server.ServerConfig;
-import de.fraunhofer.iosb.maypadbackend.config.server.YamlServerConfig;
 import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.person.Author;
-import de.fraunhofer.iosb.maypadbackend.model.repository.Branch;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Commit;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Tag;
 import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.KeyServiceAccount;
 import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.UserServiceAccount;
+import de.fraunhofer.iosb.maypadbackend.util.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +39,11 @@ public class SvnRepoManager extends RepoManager {
     private SVNClientManager svnClientManager = SVNClientManager.newInstance();
     private ISVNAuthenticationManager authManager;
     private Logger logger = LoggerFactory.getLogger(SvnRepoManager.class);
-    private YamlProjectConfig projConfig;
+    private ProjectConfig projConfig;
 
-    private String projectRoot;
+    private static SvnRepoManager instance = null;
+
+    private final String projectRoot;
 
     @Autowired
     ServerConfig config;
@@ -61,9 +63,10 @@ public class SvnRepoManager extends RepoManager {
      *
      * @param project Project for which the svn-repository is to be managed
      */
-    public SvnRepoManager(Project project) {
+    private SvnRepoManager(Project project) {
         super(project);
         projectRoot = project.getRepository().getRootFolder().getAbsolutePath();
+        logger.info("Cloned project into " + projectRoot);
         if (project.getServiceAccount() != null) {
             if (project.getServiceAccount() instanceof KeyServiceAccount) {
                 KeyServiceAccount sA = (KeyServiceAccount)project.getServiceAccount();
@@ -76,6 +79,13 @@ public class SvnRepoManager extends RepoManager {
             }
             svnClientManager.setAuthenticationManager(authManager);
         }
+    }
+
+    public static SvnRepoManager getInstance(Project project) {
+        if (instance == null) {
+            return (instance = new SvnRepoManager(project));
+        }
+        return instance;
     }
 
     /**
@@ -184,16 +194,24 @@ public class SvnRepoManager extends RepoManager {
                     SVNDepth.INFINITY, // How far to clone the history tree
                     true
             );
-            try {
-                projConfig = new YamlProjectConfig(this.getProject().getRepository().getRootFolder());
-            } catch (IOException ex) {
-                logger.error(ex.getMessage());
-            }
+            projConfig = this.getProjectConfig().getKey();
             switchBranch("trunk");
             return true;
         } catch (SVNException ex) {
             logger.error(ex.getMessage());
             return false;
+        }
+    }
+
+    @Override
+    public Tuple<ProjectConfig, File> getProjectConfig() {
+        try {
+            File f = new File(projectRoot + "/maypad.yaml");
+            logger.info("Searching for config at " + f.getAbsolutePath());
+            return new Tuple<ProjectConfig, File>(new YamlProjectConfig(f), f);
+        } catch (IOException ex) {
+            logger.error("Can't find project configuration (maypad.yaml).");
+            return null;
         }
     }
 
