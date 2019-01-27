@@ -25,11 +25,33 @@ public class Author extends Person {
 
     /**
      * Constructor for Author.
+     *
      * @param name the authors name
      * @param mail the authors emailaddress
      */
     public Author(String name, Mail mail) {
         super(name);
         this.mail = mail;
+    }
+
+    /**
+     * Compare this current author with an other author and update different data.
+     *
+     * @param author Other author
+     */
+    public void compareAndUpdate(Author author) {
+        if (author == null) {
+            return;
+        }
+        if (!getName().equals(author.getName())) {
+            setName(author.getName());
+        }
+        if (mail == null) {
+            setMail(author.getMail());
+        } else if (author.getMail() == null) {
+            setMail(null);
+        } else {
+            getMail().setMailAddress(author.getMail().getMailAddress());
+        }
     }
 }

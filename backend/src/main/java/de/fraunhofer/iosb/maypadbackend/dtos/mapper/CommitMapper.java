@@ -16,7 +16,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface CommitMapper {
     @Mappings({
-            @Mapping(source = "author.mail.mailAddress", target = "author")
+            @Mapping(source = "author.name", target = "author")
     })
     public CommitResponse toResponse(Commit commit);
 

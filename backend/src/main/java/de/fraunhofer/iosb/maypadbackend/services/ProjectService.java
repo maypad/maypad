@@ -68,7 +68,7 @@ public class ProjectService {
      * @return Created project
      */
     public Project create(int projectgroupId, String repositoryUrl) {
-        //TODO: Webhook and Repo for model
+        //TODO: Generate Webhook and for model
         Project project = saveProject(new Project(repositoryUrl));
         addProjectToProjectgroup(projectgroupId, project);
         return project;
