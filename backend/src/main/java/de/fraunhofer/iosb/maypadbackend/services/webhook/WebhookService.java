@@ -162,12 +162,18 @@ public class WebhookService {
     private void initMapping() {
         List<Project> projects = projectRepository.findAll();
         for (Project project : projects) {
-            mappedHooks.put(project.getRefreshWebhook().getToken(), new RefreshWebhookHandler(project, repoService));
+            if (project.getRefreshWebhook() != null) {
+                mappedHooks.put(project.getRefreshWebhook().getToken(), new RefreshWebhookHandler(project, repoService));
+            }
             for (Map.Entry<String, Branch> entry : project.getRepository().getBranches().entrySet()) {
-                mappedHooks.put(entry.getValue().getBuildFailureWebhook().getToken(),
-                        new BuildWebhookHandler(entry.getValue(), Status.FAILED, buildService));
-                mappedHooks.put(entry.getValue().getBuildSuccessWebhook().getToken(),
-                        new BuildWebhookHandler(entry.getValue(), Status.SUCCESS, buildService));
+                if (entry.getValue().getBuildFailureWebhook() != null) {
+                    mappedHooks.put(entry.getValue().getBuildFailureWebhook().getToken(),
+                            new BuildWebhookHandler(entry.getValue(), Status.FAILED, buildService));
+                }
+                if (entry.getValue().getBuildSuccessWebhook() != null) {
+                    mappedHooks.put(entry.getValue().getBuildSuccessWebhook().getToken(),
+                            new BuildWebhookHandler(entry.getValue(), Status.SUCCESS, buildService));
+                }
             }
         }
     }
