@@ -1,5 +1,6 @@
 webServerPort: 1337
 reloadRepositoriesSeconds: 900
+domain: maypad.de
 
 scheduler:
   poolSize: 4
