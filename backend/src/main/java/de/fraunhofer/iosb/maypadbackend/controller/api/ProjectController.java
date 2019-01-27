@@ -65,6 +65,6 @@ public class ProjectController implements ProjectApi {
 
     @Override
     public void deleteProject(int id) {
-        projectService.deleteProject(id);
+        repoService.deleteProject(id);
     }
 }

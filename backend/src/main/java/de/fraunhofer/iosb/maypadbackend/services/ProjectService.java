@@ -16,6 +16,7 @@ import de.fraunhofer.iosb.maypadbackend.services.scheduler.SchedulerService;
 import de.fraunhofer.iosb.maypadbackend.services.webhook.WebhookService;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -49,6 +50,7 @@ public class ProjectService {
      * @param serverConfig        Serverconfiguration
      */
     @Autowired
+    @Lazy
     public ProjectService(WebhookService webhookService, ProjectgroupService projectgroupService,
                           SchedulerService schedulerService, ProjectRepository projectRepository, ServerConfig serverConfig) {
         this.webhookService = webhookService;
@@ -79,7 +81,7 @@ public class ProjectService {
      * @return Created project
      */
     public Project create(CreateProjectRequest request) {
-        ServiceAccount serviceAccount = getServiceAccount(request.getServiceAccountRequest());
+        ServiceAccount serviceAccount = getServiceAccount(request.getServiceAccount());
         Project project = saveProject(new Project(request.getRepositoryUrl(), serviceAccount));
 
         addProjectToProjectgroup(request.getGroupId(), project);
@@ -161,9 +163,8 @@ public class ProjectService {
      */
     public Project changeProject(int id, ChangeProjectRequest request) {
         Project project = getProject(id);
-        ServiceAccount serviceAccount = getServiceAccount(request.getServiceAccountRequest());
+        ServiceAccount serviceAccount = getServiceAccount(request.getServiceAccount());
         project.setServiceAccount(serviceAccount);
-        //TODO: Repo url ~> update Repo
         return saveProject(project);
     }
 

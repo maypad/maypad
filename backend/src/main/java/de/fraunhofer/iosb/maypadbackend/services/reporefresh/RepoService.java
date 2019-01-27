@@ -51,7 +51,7 @@ public class RepoService {
     private ProjectService projectService;
     private ServerConfig serverConfig;
     private BranchRepository branchRepository;
-    private Set<Integer> lockedProjects;
+    private Map<Integer, Boolean> lockedProjects; //boolean: allows init while locked
     private Logger logger = LoggerFactory.getLogger(RepoService.class);
 
 
@@ -66,15 +66,15 @@ public class RepoService {
     public RepoService(ProjectService projectService, ServerConfig serverConfig, BranchRepository branchRepository) {
         this.projectService = projectService;
         this.serverConfig = serverConfig;
-        this.lockedProjects = ConcurrentHashMap.newKeySet();
+        this.lockedProjects = new ConcurrentHashMap<>();
         this.branchRepository = branchRepository;
     }
 
     private synchronized boolean repoLock(Project project) {
-        if (lockedProjects.contains(project.getId())) {
+        if (lockedProjects.containsKey(project.getId()) && !lockedProjects.get(project.getId())) {
             return true;
         }
-        lockedProjects.add(project.getId());
+        lockedProjects.put(project.getId(), false);
         return false;
     }
 
@@ -101,9 +101,12 @@ public class RepoService {
             return;
         }
 
-        if (project.getRepository() == null || project.getRepository().getRepositoryType() == RepositoryType.NONE) {
+        if (project.getRepository() == null || project.getRepository().getRepositoryType() == RepositoryType.NONE
+                || project.getRepositoryStatus() == Status.FAILED) {
+            //allow init
+            lockedProjects.put(project.getId(), true);
             initProject(project);
-            //lock will be remoced after init
+            //lock is removed in init
             return;
         }
         logger.info("Start refresh project with id " + project.getId());
@@ -158,6 +161,7 @@ public class RepoService {
                         branch.setName(branchname);
                         branch.setBuildStatus(Status.UNKNOWN);
                         branch.setDependencies(new LinkedHashSet<>());
+                        branch.setBuildType(null);
                         project.getRepository().getBranches().put(branchname, branchRepository.saveAndFlush(branch));
                     } else {
                         //update existing branch. Now it is a maypad_all branch
@@ -241,6 +245,10 @@ public class RepoService {
             logger.error("Wanted to init a null project");
             return;
         }
+        if (repoLock(project)) {
+            logger.info("Project with id " + project.getId() + " is currently initializing");
+            return;
+        }
         logger.info("Start init project with id " + project.getId());
         Repository repository = project.getRepository();
         //repo wasn't created before
@@ -248,7 +256,6 @@ public class RepoService {
             repository = new Repository();
             repository.setBranches(new ConcurrentHashMap<>());
             repository.setTags(new ArrayList<>());
-
             project.setRepository(repository);
         }
 
@@ -258,6 +265,7 @@ public class RepoService {
             logger.error("Can't read / write to " + parentDir.getAbsolutePath());
             initNullRepository(repository);
             project.setRepositoryStatus(Status.FAILED);
+            removeLock(project);
             return;
         }
         File file = new File(parentDir.getAbsolutePath() + File.separator + project.getId());
@@ -267,6 +275,7 @@ public class RepoService {
             logger.error("Can't create directories for " + file.getAbsolutePath());
             initNullRepository(repository);
             project.setRepositoryStatus(Status.FAILED);
+            removeLock(project);
             return;
         }
         RepositoryType repositoryType = getCorrectRepositoryType(project.getRepositoryUrl());
@@ -281,10 +290,12 @@ public class RepoService {
         boolean cloneSuccess = repoManager.cloneRepository();
         if (!cloneSuccess) {
             project.setRepositoryStatus(Status.FAILED);
+        } else {
+            project.setRepositoryStatus(Status.INIT);
         }
 
         project = projectService.saveProject(project);
-
+        removeLock(project);
         //if repo isn't null, so we can refresh the data. Preventing call this method twice.
         if (repositoryType != RepositoryType.NONE && cloneSuccess) {
             refreshProject(project);
@@ -294,14 +305,14 @@ public class RepoService {
     /**
      * Delete whole project.
      *
-     * @param project Project
+     * @param id id of the project
      * @return true, if all data were deleted, else false
      */
-    public boolean deleteProject(Project project) {
+    public boolean deleteProject(int id) {
         //TODO
-
-        if (project == null) {
-            return false;
+        Project project = projectService.getProject(id);
+        for (Branch branch : project.getRepository().getBranches().values()) {
+            branchRepository.deleteById(branch.getId());
         }
         projectService.deleteProject(project.getId());
         return FileUtil.deleteAllFiles(projectService.getRepoDir(project.getId()));
@@ -349,13 +360,11 @@ public class RepoService {
 
         //build
         if (branchProperty.getBuild() != null) {
-            //TODO: Buildtype (webhook build, etc.)
             branch.setBuildType(new WebhookBuild(new ExternalWebhook(branchProperty.getBuild())));
         }
 
         //deployment
         if (branchProperty.getDeployment() != null) {
-            //TODO: Deploytype (webhook deploy, etc.)
             branch.setDeploymentType(new WebhookDeployment(new ExternalWebhook(branchProperty.getDeployment().getUrl()),
                     branchProperty.getDeployment().getDeploymentName()));
         }
