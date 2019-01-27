@@ -36,12 +36,13 @@ public enum RepositoryType {
     SVN {
         @Override
         public RepoManager toRepoManager(Project project) {
-            return new SvnRepoManager(project);
+            return SvnRepoManager.getInstance(project);
         }
 
         @Override
         public boolean isUrlBelongToRepotype(String url) {
-            return url.matches("svn://.+/.+");
+            // TODO: More protocols, no clashes with git.
+            return url.startsWith("svn://") || url.startsWith("svn+ssh://");
         }
     },
 
