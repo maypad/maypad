@@ -5,6 +5,7 @@ import de.fraunhofer.iosb.maypadbackend.config.project.YamlProjectConfig;
 import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Commit;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Tag;
+import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.KeyServiceAccount;
 import de.fraunhofer.iosb.maypadbackend.util.FileUtil;
 import de.fraunhofer.iosb.maypadbackend.util.Tuple;
 import lombok.AccessLevel;
@@ -15,7 +16,13 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
+
 
 /**
  * Provides specific methods to interact with a version control system.
@@ -140,12 +147,51 @@ public abstract class RepoManager {
     }
 
     /**
-     * asd.
-     * @return asd.
+     * Create a SSH pem File.
+     *
+     * @return SSH File with key
      */
     protected File getSshFile() {
-        //TODO
-        return null;
+        File keyDir = new File(projectRootDir.getAbsolutePath() + File.separator + "keys");
+        if (!keyDir.isDirectory() && !keyDir.exists()) {
+            logger.info("Folder for keys doesn't exists. So, create it.");
+            if (!keyDir.mkdirs()) {
+                logger.error("Can't create folder " + keyDir.getAbsolutePath());
+                return null;
+            }
+        }
+        File keyFile = new File(keyDir.getAbsolutePath() + File.separator + project.getId());
+        //
+        if (keyFile.exists()) {
+            return keyFile;
+        }
+        //Create new keyfile
+        if (!(project.getServiceAccount() instanceof KeyServiceAccount)) {
+            logger.warn("Project with id " + project.getId() + " hasn't an serviceaccount with a key.");
+            return null;
+        }
+        KeyServiceAccount serviceAccount = (KeyServiceAccount) project.getServiceAccount();
+        List<String> lines = Arrays.asList("-----BEGIN RSA PRIVATE KEY-----", serviceAccount.getKey(), "-----END RSA PRIVATE KEY-----");
+        Path file = Paths.get(keyFile.getAbsolutePath());
+        try {
+            Files.write(file, lines, Charset.forName("UTF-8"));
+        } catch (IOException e) {
+            logger.error("Can't write key file for project with id " + project.getId());
+            return null;
+        }
+        return keyFile;
+    }
+
+    /**
+     * Delete the SSH key file, if exists.
+     */
+    protected void deleteSshFile() {
+        File keyFile = new File(projectRootDir.getAbsolutePath() + File.separator + "keys" + File.separator + project.getId());
+        if (keyFile.exists()) {
+            if (!keyFile.delete()) {
+                logger.error("Can't delete key file for project with id " + project.getId());
+            }
+        }
     }
 
 }

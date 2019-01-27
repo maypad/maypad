@@ -11,5 +11,5 @@ import lombok.Data;
 public class CreateProjectRequest {
     private int groupId;
     private String repositoryUrl;
-    private ServiceAccountRequest serviceAccountRequest;
+    private ServiceAccountRequest serviceAccount;
 }
