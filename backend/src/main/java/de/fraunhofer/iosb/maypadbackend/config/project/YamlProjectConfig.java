@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -77,7 +78,9 @@ public class YamlProjectConfig implements ProjectConfig {
      */
     @Override
     public List<BranchProperty> getBranchProperties() {
-        return yamlObject.getBranches();
+
+        List<BranchProperty> branches = yamlObject.getBranches();
+        return (branches == null) ? new ArrayList<BranchProperty>() : branches;
     }
 
     @Override
