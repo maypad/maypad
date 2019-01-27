@@ -196,7 +196,7 @@ public class RepoService {
                 logger.info("Remove branch " + branchname + " in project with id " + project.getId());
 
                 branchRepository.delete(project.getRepository().getBranches().get(branchname));
-                project.getRepository().getBranches().remove(branchname); //TODO; remove depends on
+                project.getRepository().getBranches().remove(branchname);
             }
         }
 
@@ -207,7 +207,11 @@ public class RepoService {
                 continue;
             }
             //last branch commit
-            branch.setLastCommit(repoManager.getLastCommit());
+            if (branch.getLastCommit() == null) {
+                branch.setLastCommit(repoManager.getLastCommit());
+            } else {
+                branch.getLastCommit().compareAndUpdate(repoManager.getLastCommit());
+            }
 
             //readme
             String readme = repoManager.getReadme();
@@ -220,8 +224,6 @@ public class RepoService {
 
         }
 
-        //last project commit
-        //TODO
 
         //tags
         //TODO

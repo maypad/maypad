@@ -193,8 +193,7 @@ public class GitRepoManager extends RepoManager {
      *
      * @return The last commit
      */
-    @Override
-    public Commit getLastCommit() {
+    public Commit getGlobalLastCommit() {
         return getLastCommitByBranch(null);
     }
 
@@ -204,7 +203,8 @@ public class GitRepoManager extends RepoManager {
      *
      * @return Last commit
      */
-    public Commit getLastCommitByBranch() {
+    @Override
+    public Commit getLastCommit() {
         String currentBranch = getCurrentBranch();
         if (currentBranch == null) {
             return getDefaultCommit();
@@ -229,7 +229,7 @@ public class GitRepoManager extends RepoManager {
         RevCommit revCommit = null;
         RevWalk walk = new RevWalk(git.getRepository());
         for (Ref branch : branches) {
-            if (!allBranches && !branch.getName().equals(branchname)) {
+            if (!allBranches && !branch.getName().equals("refs/remotes/origin/" + branchname)) {
                 continue;
             }
             RevCommit commit = null;
@@ -239,6 +239,7 @@ public class GitRepoManager extends RepoManager {
                 getLogger().warn("Can't get last commit of branch " + branch.getName() + " in " + getProjectRootDir().getAbsolutePath());
             }
             if (commit == null) {
+                System.out.println("Commit is null");
                 continue;
             }
             if (revCommit == null) {
