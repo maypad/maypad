@@ -33,8 +33,8 @@ describe('Service: BranchService', () => {
         expect(data.length).toEqual(4);
 
         for (let i = 0; i++; i < 4) {
-          expect(data[i].commit.commitIdentifier).toEqual('e37ab2d1f1eddc11b1b6531372569793bd110b83');
-          expect(data[i].commit.commitMessage).toEqual('Fix various bugs');
+          expect(data[i].commit.identifier).toEqual('e37ab2d1f1eddc11b1b6531372569793bd110b83');
+          expect(data[i].commit.message).toEqual('Fix various bugs');
           expect(data[i].commit.author).toEqual('Developer One <developer.one@maypad.de>');
         }
 
@@ -89,8 +89,8 @@ describe('Service: BranchService', () => {
           + 'maypad-docs](https://github.com/juliantodt/maypad-docs)');
         expect(data.status).toEqual(BuildStatus.SUCCESS);
         expect(data.lastCommit.author).toEqual('Developer One <developer.one@maypad.de>');
-        expect(data.lastCommit.commitMessage).toEqual('Fix various bugs');
-        expect(data.lastCommit.commitIdentifier).toEqual('e37ab2d1f1eddc11b1b6531372569793bd110b83');
+        expect(data.lastCommit.message).toEqual('Fix various bugs');
+        expect(data.lastCommit.identifier).toEqual('e37ab2d1f1eddc11b1b6531372569793bd110b83');
         expect(data.lastCommit.timestamp).toEqual('Wed Jan 2 14:37:30 2019 +0100');
         expect(data.members).toEqual(['Developer One', 'Developer Two']);
         expect(data.mails).toEqual(['developer.one@maypad.de', 'developer.two@maypad.de']);

@@ -21,10 +21,10 @@
             <b i18n="Last commit">Last Commit:</b>
             <ul class="mt-1">
                 <li><b i18n="Commit hash">Hash: </b>
-                    {{ branch.lastCommit.commitIdentifier.substr(0, 7) }}
+                    {{ branch.lastCommit.identifier.substr(0, 7) }}
                 </li>
                 <li><b i18n="Commit author">Author: </b>{{ branch.lastCommit.author }}</li>
-                <li><b i18n="Commit Message">Message: </b>{{ branch.lastCommit.commitMessage }}</li>
+                <li><b i18n="Commit Message">Message: </b>{{ branch.lastCommit.message }}</li>
                 <li><b i18n="Timestamp">Timestamp: </b>{{ branch.lastCommit.timestamp }}</li>
             </ul>
         </li>

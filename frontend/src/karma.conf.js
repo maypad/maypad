@@ -39,6 +39,7 @@ module.exports = function (config) {
     singleRun: false,
     files: [
       { pattern: '../node_modules/jquery/dist/jquery.min.js', watched: false },
+      { pattern: './assets/hullabaloo.min.js', watched: false },
     ]
   });
 };
