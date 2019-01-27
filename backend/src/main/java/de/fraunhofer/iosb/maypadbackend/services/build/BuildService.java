@@ -3,12 +3,12 @@ package de.fraunhofer.iosb.maypadbackend.services.build;
 import de.fraunhofer.iosb.maypadbackend.dtos.request.BuildRequest;
 import de.fraunhofer.iosb.maypadbackend.exceptions.httpexceptions.BuildRunningException;
 import de.fraunhofer.iosb.maypadbackend.exceptions.httpexceptions.NotFoundException;
+import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.Status;
 import de.fraunhofer.iosb.maypadbackend.model.build.Build;
 import de.fraunhofer.iosb.maypadbackend.model.build.BuildType;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Branch;
 import de.fraunhofer.iosb.maypadbackend.model.repository.DependencyDescriptor;
-import de.fraunhofer.iosb.maypadbackend.repositories.BranchRepository;
 import de.fraunhofer.iosb.maypadbackend.services.ProjectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +33,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class BuildService {
 
     private ProjectService projectService;
-    private BranchRepository branchRepository;
     private Collection<? extends BuildTypeExecutor> executors;
     private Map<Class<? extends BuildType>, BuildTypeExecutor> buildTypeMappings;
     private Logger logger = LoggerFactory.getLogger(BuildService.class);
@@ -47,32 +46,33 @@ public class BuildService {
      * @param executors a collection of all BuildTypeExecutor beans
      */
     @Autowired
-    public BuildService(ProjectService projectService, BranchRepository branchRepository,
-                        Collection<? extends BuildTypeExecutor> executors) {
+    public BuildService(ProjectService projectService, Collection<? extends BuildTypeExecutor> executors) {
         this.projectService = projectService;
-        this.branchRepository = branchRepository;
         this.executors = executors;
         runningBuilds = new ConcurrentHashMap<>();
     }
 
     /**
      * Triggers a build for the given branch.
-     * @param branch the branch the should be built
+     * @param id the id of the project
+     * @param ref the name of the Branch
      * @param request the request that contains the build parameters
      * @param buildName the name of the build type (currently not used)
      */
-    public void buildBranch(Branch branch, BuildRequest request, String buildName) {
-        buildBranch(branch, request.isWithDependencies(), buildName);
+    public void buildBranch(int id, String ref, BuildRequest request, String buildName) {
+        buildBranch(id, ref, request.isWithDependencies(), buildName);
     }
 
     /**
      * Triggers a build for the given branch.
-     * @param branch the branch the should be build
+     * @param id the id of the project
+     * @param ref the name of the Branch
      * @param withDependencies if the dependencies should be build
      * @param buildName the name of the build type (currently not used)
      */
-    public void buildBranch(Branch branch, boolean withDependencies, String buildName) {
-        if (runningBuilds.containsKey(branch)) {
+    public void buildBranch(int id, String ref, boolean withDependencies, String buildName) {
+        Branch branch = projectService.getBranch(id, ref);
+        if (!runningBuilds.containsKey(branch)) {
             BuildType buildType = branch.getBuildType();
             if (!buildTypeMappings.containsKey(buildType.getClass())) {
                 logger.error("No BuildTypeExecutor registered for " + buildType.getClass());
@@ -80,7 +80,7 @@ public class BuildService {
             }
             if (withDependencies) {
                 for (DependencyDescriptor dd : branch.getDependencies()) {
-                    buildBranch(projectService.getBranch(dd.getProjectId(), dd.getBranchName()), false, buildName);
+                    buildBranch(dd.getProjectId(), dd.getBranchName(), false, buildName);
                 }
             }
             if (branch.getLastCommit() == null) {
@@ -113,10 +113,13 @@ public class BuildService {
     /**
      * Updates the status of a running build for the given branch, if there is a running build. If status is RUNNING no
      * update is required.
-     * @param branch the branch
+     * @param id the id of the project
+     * @param ref the name of the Branch
      * @param status the new status
      */
-    public void signalStatus(Branch branch, Status status) {
+    public void signalStatus(int id, String ref, Status status) {
+        Project project = projectService.getProject(id);
+        Branch branch = projectService.getBranch(id, ref);
         if (!runningBuilds.containsKey(branch)) {
             throw new NotFoundException("NO BUILD", String.format("No Build is running for %s", branch.getName()));
         }
@@ -124,7 +127,7 @@ public class BuildService {
         if (status != Status.RUNNING) {
             runningBuilds.get(branch).setStatus(status);
             runningBuilds.remove(branch);
-            branchRepository.saveAndFlush(branch);
+            projectService.saveProject(project);
         }
     }
 
@@ -138,7 +141,6 @@ public class BuildService {
             if ((current.getTime() - runningBuilds.get(key).getTimestamp().getTime()) / 1000 >= buildTimeoutSeconds) {
                 runningBuilds.get(key).setStatus(Status.TIMEOUT);
                 runningBuilds.remove(key);
-                branchRepository.saveAndFlush(key);
             }
         }
     }
