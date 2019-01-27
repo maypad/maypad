@@ -11,16 +11,20 @@ import de.fraunhofer.iosb.maypadbackend.model.repository.Tag;
 import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.KeyServiceAccount;
 import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.ServiceAccount;
 import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.UserServiceAccount;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
+import org.eclipse.jgit.api.TransportConfigCallback;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.transport.JschConfigSessionFactory;
 import org.eclipse.jgit.transport.OpenSshConfig;
+import org.eclipse.jgit.transport.SshSessionFactory;
 import org.eclipse.jgit.transport.SshTransport;
+import org.eclipse.jgit.transport.Transport;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.util.FS;
 
@@ -122,7 +126,6 @@ public class GitRepoManager extends RepoManager {
      */
     @Override
     public boolean switchBranch(String name) {
-        gitPull();
         String currentBranch = getCurrentBranch();
         if (currentBranch != null && currentBranch.equals(name)) {
             gitPull();
@@ -280,8 +283,12 @@ public class GitRepoManager extends RepoManager {
         try {
             getAuth(Git.cloneRepository().setURI(getProject().getRepositoryUrl()).setDirectory(getProjectRootDir())).call();
         } catch (GitAPIException e) {
-            e.printStackTrace();
             getLogger().warn("Can't access to repo " + getProject().getRepositoryUrl());
+            try {
+                FileUtils.deleteDirectory(getProjectRootDir());
+            } catch (IOException e1) {
+                getLogger().warn("Can't delete folder at " + getProjectRootDir().getAbsolutePath());
+            }
             return false;
         }
         return true;
@@ -342,7 +349,34 @@ public class GitRepoManager extends RepoManager {
                         userServiceAccount.getPassword()));
             } else if (serviceAccount instanceof KeyServiceAccount) {
                 KeyServiceAccount keyServiceAccount = (KeyServiceAccount) serviceAccount;
-                command.setTransportConfigCallback(transport -> {
+                command.setTransportConfigCallback(new TransportConfigCallback() {
+
+                    private final SshSessionFactory sshSessionFactory = new JschConfigSessionFactory() {
+                        @Override
+                        protected void configure(OpenSshConfig.Host hc, Session session) {
+                            session.setConfig("StrictHostKeyChecking", "no");
+                        }
+
+                        @Override
+                        protected JSch createDefaultJSch(FS fs) throws JSchException {
+                            JSch jSch = super.createDefaultJSch(fs);
+                            File keyFile = getSshFile();
+                            if (keyFile != null) {
+                                jSch.addIdentity(keyFile.getAbsolutePath());
+                            }
+
+                            return jSch;
+                        }
+                    };
+
+                    @Override
+                    public void configure(Transport transport) {
+                        getSshFile();
+                        SshTransport sshTransport = (SshTransport) transport;
+                        sshTransport.setSshSessionFactory(sshSessionFactory);
+                    }
+                });
+                /*command.setTransportConfigCallback(transport -> {
                     SshTransport sshTransport = (SshTransport) transport;
                     sshTransport.setSshSessionFactory(new JschConfigSessionFactory() {
                         @Override
@@ -353,11 +387,14 @@ public class GitRepoManager extends RepoManager {
                         @Override
                         protected JSch createDefaultJSch(FS fs) throws JSchException {
                             JSch jsch = super.createDefaultJSch(fs);
-                            //TODO
+                            File keyFile = getSshFile();
+                            if (keyFile != null) {
+                                jsch.addIdentity(keyFile.getAbsolutePath());
+                            }
                             return jsch;
                         }
                     });
-                });
+                });*/
             }
         }
         return command;
