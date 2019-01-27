@@ -11,6 +11,7 @@ import de.fraunhofer.iosb.maypadbackend.model.webhook.WebhookType;
 import de.fraunhofer.iosb.maypadbackend.repositories.ProjectRepository;
 import de.fraunhofer.iosb.maypadbackend.services.build.BuildService;
 import de.fraunhofer.iosb.maypadbackend.services.reporefresh.RepoService;
+import de.fraunhofer.iosb.maypadbackend.util.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,10 +84,10 @@ public class WebhookService {
 
     /**
      * Generates a webhook, that signals that the last build on the given branch was successful.
-     * @param branch the branch, that should be updated
+     * @param branch the branch that should be updated as a pair of project id and branch name
      * @return InternalWebhook for the generated webhook.
      */
-    public InternalWebhook generateSuccessWebhook(Branch branch) {
+    public InternalWebhook generateSuccessWebhook(Tuple<Integer, String> branch) {
         String token = generateToken();
         mappedHooks.put(token, new BuildWebhookHandler(branch, Status.SUCCESS, buildService));
         return new InternalWebhook(serverConfig.getDomain() + hookPath + token, token, WebhookType.UPDATEBUILD);
@@ -94,10 +95,10 @@ public class WebhookService {
 
     /**
      * Generates a webhook, that signals that the last build on the given branch failed.
-     * @param branch the branch, that should be updated
+     * @param branch the branch that should be updated as a pair of project id and branch name
      * @return InternalWebhook for the generated webhook.
      */
-    public InternalWebhook generateFailWebhook(Branch branch) {
+    public InternalWebhook generateFailWebhook(Tuple<Integer, String> branch) {
         String token = generateToken();
         mappedHooks.put(token, new BuildWebhookHandler(branch, Status.FAILED, buildService));
         return new InternalWebhook(serverConfig.getDomain() + hookPath + token, token, WebhookType.UPDATEBUILD);
@@ -105,12 +106,12 @@ public class WebhookService {
 
     /**
      * Generates a webhook, that signals that the given project should be refreshed.
-     * @param project the project that should be updated
+     * @param projectId the id of the project that should be updated
      * @return InternalWebhook for the generated webhook.
      */
-    public InternalWebhook generateRefreshWebhook(Project project) {
+    public InternalWebhook generateRefreshWebhook(int projectId) {
         String token = generateToken();
-        mappedHooks.put(token, new RefreshWebhookHandler(project, repoService));
+        mappedHooks.put(token, new RefreshWebhookHandler(projectId, repoService));
         return new InternalWebhook(serverConfig.getDomain() + hookPath + token, token, WebhookType.REFRESH);
     }
 
@@ -163,16 +164,16 @@ public class WebhookService {
         List<Project> projects = projectRepository.findAll();
         for (Project project : projects) {
             if (project.getRefreshWebhook() != null) {
-                mappedHooks.put(project.getRefreshWebhook().getToken(), new RefreshWebhookHandler(project, repoService));
+                mappedHooks.put(project.getRefreshWebhook().getToken(), new RefreshWebhookHandler(project.getId(), repoService));
             }
             for (Map.Entry<String, Branch> entry : project.getRepository().getBranches().entrySet()) {
                 if (entry.getValue().getBuildFailureWebhook() != null) {
                     mappedHooks.put(entry.getValue().getBuildFailureWebhook().getToken(),
-                            new BuildWebhookHandler(entry.getValue(), Status.FAILED, buildService));
+                            new BuildWebhookHandler(new Tuple<>(project.getId(), entry.getKey()), Status.FAILED, buildService));
                 }
                 if (entry.getValue().getBuildSuccessWebhook() != null) {
                     mappedHooks.put(entry.getValue().getBuildSuccessWebhook().getToken(),
-                            new BuildWebhookHandler(entry.getValue(), Status.SUCCESS, buildService));
+                            new BuildWebhookHandler(new Tuple<>(project.getId(), entry.getKey()), Status.SUCCESS, buildService));
                 }
             }
         }

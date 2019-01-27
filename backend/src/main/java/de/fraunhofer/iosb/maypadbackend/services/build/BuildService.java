@@ -95,7 +95,7 @@ public class BuildService {
             projectService.saveProject(project);
             build = getLatestBuild(branch);
             runningBuilds.put(new Tuple<>(id, ref), build.getId());
-            buildTypeMappings.get(buildType.getClass()).build(buildType);
+            buildTypeMappings.get(buildType.getClass()).build(buildType, id, ref);
         } else {
             throw new BuildRunningException("BUILD_RUNNING", String.format("There's already a build running for %s.",
                     branch.getName()));

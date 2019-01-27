@@ -3,7 +3,6 @@ package de.fraunhofer.iosb.maypadbackend.services.build;
 import de.fraunhofer.iosb.maypadbackend.model.Status;
 import de.fraunhofer.iosb.maypadbackend.model.build.BuildType;
 import de.fraunhofer.iosb.maypadbackend.model.build.WebhookBuild;
-import de.fraunhofer.iosb.maypadbackend.model.repository.Branch;
 import de.fraunhofer.iosb.maypadbackend.services.webhook.WebhookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -31,18 +30,18 @@ public class WebhookBuildExecutor implements BuildTypeExecutor {
 
     @Override
     @Async
-    public void build(BuildType buildType, Branch branch) {
+    public void build(BuildType buildType, int id, String ref) {
         if (buildType instanceof WebhookBuild) {
             WebhookBuild webhookBuild = (WebhookBuild) buildType;
             CompletableFuture<ResponseEntity<String>> response = webhookService.call(webhookBuild.getBuildWebhook());
             try {
                 if (response.get().getStatusCode() == HttpStatus.OK) {
-                    buildService.signalStatus(branch, Status.RUNNING);
+                    buildService.signalStatus(id, ref, Status.RUNNING);
                 } else {
-                    buildService.signalStatus(branch, Status.FAILED);
+                    buildService.signalStatus(id, ref, Status.FAILED);
                 }
             } catch (ExecutionException | InterruptedException ex) {
-                buildService.signalStatus(branch, Status.FAILED);
+                buildService.signalStatus(id, ref, Status.FAILED);
             }
         }
     }
