@@ -12,6 +12,8 @@ import * as branchesResponse from 'sample-requests/get.projects.id.branches.resp
 import { HttpClientModule } from '@angular/common/http';
 import { ProjectServiceStub } from 'src/testing/project-service-stub';
 import { ProjectService } from '../project.service';
+import { NotificationService } from '../notification.service';
+import { NotificationServiceStub } from 'src/testing/notification-service-stub';
 
 describe('ProjectDetailComponent', () => {
   let component: ProjectDetailComponent;
@@ -27,7 +29,8 @@ describe('ProjectDetailComponent', () => {
           // Mock ActivatedRoute because a unit test can't have a "real" route
           provide: ActivatedRoute, useClass: class { snapshot = {}; data = of({ project: project, branches: branches }); }
         },
-        { provide: ProjectService, useClass: ProjectServiceStub }
+        { provide: ProjectService, useClass: ProjectServiceStub },
+        { provide: NotificationService, useClass: NotificationServiceStub }
       ],
       imports: [RouterTestingModule, FormsModule, HttpClientModule]
     })
@@ -51,5 +54,12 @@ describe('ProjectDetailComponent', () => {
     for (let i = 0; i < elements.length; i++) {
       expect(elements[i].querySelector('h5').textContent).toBe(' ' + branches[i].name + ' ');
     }
+  });
+
+  it('should refresh project', () => {
+    const notification: NotificationServiceStub = TestBed.get(NotificationService);
+    spyOn(notification, 'send');
+    component.refreshProject();
+    expect(notification.send).toHaveBeenCalledWith('The project is now being refreshed.', 'info');
   });
 });

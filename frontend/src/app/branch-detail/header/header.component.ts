@@ -20,13 +20,12 @@ export class HeaderComponent implements OnInit {
 
     ngOnInit() { }
 
-    triggerDeploy(build: Boolean) {
+    triggerDeploy(build: boolean) {
         this.branchService.triggerDeployment(
-            this.projId, this.branch.name, true, this.rebuild.nativeElement.checked
+            this.projId, this.branch.name, build, this.rebuild.nativeElement.checked
         ).subscribe(
             x => { },
             error => {
-                console.error(error);
                 this.notification.send(`Deployment couldn't be started. see console for error log.`, 'danger');
             },
             () => { this.triggerAlert('deployment'); }
@@ -39,7 +38,6 @@ export class HeaderComponent implements OnInit {
         ).subscribe(
             x => { },
             error => {
-                console.error(error);
                 this.notification.send(`Build couldn't be started. see console for error log.`, 'danger');
             },
             () => { this.triggerAlert('build'); }

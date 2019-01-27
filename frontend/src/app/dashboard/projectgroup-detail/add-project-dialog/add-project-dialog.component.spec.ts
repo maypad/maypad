@@ -27,4 +27,23 @@ describe('AddProjectDialogComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should clear info', () => {
+    component.repoUrl = 'a';
+    component.sshKey = 'a';
+    component.username = 'a';
+    component.password = 'a';
+    component.clearInput();
+    expect(component.repoUrl).toBe('');
+    expect(component.sshKey).toBe('');
+    expect(component.username).toBe('');
+    expect(component.password).toBe('');
+  });
+
+  it('should select index', () => {
+    component.selectedIndex = 0;
+    component.setSelected(2);
+    expect(component.selectedIndex).toBe(2);
+  });
+
 });

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { environment } from '../environments/environment';
+import { NotificationService } from './notification.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,7 @@ export class ApiService {
 
   constructor(
     public http: HttpClient,
+    private notification: NotificationService
   ) { }
 
   handleError<T>(operation = 'operation', result?: T) {
@@ -29,11 +31,7 @@ export class ApiService {
   }
 
   private errorLog(message: string) {
-    const hulla = new hullabaloo();
-    hulla.options.align = 'center';
-    hulla.options.width = 500;
-    hulla.options.offset = { from: 'top', amount: 30 };
-    hulla.send(message, 'danger');
+    this.notification.send(message, 'danger');
   }
 }
 
