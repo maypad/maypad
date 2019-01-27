@@ -10,9 +10,11 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
 import java.io.File;
@@ -45,7 +47,7 @@ public class Repository {
     @OneToMany(cascade = CascadeType.ALL)
     private List<Tag> tags;
 
-    @ElementCollection()
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @MapKeyColumn(name = "name", length = 200)
     private Map<String, Branch> branches;
 

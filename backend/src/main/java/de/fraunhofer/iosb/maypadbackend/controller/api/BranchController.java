@@ -67,7 +67,7 @@ public class BranchController implements BranchApi {
     @Override
     public void triggerBuild(int id, String ref, @Valid BuildRequest request) {
         Branch branch = projectService.getBranch(id, ref);
-        buildService.buildBranch(branch, request, "");
+        buildService.buildBranch(id, ref, request, "");
     }
 
     @Override
