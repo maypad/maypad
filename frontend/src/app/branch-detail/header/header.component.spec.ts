@@ -7,6 +7,7 @@ import { BranchService } from 'src/app/branch.service';
 import { BranchServiceStub } from 'src/testing/branch-service-stub';
 import { NotificationService } from 'src/app/notification.service';
 import { NotificationServiceStub } from 'src/testing/notification-service-stub';
+import { Observable, throwError } from 'rxjs';
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
@@ -43,6 +44,8 @@ describe('HeaderComponent', () => {
 
   it('should error trigger deployment', () => {
     const notificationService = TestBed.get(NotificationService);
+    const branchService: BranchServiceStub = TestBed.get(BranchService);
+    spyOn(branchService, 'triggerDeployment').and.returnValue(throwError('error'));
     spyOn(notificationService, 'send');
     component.triggerDeploy(true);
     expect(notificationService.send).toHaveBeenCalledWith(`Deployment couldn't be started. see console for error log.`, 'danger');
@@ -64,6 +67,8 @@ describe('HeaderComponent', () => {
 
   it('should error trigger build', () => {
     const notificationService = TestBed.get(NotificationService);
+    const branchService: BranchServiceStub = TestBed.get(BranchService);
+    spyOn(branchService, 'triggerBuild').and.returnValue(throwError('error'));
     spyOn(notificationService, 'send');
     component.rebuild.nativeElement.checked = true;
     component.triggerBuild();
@@ -72,6 +77,8 @@ describe('HeaderComponent', () => {
 
   it('should build and deploy', () => {
     const notificationService = TestBed.get(NotificationService);
+    const branchService: BranchServiceStub = TestBed.get(BranchService);
+    spyOn(branchService, 'triggerDeployment').and.returnValue(throwError('error'));
     spyOn(notificationService, 'send');
     component.buildAndDeploy();
     expect(notificationService.send).toHaveBeenCalledWith(`Deployment couldn't be started. see console for error log.`, 'danger');

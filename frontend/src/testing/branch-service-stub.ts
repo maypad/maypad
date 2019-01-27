@@ -20,10 +20,10 @@ export class BranchServiceStub {
     }
 
     triggerDeployment(id, branchName, withBuild, rebuild): Observable<{}> {
-        return withBuild ? throwError(new Error('error')) : of({});
+        return of({});
     }
 
     triggerBuild(id, branchName, rebuild): Observable<{}> {
-        return rebuild ? throwError(new Error('error')) : of({});
+        return of({});
     }
 }

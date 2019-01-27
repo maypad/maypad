@@ -4,9 +4,7 @@ import { Project } from 'src/app/model/project';
 import { ServiceAccount } from 'src/app/model/serviceAccount';
 import * as get_projectgroups_response from '../../sample-requests/get.projectgroups.response.json';
 import * as get_projectgroups_id_projects_response from '../../sample-requests/get.projectgroups.id.projects.response.json';
-import * as post_projects_response from '../../sample-requests/post.projects.response.json';
 import * as post_projectgroups_response from '../../sample-requests/post.projectgroups.response.json';
-import * as put_projectgroups_id_response from '../../sample-requests/put.projectgroups.id.response.json';
 
 export class ProjectgroupServiceStub {
     loadProjectgroups(): Observable<Projectgroup[]> {
@@ -18,7 +16,10 @@ export class ProjectgroupServiceStub {
     }
 
     createProject(id: number, repoUrl: string, serviceAccount: ServiceAccount): Observable<Project> {
-        return of(post_projects_response['default']);
+        const proj = new Project();
+        proj.id = id;
+        proj.serviceAccount = serviceAccount;
+        return of(proj);
     }
 
     createProjectgroup(name: string): Observable<Projectgroup> {
@@ -26,7 +27,10 @@ export class ProjectgroupServiceStub {
     }
 
     updateProjectgroup(id: number, newName: string): Observable<Projectgroup> {
-        return of(put_projectgroups_id_response['default']);
+        const group = new Projectgroup();
+        group.id = id;
+        group.name = 'asd123';
+        return of(group);
     }
 
     deleteProject(id: number): Observable<{}> {

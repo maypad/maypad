@@ -7,6 +7,8 @@ import * as get_projectgroups_response from 'sample-requests/get.projectgroups.r
 import { ProjectgroupService } from 'src/app/projectgroup.service';
 import { ProjectgroupServiceStub } from 'src/testing/projectgroup.service.stub';
 import { Router } from '@angular/router';
+import { DashboardService } from '../../dashboard.service';
+import { DashboardServiceStub } from 'src/testing/dashboard-service-stub';
 
 describe('EditProjectgroupDialogComponent', () => {
   let component: EditProjectgroupDialogComponent;
@@ -19,7 +21,8 @@ describe('EditProjectgroupDialogComponent', () => {
       imports: [FormsModule],
       providers: [
         { provide: ProjectgroupService, useClass: ProjectgroupServiceStub },
-        { provide: Router, useValue: null }
+        { provide: Router, useValue: null },
+        { provide: DashboardService, useClass: DashboardServiceStub }
       ]
 
     })
@@ -35,5 +38,19 @@ describe('EditProjectgroupDialogComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should delete projectgroup', () => {
+    const service: DashboardServiceStub = TestBed.get(DashboardService);
+    spyOn(service, 'deleteProjGroup');
+    component.deleteProjectgroup();
+    expect(service.deleteProjGroup).toHaveBeenCalledWith(component.projGroup);
+  });
+
+  it('should update projectgroup', () => {
+    const newName = 'newName';
+    component.newName = newName;
+    component.updateProjectgroup();
+    expect(component.projGroup.name).toBe(newName);
   });
 });
