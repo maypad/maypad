@@ -10,6 +10,7 @@ import de.fraunhofer.iosb.maypadbackend.model.build.BuildType;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Branch;
 import de.fraunhofer.iosb.maypadbackend.model.repository.DependencyDescriptor;
 import de.fraunhofer.iosb.maypadbackend.services.ProjectService;
+import de.fraunhofer.iosb.maypadbackend.util.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +37,10 @@ public class BuildService {
     private Collection<? extends BuildTypeExecutor> executors;
     private Map<Class<? extends BuildType>, BuildTypeExecutor> buildTypeMappings;
     private Logger logger = LoggerFactory.getLogger(BuildService.class);
-    private Map<Branch, Build> runningBuilds;
+    private Map<Tuple<Integer, String>, Integer> runningBuilds;
 
     private static final long buildTimeoutSeconds = 21600; //6h
+    private static final long checkTimeoutInterval = 5000/*30000*/; //in ms
 
     /**
      * Constructor for BuildService.
@@ -71,8 +73,9 @@ public class BuildService {
      * @param buildName the name of the build type (currently not used)
      */
     public void buildBranch(int id, String ref, boolean withDependencies, String buildName) {
+        Project project = projectService.getProject(id);
         Branch branch = projectService.getBranch(id, ref);
-        if (!runningBuilds.containsKey(branch)) {
+        if (!runningBuilds.containsKey(new Tuple<>(id, ref))) {
             BuildType buildType = branch.getBuildType();
             if (!buildTypeMappings.containsKey(buildType.getClass())) {
                 logger.error("No BuildTypeExecutor registered for " + buildType.getClass());
@@ -86,9 +89,11 @@ public class BuildService {
             if (branch.getLastCommit() == null) {
                 throw new NotFoundException("NO_COMMIT", String.format("Nothing to build on %s.", branch.getName()));
             }
-            Build build = new Build(new Date(), branch.getLastCommit(), Status.RUNNING);
+            Build build = new Build(new Date(), branch.getLastCommit(), Status.UNKNOWN);
             branch.getBuilds().add(build);
-            runningBuilds.put(branch, build);
+            projectService.saveProject(project);
+            build = getLatestBuild(branch);
+            runningBuilds.put(new Tuple<>(id, ref), build.getId());
             buildTypeMappings.get(buildType.getClass()).build(buildType);
         } else {
             throw new BuildRunningException("BUILD_RUNNING", String.format("There's already a build running for %s.",
@@ -110,6 +115,11 @@ public class BuildService {
         return branch.getBuilds().get(branch.getBuilds().size() - 1);
     }
 
+    private Build getBuild(Branch branch, int buildId) {
+        return branch.getBuilds().stream().filter(b -> b.getId() == buildId).findFirst()
+                .orElseThrow(() -> new NotFoundException("BUILD_NOT_FOUND", "Build not found."));
+    }
+
     /**
      * Updates the status of a running build for the given branch, if there is a running build. If status is RUNNING no
      * update is required.
@@ -118,29 +128,33 @@ public class BuildService {
      * @param status the new status
      */
     public void signalStatus(int id, String ref, Status status) {
-        Project project = projectService.getProject(id);
+        Tuple<Integer, String> branchMapEntry = new Tuple<>(id, ref);
         Branch branch = projectService.getBranch(id, ref);
-        if (!runningBuilds.containsKey(branch)) {
+        if (!runningBuilds.containsKey(branchMapEntry)) {
             throw new NotFoundException("NO BUILD", String.format("No Build is running for %s", branch.getName()));
         }
 
-        if (status != Status.RUNNING) {
-            runningBuilds.get(branch).setStatus(status);
-            runningBuilds.remove(branch);
-            projectService.saveProject(project);
-        }
+        Build build = getBuild(branch, runningBuilds.get(branchMapEntry));
+        build.setStatus(status);
+        runningBuilds.remove(branchMapEntry);
+        Project project = projectService.getProject(id);
+        projectService.saveProject(project);
     }
 
     /**
-     * Checks every 5min if a build is running for too long.
+     * Checks if a build is running for too long in the specified interval.
      */
-    @Scheduled(fixedDelay = 30000)
+    @Scheduled(fixedDelay = checkTimeoutInterval, initialDelay = checkTimeoutInterval)
     public void timeoutRunningBuilds() {
         Date current = new Date();
-        for (Branch key : runningBuilds.keySet()) {
-            if ((current.getTime() - runningBuilds.get(key).getTimestamp().getTime()) / 1000 >= buildTimeoutSeconds) {
-                runningBuilds.get(key).setStatus(Status.TIMEOUT);
-                runningBuilds.remove(key);
+        for (Map.Entry<Tuple<Integer, String>, Integer> entry : runningBuilds.entrySet()) {
+            Project project = projectService.getProject(entry.getKey().getKey());
+            Branch branch = projectService.getBranch(entry.getKey().getKey(), entry.getKey().getValue());
+            Build build = getBuild(branch, entry.getValue());
+            if ((current.getTime() - build.getTimestamp().getTime()) / 1000 >= buildTimeoutSeconds) {
+                build.setStatus(Status.TIMEOUT);
+                runningBuilds.remove(entry.getKey());
+                projectService.saveProject(project);
             }
         }
     }
@@ -154,7 +168,6 @@ public class BuildService {
         ClassPathScanningCandidateComponentProvider provider =
                 new ClassPathScanningCandidateComponentProvider(false);
 
-        provider.addIncludeFilter(new AssignableTypeFilter(BuildType.class));
         provider.addIncludeFilter(new AnnotationTypeFilter(BuildTypeExec.class));
 
         buildTypeMappings = new ConcurrentHashMap<>();
