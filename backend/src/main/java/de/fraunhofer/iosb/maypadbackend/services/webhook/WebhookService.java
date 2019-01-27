@@ -132,7 +132,7 @@ public class WebhookService {
     @Async
     public <T> CompletableFuture<ResponseEntity<T>> call(Webhook webhook, Class<T> responseType, Object... uriVariables) {
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<T> response = restTemplate.getForEntity(webhook.getUrl(), responseType, uriVariables);
+        ResponseEntity<T> response = restTemplate.postForEntity(webhook.getUrl(), null, responseType, uriVariables);
         return CompletableFuture.completedFuture(response);
     }
 
