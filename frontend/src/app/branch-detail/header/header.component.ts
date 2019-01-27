@@ -20,9 +20,9 @@ export class HeaderComponent implements OnInit {
 
     ngOnInit() { }
 
-    triggerDeploy(build: Boolean) {
+    triggerDeploy(build: boolean) {
         this.branchService.triggerDeployment(
-            this.projId, this.branch.name, true, this.rebuild.nativeElement.checked
+            this.projId, this.branch.name, build, this.rebuild.nativeElement.checked
         ).subscribe(
             x => { },
             error => {

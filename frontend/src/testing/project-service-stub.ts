@@ -3,6 +3,7 @@ import * as branches from 'sample-requests/get.projects.id.branches.response.jso
 import * as project from 'sample-requests/get.projects.id.response.json';
 import { Branch } from 'src/app/model/branch';
 import { Project } from 'src/app/model/project';
+import { ServiceAccount } from 'src/app/model/serviceAccount';
 
 
 export class ProjectServiceStub {
@@ -12,5 +13,12 @@ export class ProjectServiceStub {
 
     loadProject(id: number): Observable<Project> {
         return of(project['default']);
+    }
+
+    updateServiceAccount(id: number, newAccount: ServiceAccount): Observable<Project> {
+        const proj = new Project();
+        proj.serviceAccount = newAccount;
+        proj.id = id;
+        return of(proj);
     }
 }
