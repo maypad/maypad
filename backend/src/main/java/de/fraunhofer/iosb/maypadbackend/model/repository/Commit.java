@@ -54,4 +54,25 @@ public class Commit {
         this.timestamp = timestamp;
         this.author = author;
     }
+
+    /**
+     * Compare this current commit with an other commit and update different data.
+     *
+     * @param commit Other commit
+     */
+    public void compareAndUpdate(Commit commit) {
+        if (commit == null) {
+            return;
+        }
+        setCommitMessage(commit.getCommitMessage());
+        setCommitIdentifier(commit.getCommitIdentifier());
+        author.compareAndUpdate(commit.author);
+        if (timestamp == null) {
+            timestamp = commit.getTimestamp();
+        } else if (commit.getTimestamp() == null) {
+            timestamp = null;
+        } else if (timestamp.getTime() != commit.getTimestamp().getTime()) {
+            timestamp.setTime(commit.getTimestamp().getTime());
+        }
+    }
 }
