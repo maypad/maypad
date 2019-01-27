@@ -35,7 +35,7 @@ describe('EditProjectDialogComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(EditProjectDialogComponent);
     component = fixture.componentInstance;
-    component.project = response['default'];
+    component.project = { ...response['default'] };
     fixture.detectChanges();
   });
 
@@ -96,8 +96,10 @@ describe('EditProjectDialogComponent', () => {
   });
 
   it('should delete project', () => {
-    const router = getTestBed().get(Router);
-    component.deleteProject();
-    expect(router.url).toBe('/');
+    fixture.ngZone.run(() => {
+      const router = getTestBed().get(Router);
+      component.deleteProject();
+      expect(router.url).toBe('/');
+    });
   });
 });

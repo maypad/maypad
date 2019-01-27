@@ -21,4 +21,8 @@ export class ProjectServiceStub {
         proj.id = id;
         return of(proj);
     }
+
+    refreshProject(id): Observable<{}> {
+        return of({});
+    }
 }

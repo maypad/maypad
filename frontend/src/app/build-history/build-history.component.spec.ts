@@ -24,7 +24,7 @@ describe('BuildHistoryComponent', () => {
       providers: [
         {
           provide: ActivatedRoute, useClass: class {
-            snapshot = snapshot; data = of({ builds: builds, branch: branch, project: project });
+            snapshot = snapshot; data = of({ builds: builds, branch: branch, project: { ...project } });
           }
         }
       ]

@@ -15,21 +15,16 @@ export class ProjectgroupServiceStub {
         return of(get_projectgroups_id_projects_response['default']);
     }
 
-    createProject(id: number, repoUrl: string, serviceAccount: ServiceAccount): Observable<Project> {
-        const proj = new Project();
-        proj.id = id;
-        proj.serviceAccount = serviceAccount;
-        return of(proj);
-    }
-
     createProjectgroup(name: string): Observable<Projectgroup> {
-        return of(post_projectgroups_response['default']);
+        const group = new Projectgroup();
+        group.name = name;
+        return of(group);
     }
 
     updateProjectgroup(id: number, newName: string): Observable<Projectgroup> {
         const group = new Projectgroup();
         group.id = id;
-        group.name = 'asd123';
+        group.name = newName;
         return of(group);
     }
 

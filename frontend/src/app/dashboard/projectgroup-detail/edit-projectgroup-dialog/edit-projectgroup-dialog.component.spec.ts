@@ -32,7 +32,7 @@ describe('EditProjectgroupDialogComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(EditProjectgroupDialogComponent);
     component = fixture.componentInstance;
-    component.projGroup = response;
+    component.projGroup = { ...response };
     fixture.detectChanges();
   });
 
@@ -52,5 +52,11 @@ describe('EditProjectgroupDialogComponent', () => {
     component.newName = newName;
     component.updateProjectgroup();
     expect(component.projGroup.name).toBe(newName);
+  });
+
+  it('should clear info', () => {
+    component.newName = 'asd';
+    component.clearInput();
+    expect(component.newName).toBe(component.projGroup.name);
   });
 });
