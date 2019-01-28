@@ -22,6 +22,8 @@ public class UserServiceAccount extends ServiceAccount {
     @Column(columnDefinition = "TEXT")
     private String password;
     @Column
+    private String salt;
+    @Column
     private String username;
 
     /**

@@ -19,8 +19,10 @@ import javax.persistence.Entity;
 @EqualsAndHashCode(callSuper = true)
 public class KeyServiceAccount extends ServiceAccount {
 
-    @Column(name = "ssh_key", columnDefinition = "TEXT")
-    private String sshKey;
+    @Column(name = "ssh_key", length = 1024)
+    private String key;
+    @Column
+    String salt;
 
     /**
      * Constructor for a serviceaccount with a ssh key.
