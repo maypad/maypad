@@ -133,7 +133,7 @@ public class RepoService {
 
         RepoManager repoManager = project.getRepository().getRepositoryType().toRepoManager(project);
         repoManager.setProjectRootDir(projectService.getRepoDir(project.getId()));
-        repoManager.switchBranch("master");
+        repoManager.switchBranch(repoManager.getMainBranchName());
 
         //compare Maypad config hash
         Tuple<ProjectConfig, File> projectConfigData = repoManager.getProjectConfig();
@@ -167,10 +167,15 @@ public class RepoService {
             branchConfigData.put(branchProperty.getName(), branchProperty);
         }
 
+        List<String> deleteBranches = new LinkedList<>();
+
         for (String branchname : branchNamesRepo) {
             if (!branchConfigData.containsKey(branchname)) {
                 if (!allBranches) {
-                    //we haven't to check this branch cause it isn't needed
+                    //we haven't to check this branch cause it isn't needed. But remove it, if it exists
+                    if (project.getRepository().getBranches().get(branchname) != null) {
+                        deleteBranches.add(branchname);
+                    }
                     continue;
                 }
                 //do detailed information, so we have only the branchname
@@ -209,8 +214,6 @@ public class RepoService {
                 }
             }
         }
-
-        List<String> deleteBranches = new LinkedList<>();
 
         //remove not existing branches
         for (String branchname : project.getRepository().getBranches().keySet()) {

@@ -66,6 +66,13 @@ public abstract class RepoManager {
     public abstract List<String> getBranchNames();
 
     /**
+     * Get the name of the main branch.
+     *
+     * @return Name of the main branch
+     */
+    public abstract String getMainBranchName();
+
+    /**
      * Switches the branch of a repository .
      *
      * @param name Name of the branch
