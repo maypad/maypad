@@ -51,6 +51,16 @@ public class NullRepoManager extends RepoManager {
     }
 
     /**
+     * Get the name of the main branch.
+     *
+     * @return Name of the main branch
+     */
+    @Override
+    public String getMainBranchName() {
+        return "";
+    }
+
+    /**
      * Switches the branch of a repository .
      *
      * @param name Name of the branch

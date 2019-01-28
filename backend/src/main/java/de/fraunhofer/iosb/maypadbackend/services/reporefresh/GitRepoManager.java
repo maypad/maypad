@@ -12,9 +12,9 @@ import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.KeyServiceAccount;
 import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.ServiceAccount;
 import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.UserServiceAccount;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
-import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.ListBranchCommand;
+import org.eclipse.jgit.api.LsRemoteCommand;
+import org.eclipse.jgit.api.TransportCommand;
 import org.eclipse.jgit.api.TransportConfigCallback;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Ref;
@@ -90,7 +90,7 @@ public class GitRepoManager extends RepoManager {
     public List<String> getBranchNames() {
         Collection<Ref> branches = null;
         try {
-            branches = getGit().lsRemote().setHeads(true).call();
+            branches = ((LsRemoteCommand) getAuth(getGit().lsRemote().setHeads(true))).call();
         } catch (GitAPIException e) {
             getLogger().error("Can't get remote branches.");
             return new ArrayList<>();
@@ -107,24 +107,13 @@ public class GitRepoManager extends RepoManager {
     }
 
     /**
-     * Get all branches of the repository.
+     * Get the name of the main branch.
      *
-     * @param mode Selects the mode where the branches should come from (for example, only remotely)
-     * @return List of all branches
+     * @return Name of the main branch
      */
-    private List<Ref> getBranches(ListBranchCommand.ListMode mode) {
-        Git git = getGit();
-        if (getGit() == null) {
-            return null;
-        }
-
-        List<Ref> branches = null;
-        try {
-            branches = git.branchList().setListMode(mode).call();
-        } catch (GitAPIException e) {
-            getLogger().error("Can't read branches from local repo " + getProjectRootDir().getAbsolutePath());
-        }
-        return branches;
+    @Override
+    public String getMainBranchName() {
+        return "master";
     }
 
     /**
@@ -239,7 +228,7 @@ public class GitRepoManager extends RepoManager {
         Collection<Ref> branches = null;
         Git git = getGit();
         try {
-            branches = git.lsRemote().setHeads(true).call();
+            branches = ((LsRemoteCommand) getAuth(git.lsRemote().setHeads(true))).call();
         } catch (GitAPIException e) {
             getLogger().error("Can't get remote branches.");
             return getDefaultCommit();
@@ -348,7 +337,7 @@ public class GitRepoManager extends RepoManager {
     private void gitPull() {
         Git git = getGit();
         try {
-            git.pull().setStrategy(MergeStrategy.THEIRS).call();
+            getAuth(git.pull().setStrategy(MergeStrategy.THEIRS)).call();
         } catch (GitAPIException e) {
             getLogger().error("Can't pull project with id " + getProject().getId());
         }
@@ -360,7 +349,7 @@ public class GitRepoManager extends RepoManager {
      * @param command Clone command
      * @return Clonecommand with added Auth
      */
-    private CloneCommand getAuth(CloneCommand command) {
+    private TransportCommand getAuth(TransportCommand command) {
         ServiceAccount serviceAccount = getProject().getServiceAccount();
         if (serviceAccount != null) {
             if (serviceAccount instanceof UserServiceAccount) {
