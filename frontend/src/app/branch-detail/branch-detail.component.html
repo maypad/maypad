@@ -2,6 +2,9 @@
 </app-branch-header>
 <div class="container w-50 mt-3">
     <ul>
+        <li *ngIf="branch.description">
+            <b>Description: </b>{{ branch.description }}
+        </li>
         <li *ngIf="branch.members.length > 0">
             <b i18n="Members">Members:</b>
             <ul class="mt-1">
@@ -17,7 +20,7 @@
                 </li>
             </ul>
         </li>
-        <li *ngIf="branch.lastCommit">
+        <li *ngIf="branch.lastCommit && branch.lastCommit.identifier">
             <b i18n="Last commit">Last Commit:</b>
             <ul class="mt-1">
                 <li><b i18n="Commit hash">Hash: </b>

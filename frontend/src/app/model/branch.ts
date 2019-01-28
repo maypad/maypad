@@ -14,4 +14,5 @@ export class Branch {
     tags: string[];
     status: BuildStatus;
     lastCommit: Commit;
+    description: string;
 }
