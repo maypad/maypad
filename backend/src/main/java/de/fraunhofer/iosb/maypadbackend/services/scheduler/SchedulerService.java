@@ -11,8 +11,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 
 @Service
@@ -37,7 +37,7 @@ public class SchedulerService {
         this.repoService = repoService;
         this.projectRepository = projectRepository;
         threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
-        taskMapping = new HashMap<>();
+        taskMapping = new ConcurrentHashMap<>();
         threadPoolTaskScheduler.setPoolSize(serverConfig.getSchedulerPoolSize());
         threadPoolTaskScheduler.setRemoveOnCancelPolicy(true);
         threadPoolTaskScheduler.initialize();
