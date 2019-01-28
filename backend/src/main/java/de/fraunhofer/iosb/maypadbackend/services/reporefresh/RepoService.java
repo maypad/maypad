@@ -664,5 +664,4 @@ public class RepoService {
         webhookService.removeWebhook(branch.getBuildSuccessWebhook());
         webhookService.removeWebhook(branch.getBuildFailureWebhook());
     }
-
 }

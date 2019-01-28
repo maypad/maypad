@@ -94,15 +94,19 @@ public class SvnRepoManager extends RepoManager {
      */
     @Override
     public List<String> getBranchNames() {
-        File branchesFolder = new File(projectRoot + "/branches/");
+        File branchesFolder = new File(this.getProjectRootDir().getAbsolutePath() + "/branches/");
         String[] branchList = branchesFolder.list();
-        if (branchList == null) { return new ArrayList<String>(); }
+        if (branchList == null) {
+            logger.info("Project contains no branches");
+            return new ArrayList<String>(); }
         List<String> branches = new ArrayList<String>();
         for (String b : branchList) {
-            if (new File(b).isDirectory()) {
+            logger.info("Found branch: " + b);
+            if (new File(branchesFolder.getAbsolutePath() + "/" + b).isDirectory()) {
                 branches.add(new File(b).getName());
             }
         }
+        logger.info("Found " + branches.size() + " branches.");
         return branches;
     }
 
@@ -142,13 +146,18 @@ public class SvnRepoManager extends RepoManager {
         String tagPath = projConfig.getSvnTagsDirectory();
         File tagFolder = new File(projectRoot + "/" + tagPath);
         String[] tagList = tagFolder.list();
+        if (tagList == null) {
+            logger.info("Project contains no tags.");
+            return new ArrayList<Tag>();
+        }
         List<Tag> tags = new ArrayList<Tag>();
         for (String t : tagList) {
-            if (new File(t).isDirectory()) {
+            if (new File(tagFolder.getAbsolutePath() + "/" + t).isDirectory()) {
                 Tag _t = new Tag();
                 _t.setName(new File(t).getName());
             }
         }
+        logger.info("Found " + tags.size() + " tags.");
         return tags;
     }
 
@@ -234,6 +243,7 @@ public class SvnRepoManager extends RepoManager {
 
         @Override
         public void handleLogEntry(SVNLogEntry svnLogEntry) throws SVNException {
+            commit = new Commit();
             commit.setAuthor(new Author(svnLogEntry.getAuthor(), null));
             commit.setTimestamp(svnLogEntry.getDate());
             commit.setCommitIdentifier(null); // No SVN commit identifier
