@@ -52,7 +52,7 @@ public class SchedulerService {
             logger.info("Scheduled Project " + projectId);
             RefreshTask task = new RefreshTask(projectId, repoService);
             ScheduledFuture<?> sf = threadPoolTaskScheduler.scheduleWithFixedDelay(task,
-                    serverConfig.getReloadRepositoriesSeconds());
+                    serverConfig.getReloadRepositoriesSeconds() * 1000);
             taskMapping.put(projectId, sf);
         }
     }
