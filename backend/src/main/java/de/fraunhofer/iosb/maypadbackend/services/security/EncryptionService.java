@@ -55,7 +55,9 @@ public class EncryptionService {
     private void init() {
         File maypadHome = new File(maypadHomePath);
         if (maypadHome.isDirectory()) {
-            File encryptionKey = new File(maypadHome.getAbsolutePath() + "/key.dat");
+            File security = new File(maypadHome.getAbsolutePath() + "/security/");
+            security.mkdir();
+            File encryptionKey = new File(security.getAbsolutePath() + "/key.dat");
             if (!encryptionKey.isFile()) {
                 try {
                     StringKeyGenerator generator = KeyGenerators.string();
