@@ -77,7 +77,7 @@ public class EncryptionService {
             logger.info("Encryption key set.");
         } else {
             logger.error("MAYPAD_HOME is not set properly.");
-             throw new RuntimeException("MAYPAD_HOME is not set properly.");
+            throw new RuntimeException("MAYPAD_HOME is not set properly.");
         }
     }
 }
