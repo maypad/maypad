@@ -11,6 +11,7 @@ import lombok.Data;
 @Data
 public class BranchResponse {
     private String name;
+    private String description;
     private String readme;
     private CommitResponse lastCommit;
     private String[] members;

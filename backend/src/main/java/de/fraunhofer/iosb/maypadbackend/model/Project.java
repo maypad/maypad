@@ -40,7 +40,7 @@ public class Project {
     @Column
     private String name;
     @Column
-    private String desciption;
+    private String description;
 
 
     @Temporal(TemporalType.TIMESTAMP)

@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -51,7 +52,7 @@ public class RepoService {
     private ProjectService projectService;
     private ServerConfig serverConfig;
     private BranchRepository branchRepository;
-    private Map<Integer, Boolean> lockedProjects; //boolean: allows init while locked
+    private Set<Integer> lockedProjects; //boolean: allows init while locked
     private Logger logger = LoggerFactory.getLogger(RepoService.class);
 
 
@@ -66,15 +67,15 @@ public class RepoService {
     public RepoService(ProjectService projectService, ServerConfig serverConfig, BranchRepository branchRepository) {
         this.projectService = projectService;
         this.serverConfig = serverConfig;
-        this.lockedProjects = new ConcurrentHashMap<>();
+        this.lockedProjects = ConcurrentHashMap.newKeySet();
         this.branchRepository = branchRepository;
     }
 
     private synchronized boolean repoLock(Project project) {
-        if (lockedProjects.containsKey(project.getId()) && !lockedProjects.get(project.getId())) {
+        if (lockedProjects.contains(project.getId())) {
             return true;
         }
-        lockedProjects.put(project.getId(), false);
+        lockedProjects.add(project.getId());
         return false;
     }
 
@@ -85,27 +86,46 @@ public class RepoService {
     /**
      * Refresh and update the given project.
      *
-     * @param project Project to update
+     * @param id Project-id to update
      */
     @Async
-    public void refreshProject(Project project) {
-        if (project == null) {
-            logger.error("Wanted to refresh a null project");
-            return;
-        }
-
-        project = projectService.getProject(project.getId());
+    public void refreshProject(int id) {
+        Project project = projectService.getProject(id);
 
         if (repoLock(project)) {
             logger.info("Project with id " + project.getId() + " is currently updated");
             return;
         }
+        try {
+            doRefreshProject(project);
+        } finally {
+            removeLock(project);
+        }
+    }
 
+    /**
+     * Init first time the given project.
+     *
+     * @param id Project-id for the local repository
+     */
+    @Async
+    public void initProject(int id) {
+        Project project = projectService.getProject(id);
+        if (repoLock(project)) {
+            logger.info("Project with id " + project.getId() + " is currently initializing");
+            return;
+        }
+        try {
+            doInitProject(project);
+        } finally {
+            removeLock(project);
+        }
+    }
+
+    private void doRefreshProject(Project project) {
         if (project.getRepository() == null || project.getRepository().getRepositoryType() == RepositoryType.NONE
                 || project.getRepositoryStatus() == Status.FAILED) {
-            //allow init
-            lockedProjects.put(project.getId(), true);
-            initProject(project);
+            doInitProject(project);
             //lock is removed in init
             return;
         }
@@ -119,85 +139,89 @@ public class RepoService {
         Tuple<ProjectConfig, File> projectConfigData = repoManager.getProjectConfig();
         if (projectConfigData == null) {
             logger.error("No maypad configuration were found in project with id " + project.getId());
-            removeLock(project);
             return;
         }
 
         String hash = FileUtil.calcSha256(projectConfigData.getValue());
         if (hash == null) {
             logger.error("Can't read maypad config with projectid " + project.getId());
-            removeLock(project);
             return;
         }
 
         List<String> branchNamesRepo = repoManager.getBranchNames();
-        if (!hash.equals(project.getRepository().getMaypadConfigHash())) {
+        boolean hasMaypadConfigChanged = !hash.equals(project.getRepository().getMaypadConfigHash());
+        if (hasMaypadConfigChanged) {
             //config has changed or didn't exists before
             logger.info("Maypad-Config for project with id " + project.getId() + " has changed");
-            //update project
-            project.setName(projectConfigData.getKey().getProjectName());
-            project.setDesciption(projectConfigData.getKey().getProjectDescription());
-            project.getRepository().setMaypadConfigHash(hash);
+        }
 
-            //update branches
-            boolean allBranches = projectConfigData.getKey().getAddAllBranches();
-            Map<String, BranchProperty> branchConfigData = new HashMap<>();
-            for (BranchProperty branchProperty : projectConfigData.getKey().getBranchProperties()) {
-                branchConfigData.put(branchProperty.getName(), branchProperty);
-            }
+        //update project
+        project.setName(projectConfigData.getKey().getProjectName());
+        project.setDescription(projectConfigData.getKey().getProjectDescription());
+        project.getRepository().setMaypadConfigHash(hash);
 
-            for (String branchname : branchNamesRepo) {
-                if (!branchConfigData.containsKey(branchname)) {
-                    if (!allBranches) {
-                        //we haven't to check this branch cause it isn't needed
-                        continue;
-                    }
-                    //do detailed information, so we have only the branchname
-                    Branch branch = project.getRepository().getBranches().get(branchname);
-                    if (branch == null) {
-                        //Branch was new created in repo. But only as maypad_all
-                        logger.info("Create new maypad_all branch " + branchname + " for project with id " + project.getId());
-                        branch = new Branch();
-                        branch.setName(branchname);
-                        branch.setBuildStatus(Status.UNKNOWN);
-                        branch.setDependencies(new LinkedHashSet<>());
-                        branch.setBuildType(null);
-                        project.getRepository().getBranches().put(branchname, branchRepository.saveAndFlush(branch));
-                    } else {
-                        //update existing branch. Now it is a maypad_all branch
-                        removeProjectConfigDataInBranch(branch);
-                        branchRepository.saveAndFlush(branch);
-                    }
-                } else {
-                    //branch is a "real" maypad branch
-                    Branch branch = project.getRepository().getBranches().get(branchname);
-                    if (branch == null) {
-                        //new branch, so create it
-                        logger.info("Create new branch " + branchname + " for project with id " + project.getId());
-                        Branch tempBranch = buildBranchModelFromConfig(branchConfigData.get(branchname));
-                        tempBranch.setBuildStatus(Status.UNKNOWN);
-                        branch = branchRepository.saveAndFlush(tempBranch);
-                        project.getRepository().getBranches().put(branchname, branch);
+        //update branches
+        boolean allBranches = projectConfigData.getKey().getAddAllBranches();
+        Map<String, BranchProperty> branchConfigData = new HashMap<>();
+        for (BranchProperty branchProperty : projectConfigData.getKey().getBranchProperties()) {
+            branchConfigData.put(branchProperty.getName(), branchProperty);
+        }
 
-                    } else {
-                        //branch already exists. So compare Branch and update
-                        branch.compareAndUpdate(buildBranchModelFromConfig(branchConfigData.get(branchname)));
-                        branchRepository.saveAndFlush(branch);
-                    }
-
+        for (String branchname : branchNamesRepo) {
+            if (!branchConfigData.containsKey(branchname)) {
+                if (!allBranches) {
+                    //we haven't to check this branch cause it isn't needed
+                    continue;
                 }
-
+                //do detailed information, so we have only the branchname
+                Branch branch = project.getRepository().getBranches().get(branchname);
+                if (branch == null) {
+                    //Branch was new created in repo. But only as maypad_all
+                    logger.info("Create new maypad_all branch " + branchname + " for project with id " + project.getId());
+                    branch = new Branch();
+                    branch.setName(branchname);
+                    branch.setBuildStatus(Status.UNKNOWN);
+                    branch.setDependencies(new LinkedHashSet<>());
+                    branch.setBuildType(null);
+                    branch.setDescription("");
+                    project.getRepository().getBranches().put(branchname, branchRepository.saveAndFlush(branch));
+                } else {
+                    //update existing branch. Now it is a maypad_all branch
+                    removeProjectConfigDataInBranch(branch);
+                    branchRepository.saveAndFlush(branch);
+                }
+            } else {
+                //branch is a "real" maypad branch
+                Branch branch = project.getRepository().getBranches().get(branchname);
+                if (branch == null) {
+                    //new branch, so create it
+                    logger.info("Create new branch " + branchname + " for project with id " + project.getId());
+                    Branch tempBranch = buildBranchModelFromConfig(branchConfigData.get(branchname));
+                    tempBranch.setBuildStatus(Status.UNKNOWN);
+                    branch = branchRepository.saveAndFlush(tempBranch);
+                    project.getRepository().getBranches().put(branchname, branch);
+                } else {
+                    //branch already exists. So compare Branch and update
+                    if (hasMaypadConfigChanged) {
+                        branch.compareAndUpdate(buildBranchModelFromConfig(branchConfigData.get(branchname)));
+                    }
+                    branchRepository.saveAndFlush(branch);
+                }
             }
         }
+
+        List<String> deleteBranches = new LinkedList<>();
 
         //remove not existing branches
         for (String branchname : project.getRepository().getBranches().keySet()) {
             if (!branchNamesRepo.contains(branchname)) {
-                logger.info("Remove branch " + branchname + " in project with id " + project.getId());
-
-                branchRepository.delete(project.getRepository().getBranches().get(branchname));
-                project.getRepository().getBranches().remove(branchname);
+                deleteBranches.add(branchname);
             }
+        }
+        for (String branchname : deleteBranches) {
+            logger.info("Remove branch " + branchname + " in project with id " + project.getId());
+            branchRepository.delete(project.getRepository().getBranches().get(branchname));
+            project.getRepository().getBranches().remove(branchname);
         }
 
         //update repo data from projects
@@ -220,8 +244,6 @@ public class RepoService {
             }
 
             branchRepository.saveAndFlush(branch);
-            removeLock(project);
-
         }
 
 
@@ -236,21 +258,7 @@ public class RepoService {
         logger.info("Project with id " + project.getId() + " has refreshed.");
     }
 
-    /**
-     * Init first time the given project.
-     *
-     * @param project Project for the local repository
-     */
-    @Async
-    public void initProject(Project project) {
-        if (project == null) {
-            logger.error("Wanted to init a null project");
-            return;
-        }
-        if (repoLock(project)) {
-            logger.info("Project with id " + project.getId() + " is currently initializing");
-            return;
-        }
+    private void doInitProject(Project project) {
         logger.info("Start init project with id " + project.getId());
         Repository repository = project.getRepository();
         //repo wasn't created before
@@ -267,7 +275,6 @@ public class RepoService {
             logger.error("Can't read / write to " + parentDir.getAbsolutePath());
             initNullRepository(repository);
             project.setRepositoryStatus(Status.FAILED);
-            removeLock(project);
             return;
         }
         File file = new File(parentDir.getAbsolutePath() + File.separator + project.getId());
@@ -277,7 +284,6 @@ public class RepoService {
             logger.error("Can't create directories for " + file.getAbsolutePath());
             initNullRepository(repository);
             project.setRepositoryStatus(Status.FAILED);
-            removeLock(project);
             return;
         }
         RepositoryType repositoryType = getCorrectRepositoryType(project.getRepositoryUrl());
@@ -297,10 +303,9 @@ public class RepoService {
         }
 
         project = projectService.saveProject(project);
-        removeLock(project);
         //if repo isn't null, so we can refresh the data. Preventing call this method twice.
         if (repositoryType != RepositoryType.NONE && cloneSuccess) {
-            refreshProject(project);
+            doRefreshProject(project);
         }
     }
 

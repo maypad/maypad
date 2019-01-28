@@ -82,20 +82,44 @@ public class Branch {
 
 
     /**
-     * Compare this current branch with an other branch and update different data.
+     * Compare this current branch with an other branch and update different data. Important: Only Data in maypad.yaml
+     * will be compared!
      *
      * @param branch Other Branch
      */
     public void compareAndUpdate(Branch branch) {
-        Util.updateSet(members, branch.getMembers());
-        Util.updateSet(mails, branch.getMails());
-        Util.updateSet(dependencies, branch.getDependencies());
-        if (!buildType.equals(branch.getBuildType())) {
-            buildType = branch.getBuildType();
+        if (branch == null) {
+            return;
         }
-        if (!deploymentType.equals(branch.getDeploymentType())) {
-            deploymentType = branch.getDeploymentType();
+
+        if (name == null || !name.equals(branch.getName())) {
+            setName(branch.getName());
         }
+
+        if (description == null || !description.equals(branch.getDescription())) {
+            setDescription(branch.getDescription());
+        }
+
+        if (branch.getMembers() != null) {
+            Util.updateSet(members, branch.getMembers());
+        }
+
+        if (branch.getMails() != null) {
+            Util.updateSet(mails, branch.getMails());
+        }
+
+        if (branch.getDependencies() != null) {
+            Util.updateSet(dependencies, branch.getDependencies());
+        }
+
+        if (buildType == null || !buildType.equals(branch.getBuildType())) {
+            setBuildType(branch.getBuildType());
+        }
+
+        if (deploymentType == null || !deploymentType.equals(branch.getDeploymentType())) {
+            setDeploymentType(branch.getDeploymentType());
+        }
+
     }
 
 
