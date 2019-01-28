@@ -199,9 +199,9 @@ public class ProjectService {
             return null;
         }
         ServiceAccount serviceAccount = null;
-        if (request.getKey() != null
-                && request.getKey().isPresent()) {
-            serviceAccount = new KeyServiceAccount(request.getKey().get());
+        if (request.getSshKey() != null
+                && request.getSshKey().isPresent()) {
+            serviceAccount = new KeyServiceAccount(request.getSshKey().get());
         } else if (request.getUsername() != null && request.getPassword() != null
                 && request.getUsername().isPresent() && request.getPassword().isPresent()) {
             serviceAccount = new UserServiceAccount(request.getUsername().get(),

@@ -99,6 +99,7 @@ public class RepoService {
         try {
             doRefreshProject(project);
         } finally {
+            KeyFileManager.deleteSshFile(projectService.getRepoDir(id), id);
             removeLock(project);
         }
     }
@@ -118,6 +119,7 @@ public class RepoService {
         try {
             doInitProject(project);
         } finally {
+            KeyFileManager.deleteSshFile(projectService.getRepoDir(id), id);
             removeLock(project);
         }
     }
@@ -132,8 +134,17 @@ public class RepoService {
         logger.info("Start refresh project with id " + project.getId());
 
         RepoManager repoManager = project.getRepository().getRepositoryType().toRepoManager(project);
-        repoManager.setProjectRootDir(projectService.getRepoDir(project.getId()));
+        repoManager.initRepoManager(new File(serverConfig.getRepositoryStoragePath()), projectService.getRepoDir(project.getId()));
         repoManager.switchBranch(repoManager.getMainBranchName());
+
+        //clone project, if data were deleted
+        if (!projectService.getRepoDir(project.getId()).exists()) {
+            if (!repoManager.cloneRepository()) {
+                project.setRepositoryStatus(Status.FAILED);
+                return;
+            }
+        }
+
 
         //compare Maypad config hash
         Tuple<ProjectConfig, File> projectConfigData = repoManager.getProjectConfig();
@@ -297,7 +308,8 @@ public class RepoService {
 
         //clone
         RepoManager repoManager = repositoryType.toRepoManager(project);
-        repoManager.setProjectRootDir(projectService.getRepoDir(project.getId()));
+        repoManager.initRepoManager(parentDir, projectService.getRepoDir(project.getId()));
+
         boolean cloneSuccess = repoManager.cloneRepository();
         if (!cloneSuccess) {
             project.setRepositoryStatus(Status.FAILED);

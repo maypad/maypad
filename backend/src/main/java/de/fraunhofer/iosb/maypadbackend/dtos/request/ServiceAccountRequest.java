@@ -13,5 +13,5 @@ import java.util.Optional;
 public class ServiceAccountRequest {
     private Optional<String> username;
     private Optional<String> password;
-    private Optional<String> key;
+    private Optional<String> sshKey;
 }

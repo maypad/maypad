@@ -20,14 +20,14 @@ import javax.persistence.Entity;
 public class KeyServiceAccount extends ServiceAccount {
 
     @Column(name = "ssh_key", columnDefinition = "TEXT")
-    private String key;
+    private String sshKey;
 
     /**
      * Constructor for a serviceaccount with a ssh key.
      *
-     * @param key ssh key
+     * @param sshKey ssh key
      */
-    public KeyServiceAccount(String key) {
-        this.key = key;
+    public KeyServiceAccount(String sshKey) {
+        this.sshKey = sshKey;
     }
 }
