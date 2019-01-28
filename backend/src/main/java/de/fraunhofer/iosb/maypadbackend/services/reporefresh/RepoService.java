@@ -88,7 +88,7 @@ public class RepoService {
      *
      * @param id Project-id to update
      */
-    @Async
+    @Async("repoRefreshPool")
     public void refreshProject(int id) {
         Project project = projectService.getProject(id);
 
@@ -109,7 +109,7 @@ public class RepoService {
      *
      * @param id Project-id for the local repository
      */
-    @Async
+    @Async("repoRefreshPool")
     public void initProject(int id) {
         Project project = projectService.getProject(id);
         if (repoLock(project)) {
