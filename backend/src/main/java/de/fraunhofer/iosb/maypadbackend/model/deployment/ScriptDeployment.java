@@ -21,4 +21,18 @@ public class ScriptDeployment extends DeploymentType {
     @Column
     private File script;
 
+    public ScriptDeployment(File script) {
+        this.script = script;
+    }
+
+    /**
+     * Constructor for Script-Deployment.
+     *
+     * @param script File to the script
+     * @param name   Name of the deployment
+     */
+    public ScriptDeployment(File script, String name) {
+        super(name);
+        this.script = script;
+    }
 }

@@ -6,6 +6,7 @@ import de.fraunhofer.iosb.maypadbackend.config.server.ServerConfig;
 import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.Status;
 import de.fraunhofer.iosb.maypadbackend.model.build.WebhookBuild;
+import de.fraunhofer.iosb.maypadbackend.model.deployment.ScriptDeployment;
 import de.fraunhofer.iosb.maypadbackend.model.deployment.WebhookDeployment;
 import de.fraunhofer.iosb.maypadbackend.model.person.Mail;
 import de.fraunhofer.iosb.maypadbackend.model.person.Person;
@@ -159,7 +160,6 @@ public class RepoService {
             return;
         }
 
-        List<String> branchNamesRepo = repoManager.getBranchNames();
         boolean hasMaypadConfigChanged = !hash.equals(project.getRepository().getMaypadConfigHash());
         if (hasMaypadConfigChanged) {
             //config has changed or didn't exists before
@@ -179,6 +179,7 @@ public class RepoService {
         }
 
         List<String> deleteBranches = new LinkedList<>();
+        List<String> branchNamesRepo = repoManager.getBranchNames();
 
         for (String branchname : branchNamesRepo) {
             if (!branchConfigData.containsKey(branchname)) {
@@ -387,8 +388,20 @@ public class RepoService {
 
         //deployment
         if (branchProperty.getDeployment() != null) {
-            branch.setDeploymentType(new WebhookDeployment(new ExternalWebhook(branchProperty.getDeployment().getUrl()),
-                    branchProperty.getDeployment().getDeploymentName()));
+            switch (branchProperty.getDeployment().getType().toLowerCase()) {
+                case "webhook":
+                    branch.setDeploymentType(
+                            new WebhookDeployment(new ExternalWebhook(branchProperty.getDeployment().getArguments()),
+                                    branchProperty.getDeployment().getName()));
+                    break;
+                case "script":
+                    branch.setDeploymentType(new ScriptDeployment(new File(branchProperty.getDeployment().getArguments()),
+                            branchProperty.getDeployment().getName()));
+                    break;
+                default:
+                    logger.warn("Unknown deploymenttype " + branchProperty.getDeployment().getType() + " in branch " + branch.getName());
+                    break;
+            }
         }
 
         //dependencies

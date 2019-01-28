@@ -8,6 +8,7 @@ import de.fraunhofer.iosb.maypadbackend.model.deployment.DeploymentType;
 import de.fraunhofer.iosb.maypadbackend.model.person.Mail;
 import de.fraunhofer.iosb.maypadbackend.model.person.Person;
 import de.fraunhofer.iosb.maypadbackend.model.webhook.InternalWebhook;
+import de.fraunhofer.iosb.maypadbackend.util.Util;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
