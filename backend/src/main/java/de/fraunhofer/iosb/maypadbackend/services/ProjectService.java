@@ -73,6 +73,7 @@ public class ProjectService {
         //get the saved project, with correct id
         project = saveProject(project);
         addProjectToProjectgroup(projectgroupId, project);
+        schedulerService.scheduleRepoRefresh(project.getId());
         return project;
     }
 
@@ -180,6 +181,8 @@ public class ProjectService {
     public void deleteProject(int id) {
         //check if repo id is valid and remove webhook
         webhookService.removeWebhook(getProject(id).getRefreshWebhook());
+        getProject(id);
+        schedulerService.unscheduleRepoRefresh(id);
         projectRepository.deleteById(id);
     }
 
