@@ -5,3 +5,7 @@
 .text-black {
     color:black;
 }
+
+#description {
+    display: block;
+}

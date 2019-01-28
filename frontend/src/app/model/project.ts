@@ -10,4 +10,5 @@ export class Project {
     serviceAccount: ServiceAccount;
     status: BuildStatus;
     groupId: number;
+    description: string;
 }
