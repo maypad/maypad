@@ -18,6 +18,7 @@ import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.TransportConfigCallback;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.merge.MergeStrategy;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.transport.JschConfigSessionFactory;
@@ -31,6 +32,7 @@ import org.eclipse.jgit.util.FS;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -86,8 +88,15 @@ public class GitRepoManager extends RepoManager {
      */
     @Override
     public List<String> getBranchNames() {
-        List<Ref> branches = getBranches(ListBranchCommand.ListMode.REMOTE);
+        Collection<Ref> branches = null;
+        try {
+            branches = getGit().lsRemote().setHeads(true).call();
+        } catch (GitAPIException e) {
+            getLogger().error("Can't get remote branches.");
+            return new ArrayList<>();
+        }
         List<String> branchNames = new ArrayList<>();
+
         if (branches == null) {
             return branchNames;
         }
@@ -213,6 +222,13 @@ public class GitRepoManager extends RepoManager {
     }
 
     /**
+     * Clean the RepoManager after usage.
+     */
+    public void cleanUp() {
+        getGit().close();
+    }
+
+    /**
      * Get the last Commit of the current given branch.
      *
      * @param branchname Branch of the last commit. If null, all branches were checked.
@@ -220,16 +236,22 @@ public class GitRepoManager extends RepoManager {
      */
     public Commit getLastCommitByBranch(String branchname) {
         boolean allBranches = branchname == null;
-        List<Ref> branches = getBranches(ListBranchCommand.ListMode.REMOTE);
+        Collection<Ref> branches = null;
+        Git git = getGit();
+        try {
+            branches = git.lsRemote().setHeads(true).call();
+        } catch (GitAPIException e) {
+            getLogger().error("Can't get remote branches.");
+            return getDefaultCommit();
+        }
         if (branches == null) {
             return getDefaultCommit();
         }
-        Git git = getGit();
 
         RevCommit revCommit = null;
         RevWalk walk = new RevWalk(git.getRepository());
         for (Ref branch : branches) {
-            if (!allBranches && !branch.getName().equals("refs/remotes/origin/" + branchname)) {
+            if (!allBranches && !branch.getName().equals("refs/heads/" + branchname)) {
                 continue;
             }
             RevCommit commit = null;
@@ -239,7 +261,6 @@ public class GitRepoManager extends RepoManager {
                 getLogger().warn("Can't get last commit of branch " + branch.getName() + " in " + getProjectRootDir().getAbsolutePath());
             }
             if (commit == null) {
-                System.out.println("Commit is null");
                 continue;
             }
             if (revCommit == null) {
@@ -264,9 +285,7 @@ public class GitRepoManager extends RepoManager {
      */
     private String getCurrentBranch() {
         try {
-            String currentBranch = getGit().getRepository().getBranch();
-            getLogger().info("Get last commit of current (local) branch: " + currentBranch);
-            return currentBranch;
+            return getGit().getRepository().getBranch();
         } catch (IOException e) {
             getLogger().error("Can't detect current (local) branch");
         }
@@ -329,7 +348,7 @@ public class GitRepoManager extends RepoManager {
     private void gitPull() {
         Git git = getGit();
         try {
-            git.pull().call();
+            git.pull().setStrategy(MergeStrategy.THEIRS).call();
         } catch (GitAPIException e) {
             getLogger().error("Can't pull project with id " + getProject().getId());
         }
@@ -360,13 +379,13 @@ public class GitRepoManager extends RepoManager {
 
                         @Override
                         protected JSch createDefaultJSch(FS fs) throws JSchException {
-                            JSch jSch = super.createDefaultJSch(fs);
+                            JSch jsch = super.createDefaultJSch(fs);
                             File keyFile = getSshFile();
                             if (keyFile != null) {
-                                jSch.addIdentity(keyFile.getAbsolutePath());
+                                jsch.addIdentity(keyFile.getAbsolutePath());
                             }
 
-                            return jSch;
+                            return jsch;
                         }
                     };
 

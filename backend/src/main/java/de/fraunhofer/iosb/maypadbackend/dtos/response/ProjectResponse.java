@@ -12,6 +12,7 @@ import lombok.Data;
 public class ProjectResponse {
     private int id;
     private String name;
+    private String description;
     private Status buildStatus;
     private String refreshUrl;
     private String repositoryUrl;

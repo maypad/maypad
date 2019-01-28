@@ -31,6 +31,9 @@ public class Util {
      * @param <T>     Type in list
      */
     public static <T> void updateList(List<T> oldList, List<T> newList) {
+        if (newList == null) {
+            return;
+        }
         oldList.retainAll(newList);
         for (T item : newList) {
             if (!oldList.contains(item)) {

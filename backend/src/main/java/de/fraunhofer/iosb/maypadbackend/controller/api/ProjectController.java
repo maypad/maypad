@@ -37,7 +37,7 @@ public class ProjectController implements ProjectApi {
     @Override
     public ProjectResponse createProject(@Valid CreateProjectRequest request) {
         Project project = projectService.create(request);
-        repoService.initProject(project);
+        repoService.initProject(project.getId());
         return projectMapper.toResponse(project);
     }
 
@@ -60,7 +60,7 @@ public class ProjectController implements ProjectApi {
     public void refreshProject(int id) {
         //TODO: Implement RepoService
 
-        repoService.refreshProject(projectService.getProject(id));
+        repoService.refreshProject(id);
     }
 
     @Override

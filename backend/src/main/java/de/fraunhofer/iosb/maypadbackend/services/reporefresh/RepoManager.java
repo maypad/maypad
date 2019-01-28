@@ -95,13 +95,6 @@ public abstract class RepoManager {
     protected abstract boolean cloneRepository();
 
     /**
-     * Check if there are changes in the repository and update the project accordingly.
-     */
-    public void refreshRepository() {
-
-    }
-
-    /**
      * Get the project of this repomanager.
      *
      * @return Project of this repomanager
@@ -183,7 +176,7 @@ public abstract class RepoManager {
     }
 
     /**
-     * Get the locaion root dir of the current branch.
+     * Get the location root dir of the current branch.
      *
      * @return File to the location
      */
