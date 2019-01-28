@@ -23,7 +23,6 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.transport.JschConfigSessionFactory;
 import org.eclipse.jgit.transport.OpenSshConfig;
-import org.eclipse.jgit.transport.SshSessionFactory;
 import org.eclipse.jgit.transport.SshTransport;
 import org.eclipse.jgit.transport.Transport;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
@@ -357,34 +356,52 @@ public class GitRepoManager extends RepoManager {
                 command.setCredentialsProvider(new UsernamePasswordCredentialsProvider(userServiceAccount.getUsername(),
                         userServiceAccount.getPassword()));
             } else if (serviceAccount instanceof KeyServiceAccount) {
-                KeyServiceAccount keyServiceAccount = (KeyServiceAccount) serviceAccount;
                 command.setTransportConfigCallback(new TransportConfigCallback() {
+                    @Override
+                    public void configure(Transport transport) {
+                        SshTransport sshTransport = (SshTransport) transport;
+                        sshTransport.setSshSessionFactory(new JschConfigSessionFactory() {
+                            @Override
+                            protected void configure(OpenSshConfig.Host host, Session session) {
+                                session.setConfig("StrictHostKeyChecking", "no");
+                            }
 
-                    private final SshSessionFactory sshSessionFactory = new JschConfigSessionFactory() {
+                            @Override
+                            protected JSch createDefaultJSch(FS fs) throws JSchException {
+                                JSch defaultJSch = super.createDefaultJSch(fs);
+                                defaultJSch.addIdentity(getKeyFileManager().getSshFile().getAbsolutePath());
+                                return defaultJSch;
+                            }
+                        });
+                    }
+                });
+                /*command.setTransportConfigCallback((TransportConfigCallback) (command.setTransportConfigCallback(transport -> {
+                    SshTransport sshTransport = (SshTransport) transport;
+                    sshTransport.setSshSessionFactory(new JschConfigSessionFactory() {
                         @Override
-                        protected void configure(OpenSshConfig.Host hc, Session session) {
+                        protected void configure(OpenSshConfig.Host host, Session session) {
                             session.setConfig("StrictHostKeyChecking", "no");
                         }
 
                         @Override
                         protected JSch createDefaultJSch(FS fs) throws JSchException {
                             JSch jsch = super.createDefaultJSch(fs);
-                            File keyFile = getSshFile();
+                            File keyFile = getKeyFileManager().getSshFile();
                             if (keyFile != null) {
                                 jsch.addIdentity(keyFile.getAbsolutePath());
                             }
-
                             return jsch;
                         }
-                    };
+                    });
+                })));*/
 
-                    @Override
+                    /*@Override
                     public void configure(Transport transport) {
-                        getSshFile();
+                        File keyFile = getKeyFileManager().getSshFile();
                         SshTransport sshTransport = (SshTransport) transport;
                         sshTransport.setSshSessionFactory(sshSessionFactory);
-                    }
-                });
+                    }*/
+                // });
                 /*command.setTransportConfigCallback(transport -> {
                     SshTransport sshTransport = (SshTransport) transport;
                     sshTransport.setSshSessionFactory(new JschConfigSessionFactory() {

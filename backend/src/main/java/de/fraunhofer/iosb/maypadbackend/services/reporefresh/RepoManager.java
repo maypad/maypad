@@ -5,22 +5,15 @@ import de.fraunhofer.iosb.maypadbackend.config.project.YamlProjectConfig;
 import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Commit;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Tag;
-import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.KeyServiceAccount;
 import de.fraunhofer.iosb.maypadbackend.util.FileUtil;
 import de.fraunhofer.iosb.maypadbackend.util.Tuple;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -34,9 +27,10 @@ public abstract class RepoManager {
 
     private Project project;
     private Logger logger = LoggerFactory.getLogger(RepoManager.class);
-    @Setter
     @Getter(AccessLevel.PROTECTED)
     private File projectRootDir;
+    @Getter(AccessLevel.PROTECTED)
+    private KeyFileManager keyFileManager;
 
     /**
      * Constructor, prepare the RepoManager.
@@ -56,6 +50,16 @@ public abstract class RepoManager {
      */
     public RepoManager(Project project) {
         this.project = project;
+    }
+
+    /**
+     * Init the project repo manager.
+     *
+     * @param projectRootDir The root directory for the repo files
+     */
+    public void initRepoManager(File keyDir, File projectRootDir) {
+        this.projectRootDir = projectRootDir;
+        this.keyFileManager = new KeyFileManager(keyDir, project);
     }
 
     /**
@@ -147,42 +151,6 @@ public abstract class RepoManager {
     }
 
     /**
-     * Create a SSH pem File.
-     *
-     * @return SSH File with key
-     */
-    protected File getSshFile() {
-        File keyDir = new File(projectRootDir.getAbsolutePath() + File.separator + "keys");
-        if (!keyDir.isDirectory() && !keyDir.exists()) {
-            logger.info("Folder for keys doesn't exists. So, create it.");
-            if (!keyDir.mkdirs()) {
-                logger.error("Can't create folder " + keyDir.getAbsolutePath());
-                return null;
-            }
-        }
-        File keyFile = new File(keyDir.getAbsolutePath() + File.separator + project.getId());
-        //
-        if (keyFile.exists()) {
-            return keyFile;
-        }
-        //Create new keyfile
-        if (!(project.getServiceAccount() instanceof KeyServiceAccount)) {
-            logger.warn("Project with id " + project.getId() + " hasn't an serviceaccount with a key.");
-            return null;
-        }
-        KeyServiceAccount serviceAccount = (KeyServiceAccount) project.getServiceAccount();
-        List<String> lines = Arrays.asList("-----BEGIN RSA PRIVATE KEY-----", serviceAccount.getKey(), "-----END RSA PRIVATE KEY-----");
-        Path file = Paths.get(keyFile.getAbsolutePath());
-        try {
-            Files.write(file, lines, Charset.forName("UTF-8"));
-        } catch (IOException e) {
-            logger.error("Can't write key file for project with id " + project.getId());
-            return null;
-        }
-        return keyFile;
-    }
-
-    /**
      * Get the location root dir of the current branch.
      *
      * @return File to the location
@@ -191,16 +159,5 @@ public abstract class RepoManager {
         return projectRootDir;
     }
 
-    /**
-     * Delete the SSH key file, if exists.
-     */
-    protected void deleteSshFile() {
-        File keyFile = new File(projectRootDir.getAbsolutePath() + File.separator + "keys" + File.separator + project.getId());
-        if (keyFile.exists()) {
-            if (!keyFile.delete()) {
-                logger.error("Can't delete key file for project with id " + project.getId());
-            }
-        }
-    }
 
 }
