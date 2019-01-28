@@ -313,8 +313,8 @@ public class GitRepoManager extends RepoManager {
         if (revCommit == null) {
             return commit;
         }
-        commit.setCommitMessage(revCommit.getShortMessage());
-        commit.setCommitIdentifier(revCommit.getName());
+        commit.setMessage(revCommit.getShortMessage());
+        commit.setIdentifier(revCommit.getName());
         commit.setAuthor(new Author(revCommit.getAuthorIdent().getName(), new Mail(revCommit.getAuthorIdent().getEmailAddress())));
         commit.setTimestamp(revCommit.getAuthorIdent().getWhen());
 

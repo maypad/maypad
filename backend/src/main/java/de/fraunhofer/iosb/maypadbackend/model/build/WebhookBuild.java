@@ -21,7 +21,6 @@ import javax.persistence.OneToOne;
 @Data
 @NoArgsConstructor
 @Entity
-@NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @BuildTypeExec(executor = WebhookBuildExecutor.class)
@@ -30,8 +29,4 @@ public class WebhookBuild extends BuildType {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private ExternalWebhook buildWebhook;
 
-
-    public WebhookBuild(ExternalWebhook buildWebhook) {
-        this.buildWebhook = buildWebhook;
-    }
 }

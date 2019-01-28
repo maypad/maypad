@@ -174,6 +174,7 @@ public class ProjectService {
      * @param id Id of the project
      */
     public void deleteProject(int id) {
+        //check if repo id is valid
         getProject(id);
         projectRepository.deleteById(id);
     }

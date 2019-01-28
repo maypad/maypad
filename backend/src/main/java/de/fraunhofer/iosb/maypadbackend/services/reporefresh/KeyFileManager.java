@@ -55,7 +55,8 @@ public class KeyFileManager {
         KeyServiceAccount serviceAccount = (KeyServiceAccount) project.getServiceAccount();
         //empty line after key is needed for API, if rsa key is only in one line.
         // So: mind. 2 lines for the key is needed (or one line with a following empty line)
-        List<String> lines = Arrays.asList("-----BEGIN RSA PRIVATE KEY-----", serviceAccount.getSshKey(), "", "-----END RSA PRIVATE KEY-----");
+        List<String> lines = Arrays.asList("-----BEGIN RSA PRIVATE KEY-----", serviceAccount.getSshKey(), "",
+                "-----END RSA PRIVATE KEY-----");
         Path file = Paths.get(keyFile.getAbsolutePath());
         try {
             Files.write(file, lines, Charset.forName("UTF-8"));

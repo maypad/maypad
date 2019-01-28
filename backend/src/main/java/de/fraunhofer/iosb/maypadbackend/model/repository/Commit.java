@@ -64,8 +64,8 @@ public class Commit {
         if (commit == null) {
             return;
         }
-        setCommitMessage(commit.getCommitMessage());
-        setCommitIdentifier(commit.getCommitIdentifier());
+        setMessage(commit.getMessage());
+        setIdentifier(commit.getIdentifier());
         author.compareAndUpdate(commit.author);
         if (timestamp == null) {
             timestamp = commit.getTimestamp();
