@@ -85,6 +85,7 @@ public class ServerConfigTest {
         assertThat(serverConfig.getDbPort()).isEqualTo(7357);
         assertThat(serverConfig.getSchedulerPoolSize()).isEqualTo(4);
         assertThat(serverConfig.getWebhookTokenLength()).isEqualTo(24);
+        assertThat(serverConfig.getDomain()).isEqualTo("maypad.de");
     }
 
 

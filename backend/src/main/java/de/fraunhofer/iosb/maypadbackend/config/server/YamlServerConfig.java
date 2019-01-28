@@ -47,6 +47,8 @@ public class YamlServerConfig implements ServerConfig {
     private int schedulerPoolSize;
     @Value("${webhook.tokenLength:${MAYPAD_WEBHOOK_TOKEN_LENGTH:20}}")
     private int webhookTokenLength;
+    @Value("${domain:${MAYPAD_DOMAIN:not set}}")
+    private String domain;
 
     /**
      * Bean for easy access to properties.
@@ -68,9 +70,11 @@ public class YamlServerConfig implements ServerConfig {
                 yaml.setResources(new FileSystemResource(configFile));
             } else {
                 logger.error("No config found in " + maypadHome.getAbsolutePath());
+                throw new RuntimeException("No config found in " + maypadHome.getAbsolutePath());
             }
         } else {
             logger.error("MAYPAD_HOME is not set properly.");
+            throw new RuntimeException("MAYPAD_HOME ist not set properly");
         }
         propertySourcesPlaceholderConfigurer.setProperties(yaml.getObject());
         return propertySourcesPlaceholderConfigurer;
