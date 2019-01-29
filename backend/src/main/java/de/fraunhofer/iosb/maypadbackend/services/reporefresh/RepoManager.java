@@ -138,7 +138,6 @@ public abstract class RepoManager {
      */
     public Tuple<ProjectConfig, File> getProjectConfig() {
         File mapaydConfigPath = new File(getProjectRootDir().getAbsolutePath() + File.separator + "maypad.yaml");
-        logger.info(mapaydConfigPath.getAbsolutePath());
         if (mapaydConfigPath.exists() && mapaydConfigPath.canRead()) {
             try {
                 return new Tuple<>(new YamlProjectConfig(mapaydConfigPath), mapaydConfigPath);
@@ -170,14 +169,13 @@ public abstract class RepoManager {
         return projectRootDir;
     }
 
-    protected int getSshKey() {
+    protected int getSshPort() {
         try {
             String[] spl = project.getRepositoryUrl().split(":");
             return Integer.parseInt(spl[spl.length - 1]);
-        } catch (Exception e) {
-            logger.error("Couldn't get SSH-Port from url.");
+        } catch (Exception ex) {
+            logger.error("Could not get port from URL.");
             return -1;
         }
     }
-
 }

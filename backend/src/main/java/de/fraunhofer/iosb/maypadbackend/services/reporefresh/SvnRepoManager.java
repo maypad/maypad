@@ -68,9 +68,10 @@ public class SvnRepoManager extends RepoManager {
         logger.info("Cloned project into " + projectRoot);
         if (project.getServiceAccount() != null) {
             if (project.getServiceAccount() instanceof KeyServiceAccount) {
+                KeyFileManager kfm = new KeyFileManager(this.getProjectRootDir(), this.getProject());
                 KeyServiceAccount sA = (KeyServiceAccount)project.getServiceAccount();
-                File sshFile = getSshFile();
-                int sshPort = (getSshKey() == -1) ? 22 : getSshKey();
+                File sshFile = kfm.getSshFile();
+                int sshPort = (this.getSshPort() == -1) ? 22 : getSshPort();
                 authManager = new BasicAuthenticationManager("", sshFile, "", sshPort);
             } else if (project.getServiceAccount() instanceof UserServiceAccount) {
                 UserServiceAccount sA = (UserServiceAccount)project.getServiceAccount();
@@ -108,6 +109,16 @@ public class SvnRepoManager extends RepoManager {
         }
         logger.info("Found " + branches.size() + " branches.");
         return branches;
+    }
+
+    /**
+     * Get the name of the main branch.
+     *
+     * @return Name of the main branch
+     */
+    @Override
+    public String getMainBranchName() {
+        return "trunk";
     }
 
     /**
@@ -246,8 +257,8 @@ public class SvnRepoManager extends RepoManager {
             commit = new Commit();
             commit.setAuthor(new Author(svnLogEntry.getAuthor(), null));
             commit.setTimestamp(svnLogEntry.getDate());
-            commit.setCommitIdentifier(null); // No SVN commit identifier
-            commit.setCommitMessage(svnLogEntry.getMessage());
+            commit.setIdentifier(null); // No SVN commit identifier
+            commit.setMessage(svnLogEntry.getMessage());
         }
 
         public Commit getCommit() {
