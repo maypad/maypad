@@ -46,12 +46,12 @@ public class WebhookService {
     private static final Logger logger = LoggerFactory.getLogger(WebhookService.class);
 
 
-
     /**
      * Constructor for WebhookService.
-     * @param serverConfig the server configuration
-     * @param buildService the BuildService used to build projects
-     * @param repoService the RepoService used to update repositories
+     *
+     * @param serverConfig      the server configuration
+     * @param buildService      the BuildService used to build projects
+     * @param repoService       the RepoService used to update repositories
      * @param projectRepository the ProjectRepository used to access projects
      */
     @Lazy
@@ -70,6 +70,7 @@ public class WebhookService {
 
     /**
      * Generates a new token used for identifying webhooks.
+     *
      * @return the generated token
      */
     private String generateToken() {
@@ -84,6 +85,7 @@ public class WebhookService {
 
     /**
      * Generates a webhook, that signals that the last build on the given branch was successful.
+     *
      * @param branch the branch that should be updated as a pair of project id and branch name
      * @return InternalWebhook for the generated webhook.
      */
@@ -95,6 +97,7 @@ public class WebhookService {
 
     /**
      * Generates a webhook, that signals that the last build on the given branch failed.
+     *
      * @param branch the branch that should be updated as a pair of project id and branch name
      * @return InternalWebhook for the generated webhook.
      */
@@ -106,6 +109,7 @@ public class WebhookService {
 
     /**
      * Generates a webhook, that signals that the given project should be refreshed.
+     *
      * @param projectId the id of the project that should be updated
      * @return InternalWebhook for the generated webhook.
      */
@@ -117,6 +121,7 @@ public class WebhookService {
 
     /**
      * Removes the mapping for the given Webhook.
+     *
      * @param webhook the webhook that should be unmapped.
      */
     public void removeWebhook(InternalWebhook webhook) {
@@ -125,7 +130,8 @@ public class WebhookService {
 
     /**
      * Calls the given webhook and returns the ResponseEntity with the given type.
-     * @param webhook the webhook that should be called
+     *
+     * @param webhook      the webhook that should be called
      * @param responseType the type of the ResponseEntity
      * @param uriVariables the variables to expand the url of the given webhook
      * @return Future of ResponseEntity
@@ -139,6 +145,7 @@ public class WebhookService {
 
     /**
      * Calls the given webhook and returns the ReponseEntity as String.
+     *
      * @param webhook the webhook that should be called
      * @return Future of ResponseEntity
      */
@@ -149,6 +156,7 @@ public class WebhookService {
 
     /**
      * Handles a call to an webhook with the given token.
+     *
      * @param token the token of the called Webhook.
      */
     public void handle(String token) {
@@ -165,6 +173,9 @@ public class WebhookService {
         for (Project project : projects) {
             if (project.getRefreshWebhook() != null) {
                 mappedHooks.put(project.getRefreshWebhook().getToken(), new RefreshWebhookHandler(project.getId(), repoService));
+            }
+            if (project.getRepository() == null) {
+                continue;
             }
             for (Map.Entry<String, Branch> entry : project.getRepository().getBranches().entrySet()) {
                 if (entry.getValue().getBuildFailureWebhook() != null) {
