@@ -291,6 +291,7 @@ public class GitRepoManager extends RepoManager {
         try {
             getAuth(Git.cloneRepository().setURI(getProject().getRepositoryUrl()).setDirectory(getProjectRootDir())).call();
         } catch (GitAPIException e) {
+            getGit().close();
             getLogger().warn("Can't access to repo " + getProject().getRepositoryUrl());
             try {
                 FileUtils.deleteDirectory(getProjectRootDir());
@@ -338,15 +339,16 @@ public class GitRepoManager extends RepoManager {
         try {
             getAuth(git.pull().setStrategy(MergeStrategy.THEIRS)).call();
         } catch (GitAPIException e) {
+            git.close();
             getLogger().error("Can't pull project with id " + getProject().getId());
         }
     }
 
     /**
-     * Add the correct Auth to the clone Command.
+     * Add the correct Auth to the git command.
      *
-     * @param command Clone command
-     * @return Clonecommand with added Auth
+     * @param command git command
+     * @return gitcommand with added Auth
      */
     private TransportCommand getAuth(TransportCommand command) {
         ServiceAccount serviceAccount = getProject().getServiceAccount();
