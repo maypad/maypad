@@ -381,52 +381,6 @@ public class GitRepoManager extends RepoManager {
                         });
                     }
                 });
-                /*command.setTransportConfigCallback((TransportConfigCallback) (command.setTransportConfigCallback(transport -> {
-                    SshTransport sshTransport = (SshTransport) transport;
-                    sshTransport.setSshSessionFactory(new JschConfigSessionFactory() {
-                        @Override
-                        protected void configure(OpenSshConfig.Host host, Session session) {
-                            session.setConfig("StrictHostKeyChecking", "no");
-                        }
-
-                        @Override
-                        protected JSch createDefaultJSch(FS fs) throws JSchException {
-                            JSch jsch = super.createDefaultJSch(fs);
-                            File keyFile = getKeyFileManager().getSshFile();
-                            if (keyFile != null) {
-                                jsch.addIdentity(keyFile.getAbsolutePath());
-                            }
-                            return jsch;
-                        }
-                    });
-                })));*/
-
-                    /*@Override
-                    public void configure(Transport transport) {
-                        File keyFile = getKeyFileManager().getSshFile();
-                        SshTransport sshTransport = (SshTransport) transport;
-                        sshTransport.setSshSessionFactory(sshSessionFactory);
-                    }*/
-                // });
-                /*command.setTransportConfigCallback(transport -> {
-                    SshTransport sshTransport = (SshTransport) transport;
-                    sshTransport.setSshSessionFactory(new JschConfigSessionFactory() {
-                        @Override
-                        protected void configure(OpenSshConfig.Host host, Session session) {
-                            session.setConfig("StrictHostKeyChecking", "no");
-                        }
-
-                        @Override
-                        protected JSch createDefaultJSch(FS fs) throws JSchException {
-                            JSch jsch = super.createDefaultJSch(fs);
-                            File keyFile = getSshFile();
-                            if (keyFile != null) {
-                                jsch.addIdentity(keyFile.getAbsolutePath());
-                            }
-                            return jsch;
-                        }
-                    });
-                });*/
             }
         }
         return command;
