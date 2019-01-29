@@ -129,8 +129,7 @@ public class Project {
                     repository.getBranches().entrySet().stream()
                             .max(Comparator.comparing(e -> e.getValue().getBuildStatus().getPriority()));
             buildStatus = maxPrioBranchEntry.isPresent()
-                    ? Status.fromPriority(Math.max(maxPrioBranchEntry.get().getValue().getBuildStatus()
-                    .getPriority(), buildStatus.getPriority())) : buildStatus;
+                    ? maxPrioBranchEntry.get().getValue().getBuildStatus() : buildStatus;
         }
         return buildStatus;
     }
