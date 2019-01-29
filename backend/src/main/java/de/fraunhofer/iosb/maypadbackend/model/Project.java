@@ -108,7 +108,7 @@ public class Project {
      * @return Name of this project
      */
     public String getName() {
-        if (repositoryStatus != Status.SUCCESS) {
+        if (repositoryStatus != null && repositoryStatus != Status.SUCCESS) {
             return repositoryStatus.getName();
         }
         return name;
