@@ -11,31 +11,31 @@ public enum Status {
     /**
      * The process was completed successfully.
      */
-    SUCCESS,
+    SUCCESS(2),
     /**
      * The process was completed incorrectly.
      */
-    FAILED,
+    FAILED(3),
     /**
      * The process ended in an error.
      */
-    ERROR,
+    ERROR(3),
     /**
      * The process has not been completed yet.
      */
-    RUNNING,
+    RUNNING(0),
     /**
      * The process was canceled.
      */
-    CANCELED,
+    CANCELED(0),
     /**
      * The status of the process is unknown.
      */
-    UNKNOWN,
+    UNKNOWN(0),
     /**
      * Currently create / init something.
      */
-    INIT {
+    INIT(1) {
         @Override
         public String getName() {
             return "Initialize";
@@ -44,7 +44,36 @@ public enum Status {
     /**
      * The status of a process that has timed out.
      */
-    TIMEOUT;
+    TIMEOUT(0);
+
+
+    private final int priority;
+
+    private Status(int priority) {
+        this.priority = priority;
+    }
+
+    /**
+     * Returns the priority of the status.
+     * @return the priority of the status
+     */
+    public int getPriority() {
+        return priority;
+    }
+
+    /**
+     * Returns the Status to the given priority.
+     * @param priority the priority of the wanted Status
+     * @return the Status to the given priority.
+     */
+    public static Status fromPriority(int priority) {
+        switch (priority) {
+            case 1: return INIT;
+            case 2: return SUCCESS;
+            case 3: return FAILED;
+            default: return UNKNOWN;
+        }
+    }
 
     public String getName() {
         return this.toString().substring(0, 1).toUpperCase() + this.toString().substring(1);

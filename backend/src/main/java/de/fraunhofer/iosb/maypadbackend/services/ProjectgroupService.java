@@ -124,6 +124,28 @@ public class ProjectgroupService {
         return projectgroup.getProjects();
     }
 
+
+    /**
+     * Updates the status of the projectgroup with the given id.
+     * @param id the id of the projectgroup that should be updated
+     */
+    public void updateStatus(int id) {
+        Projectgroup projectgroup = getProjectgroup(id);
+        projectgroup.updateStatus();
+        saveProjectgroup(projectgroup);
+    }
+
+    /**
+     * Returns the projectgroup containing the given project.
+     * @param project the project that should be contained in the projectgroup
+     * @return the projectgroup containing the given project
+     */
+    public Projectgroup getProjectrgroupByProject(Project project) {
+        return projectgroupRepository.findProjectgroupByProjectsContaining(project)
+                .orElseThrow(() -> new NotFoundException("PROJECTGROUP_NOT_FOUND",
+                        String.format("Projectgroup containing Project with id %d not found", project.getId())));
+    }
+
     /**
      * Throw an exception if the projectgroup was not found.
      *
