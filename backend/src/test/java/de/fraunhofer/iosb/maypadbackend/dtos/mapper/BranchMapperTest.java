@@ -11,6 +11,7 @@ import de.fraunhofer.iosb.maypadbackend.model.person.Person;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Branch;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Commit;
 import de.fraunhofer.iosb.maypadbackend.model.repository.DependencyDescriptor;
+import de.fraunhofer.iosb.maypadbackend.model.webhook.ExternalWebhook;
 import de.fraunhofer.iosb.maypadbackend.model.webhook.InternalWebhook;
 import de.fraunhofer.iosb.maypadbackend.model.webhook.WebhookType;
 import org.junit.Before;
@@ -45,10 +46,10 @@ public class BranchMapperTest {
         branchDependency.setProjectId(12);
         List<DependencyDescriptor> dependencies = new ArrayList<>();
         dependencies.add(branchDependency);
-        WebhookBuild webhookBuild = new WebhookBuild();
-        webhookBuild.setName("https://buildProject.com/4372434");
-        WebhookDeployment webhookDeployment = new WebhookDeployment();
-        webhookDeployment.setName("https://deployProject.com/3742493");
+        WebhookBuild webhookBuild = new WebhookBuild(new ExternalWebhook("https://buildProject.com/1234"));
+        webhookBuild.setName("Webhook Build #1");
+        WebhookDeployment webhookDeployment = new WebhookDeployment(new ExternalWebhook("https://deployProject.com/123"));
+        webhookDeployment.setName("Webhook Deployment #1");
 
         testBranch = new Branch();
         testBranch.setName("testBranch");
@@ -83,8 +84,8 @@ public class BranchMapperTest {
         assertThat(response.getReadme()).isEqualTo("Test Readme");
         assertThat(response.getDependencies()).isEqualTo(dependencies);
         assertThat(response.getMembers()).isEqualTo(members);
-        assertThat(response.getBuildWebhook()).isEqualTo("https://buildProject.com/4372434");
-        assertThat(response.getDeploymentWebhook()).isEqualTo("https://deployProject.com/3742493");
+        assertThat(response.getBuildWebhook()).isEqualTo("https://buildProject.com/1234");
+        assertThat(response.getDeployment()).isEqualTo("https://deployProject.com/123");
         assertThat(response.getBuildSuccessUrl()).isEqualTo("https://maypad.de/hook/12345");
         assertThat(response.getBuildFailureUrl()).isEqualTo("https://maypad.de/hook/123456");
         assertThat(response.getMails()).isEqualTo(mails);
