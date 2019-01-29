@@ -100,7 +100,7 @@ public class RepoService {
         try {
             doRefreshProject(project);
         } finally {
-            KeyFileManager.deleteSshFile(projectService.getRepoDir(id), id);
+            KeyFileManager.deleteSshFile(new File(serverConfig.getRepositoryStoragePath()), id);
             removeLock(project);
         }
     }
@@ -120,7 +120,7 @@ public class RepoService {
         try {
             doInitProject(project);
         } finally {
-            KeyFileManager.deleteSshFile(projectService.getRepoDir(id), id);
+            KeyFileManager.deleteSshFile(new File(serverConfig.getRepositoryStoragePath()), id);
             removeLock(project);
         }
     }
@@ -334,9 +334,12 @@ public class RepoService {
     public boolean deleteProject(int id) {
         //TODO
         Project project = projectService.getProject(id);
-        for (Branch branch : project.getRepository().getBranches().values()) {
-            branchRepository.deleteById(branch.getId());
+        if (project.getRepository().getBranches() != null) {
+            for (Branch branch : project.getRepository().getBranches().values()) {
+                branchRepository.deleteById(branch.getId());
+            }
         }
+
         projectService.deleteProject(project.getId());
         return FileUtil.deleteAllFiles(projectService.getRepoDir(project.getId()));
 
