@@ -25,5 +25,5 @@
     ],
     "buildStatus":"SUCCESS",
     "buildSuccessUrl":"https://maypad.de/projects/1/branches/master/builds/success?token=djhbvjskbfavhbkdfbvlfbva",
-    "buildFailUrl":"https://maypad.de/projects/1/branches/master/builds/fail?token=jhdsbfajdbfhjbhvjdafb"
+    "buildFailureUrl":"https://maypad.de/projects/1/branches/master/builds/fail?token=jhdsbfajdbfhjbhvjdafb"
 }
