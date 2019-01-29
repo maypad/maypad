@@ -17,6 +17,7 @@ import de.fraunhofer.iosb.maypadbackend.model.repository.RepositoryType;
 import de.fraunhofer.iosb.maypadbackend.model.webhook.ExternalWebhook;
 import de.fraunhofer.iosb.maypadbackend.repositories.BranchRepository;
 import de.fraunhofer.iosb.maypadbackend.services.ProjectService;
+import de.fraunhofer.iosb.maypadbackend.services.webhook.WebhookService;
 import de.fraunhofer.iosb.maypadbackend.util.FileUtil;
 import de.fraunhofer.iosb.maypadbackend.util.Tuple;
 import lombok.NoArgsConstructor;
@@ -53,6 +54,7 @@ public class RepoService {
     private ProjectService projectService;
     private ServerConfig serverConfig;
     private BranchRepository branchRepository;
+    private WebhookService webhookService;
     private Set<Integer> lockedProjects; //boolean: allows init while locked
     private Logger logger = LoggerFactory.getLogger(RepoService.class);
 
@@ -63,13 +65,16 @@ public class RepoService {
      * @param projectService   Projectservice
      * @param serverConfig     Configuration for server
      * @param branchRepository Database-Repository for branches
+     * @param webhookService   Webhookservice
      */
     @Autowired
-    public RepoService(ProjectService projectService, ServerConfig serverConfig, BranchRepository branchRepository) {
+    public RepoService(ProjectService projectService, ServerConfig serverConfig, BranchRepository branchRepository,
+                       WebhookService webhookService) {
         this.projectService = projectService;
         this.serverConfig = serverConfig;
         this.lockedProjects = ConcurrentHashMap.newKeySet();
         this.branchRepository = branchRepository;
+        this.webhookService = webhookService;
     }
 
     private synchronized boolean repoLock(Project project) {
@@ -235,7 +240,9 @@ public class RepoService {
         }
         for (String branchname : deleteBranches) {
             logger.info("Remove branch " + branchname + " in project with id " + project.getId());
-            branchRepository.delete(project.getRepository().getBranches().get(branchname));
+            Branch branch = project.getRepository().getBranches().get(branchname);
+            removeAllWebhooks(branch);
+            branchRepository.delete(branch);
             project.getRepository().getBranches().remove(branchname);
         }
 
@@ -336,6 +343,7 @@ public class RepoService {
         Project project = projectService.getProject(id);
         if (project.getRepository().getBranches() != null) {
             for (Branch branch : project.getRepository().getBranches().values()) {
+                removeAllWebhooks(branch);
                 branchRepository.deleteById(branch.getId());
             }
         }
@@ -443,6 +451,23 @@ public class RepoService {
             }
         }
         return RepositoryType.NONE;
+    }
+
+    private Branch generateAllNeededWebhooks(int projectid, Branch branch) {
+        if (branch == null) {
+            return null;
+        }
+        branch.setBuildSuccessWebhook(webhookService.generateSuccessWebhook(new Tuple<>(projectid, branch.getName())));
+        branch.setBuildFailureWebhook(webhookService.generateFailWebhook(new Tuple<>(projectid, branch.getName())));
+        return branch;
+    }
+
+    private void removeAllWebhooks(Branch branch) {
+        if (branch == null) {
+            return;
+        }
+        webhookService.removeWebhook(branch.getBuildSuccessWebhook());
+        webhookService.removeWebhook(branch.getBuildFailureWebhook());
     }
 
 }

@@ -68,8 +68,10 @@ public class ProjectService {
      * @return Created project
      */
     public Project create(int projectgroupId, String repositoryUrl) {
-        //TODO: Generate Webhook and for model
-        Project project = saveProject(new Project(repositoryUrl));
+        Project project = new Project(repositoryUrl);
+        project.setRefreshWebhook(webhookService.generateRefreshWebhook(project.getId()));
+        //get the saved project, with correct id
+        project = saveProject(project);
         addProjectToProjectgroup(projectgroupId, project);
         return project;
     }
@@ -82,7 +84,9 @@ public class ProjectService {
      */
     public Project create(CreateProjectRequest request) {
         ServiceAccount serviceAccount = getServiceAccount(request.getServiceAccount());
-        Project project = saveProject(new Project(request.getRepositoryUrl(), serviceAccount));
+        Project project = new Project(request.getRepositoryUrl(), serviceAccount);
+        project.setRefreshWebhook(webhookService.generateRefreshWebhook(project.getId()));
+        project = saveProject(project);
 
         addProjectToProjectgroup(request.getGroupId(), project);
         return project;
@@ -174,8 +178,8 @@ public class ProjectService {
      * @param id Id of the project
      */
     public void deleteProject(int id) {
-        //check if repo id is valid
-        getProject(id);
+        //check if repo id is valid and remove webhook
+        webhookService.removeWebhook(getProject(id).getRefreshWebhook());
         projectRepository.deleteById(id);
     }
 
