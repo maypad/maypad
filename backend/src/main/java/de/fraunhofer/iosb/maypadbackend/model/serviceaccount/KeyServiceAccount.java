@@ -2,6 +2,7 @@ package de.fraunhofer.iosb.maypadbackend.model.serviceaccount;
 
 import de.fraunhofer.iosb.maypadbackend.services.security.EncryptedText;
 import de.fraunhofer.iosb.maypadbackend.services.security.EncryptionService;
+import de.fraunhofer.iosb.maypadbackend.util.EncryptionFactory;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 
 /**
  * Service account whose authentication is using an SSH key.
@@ -23,11 +25,11 @@ import javax.persistence.Entity;
 public class KeyServiceAccount extends ServiceAccount {
 
     @Column(name = "ssh_key", length = 1024)
-    private String key;
+    private String sshKey;
     @Column
     String salt;
 
-    @Autowired
+    @Transient
     private EncryptionService encryptionService;
 
     /**
@@ -35,13 +37,14 @@ public class KeyServiceAccount extends ServiceAccount {
      *
      * @param sshKey ssh key
      */
-    public KeyServiceAccount(String key) {
-        EncryptedText text = encryptionService.encrypt(key);
-        this.key = text.getText();
+    public KeyServiceAccount(String sshKey) {
+        EncryptedText text = encryptionService.encrypt(sshKey);
+        this.encryptionService = EncryptionFactory.getEncryptionService();
+        this.sshKey = text.getText();
         this.salt = text.getSalt();
     }
 
     public String getKey() {
-        return encryptionService.decrypt(key, salt);
+        return encryptionService.decrypt(sshKey, salt);
     }
 }
