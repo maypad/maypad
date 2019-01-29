@@ -49,18 +49,13 @@ import java.util.concurrent.ConcurrentHashMap;
 @NoArgsConstructor
 @EnableAsync
 public class RepoService {
-    
-    private ProjectService projectService;
-    private ServerConfig serverConfig;
-    private BranchRepository branchRepository;
-    private Map<Integer, Boolean> lockedProjects; //boolean: allows init while locked
-    private Logger logger = LoggerFactory.getLogger(RepoService.class);
 
     private ProjectService projectService;
     private ServerConfig serverConfig;
     private BranchRepository branchRepository;
     private Set<Integer> lockedProjects; //boolean: allows init while locked
     private Logger logger = LoggerFactory.getLogger(RepoService.class);
+
 
     /**
      * Constructor for the RepoService.
@@ -151,11 +146,11 @@ public class RepoService {
             }
         }
 
+
         //compare Maypad config hash
         Tuple<ProjectConfig, File> projectConfigData = repoManager.getProjectConfig();
         if (projectConfigData == null) {
             logger.error("No maypad configuration were found in project with id " + project.getId());
-            removeLock(project);
             return;
         }
 
@@ -277,7 +272,7 @@ public class RepoService {
         projectService.saveProject(project);
         logger.info("Project with id " + project.getId() + " has refreshed.");
     }
-    
+
     private void doInitProject(Project project) {
         logger.info("Start init project with id " + project.getId());
         Repository repository = project.getRepository();
@@ -315,6 +310,7 @@ public class RepoService {
         //clone
         RepoManager repoManager = repositoryType.toRepoManager(project);
         repoManager.initRepoManager(parentDir, projectService.getRepoDir(project.getId()));
+
         boolean cloneSuccess = repoManager.cloneRepository();
         if (!cloneSuccess) {
             project.setRepositoryStatus(Status.FAILED);
@@ -343,6 +339,7 @@ public class RepoService {
                 branchRepository.deleteById(branch.getId());
             }
         }
+
         projectService.deleteProject(project.getId());
         return FileUtil.deleteAllFiles(projectService.getRepoDir(project.getId()));
 
@@ -447,4 +444,5 @@ public class RepoService {
         }
         return RepositoryType.NONE;
     }
+
 }

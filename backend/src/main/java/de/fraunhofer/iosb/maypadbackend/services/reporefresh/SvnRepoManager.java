@@ -51,16 +51,6 @@ public class SvnRepoManager extends RepoManager {
     /**
      * Constructor, prepare the SvnRepoManager.
      *
-     * @param project        Project for which the svn-repository is to be managed
-     * @param projectRootDir The root directory for the repo files
-     */
-    public SvnRepoManager(Project project, File projectRootDir) {
-        super(project, projectRootDir);
-    }
-
-    /**
-     * Constructor, prepare the SvnRepoManager.
-     *
      * @param project Project for which the svn-repository is to be managed
      */
     private SvnRepoManager(Project project) {
@@ -68,9 +58,10 @@ public class SvnRepoManager extends RepoManager {
         logger.info("Cloned project into " + projectRoot);
         if (project.getServiceAccount() != null) {
             if (project.getServiceAccount() instanceof KeyServiceAccount) {
+                KeyFileManager kfm = new KeyFileManager(this.getProjectRootDir(), this.getProject());
                 KeyServiceAccount sA = (KeyServiceAccount)project.getServiceAccount();
-                File sshFile = getSshFile();
-                int sshPort = (getSshKey() == -1) ? 22 : getSshKey();
+                File sshFile = kfm.getSshFile();
+                int sshPort = (this.getSshPort() == -1) ? 22 : getSshPort();
                 authManager = new BasicAuthenticationManager("", sshFile, "", sshPort);
             } else if (project.getServiceAccount() instanceof UserServiceAccount) {
                 UserServiceAccount sA = (UserServiceAccount)project.getServiceAccount();
@@ -108,6 +99,16 @@ public class SvnRepoManager extends RepoManager {
         }
         logger.info("Found " + branches.size() + " branches.");
         return branches;
+    }
+
+    /**
+     * Get the name of the main branch.
+     *
+     * @return Name of the main branch
+     */
+    @Override
+    public String getMainBranchName() {
+        return "trunk";
     }
 
     /**
@@ -246,75 +247,13 @@ public class SvnRepoManager extends RepoManager {
             commit = new Commit();
             commit.setAuthor(new Author(svnLogEntry.getAuthor(), null));
             commit.setTimestamp(svnLogEntry.getDate());
-            commit.setCommitIdentifier(null); // No SVN commit identifier
-            commit.setCommitMessage(svnLogEntry.getMessage());
+            commit.setIdentifier(null); // No SVN commit identifier
+            commit.setMessage(svnLogEntry.getMessage());
         }
 
         public Commit getCommit() {
             return commit;
         }
-    }
-
-    /**
-     * Get the names of all existing branches of the repository.
-     *
-     * @return List of all branchnames
-     */
-    @Override
-    public List<String> getBranchNames() {
-        return null;
-    }
-
-    /**
-     * Get the name of the main branch.
-     *
-     * @return Name of the main branch
-     */
-    @Override
-    public String getMainBranchName() {
-        return "trunc";
-    }
-
-    /**
-     * Switches the branch of a repository .
-     *
-     * @param name Name of the branch
-     * @return true, if the switch to other branch was successfully, else false
-     */
-    @Override
-    public boolean switchBranch(String name) {
-        return true;
-    }
-
-
-    /**
-     * Get all tags of a branch.
-     *
-     * @return List with tags
-     */
-    @Override
-    public List<Tag> getTags() {
-        return null;
-    }
-
-    /**
-     * Get the last commit.
-     *
-     * @return The last commit
-     */
-    @Override
-    public Commit getLastCommit() {
-        return null;
-    }
-
-    /**
-     * Clones the repository using the repository URL stored in the project.
-     *
-     * @return True in success, else false
-     */
-    @Override
-    protected boolean cloneRepository() {
-        return true;
     }
 
 }
