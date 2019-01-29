@@ -69,18 +69,23 @@ public class SvnRepoManager extends RepoManager {
         if (project.getServiceAccount() != null) {
             if (project.getServiceAccount() instanceof KeyServiceAccount) {
                 KeyFileManager kfm = new KeyFileManager(this.getProjectRootDir(), this.getProject());
-                KeyServiceAccount sA = (KeyServiceAccount)project.getServiceAccount();
+                KeyServiceAccount sa = (KeyServiceAccount)project.getServiceAccount();
                 File sshFile = kfm.getSshFile();
                 int sshPort = (this.getSshPort() == -1) ? 22 : getSshPort();
                 authManager = new BasicAuthenticationManager("", sshFile, "", sshPort);
             } else if (project.getServiceAccount() instanceof UserServiceAccount) {
-                UserServiceAccount sA = (UserServiceAccount)project.getServiceAccount();
-                authManager = new BasicAuthenticationManager(sA.getUsername(), sA.getPassword());
+                UserServiceAccount sa = (UserServiceAccount)project.getServiceAccount();
+                authManager = new BasicAuthenticationManager(sa.getUsername(), sa.getPassword());
             }
             svnClientManager.setAuthenticationManager(authManager);
         }
     }
 
+    /**
+     * Returns instance of SvnRepoManager (see singleton).
+     * @param project Project to manage
+     * @return Instance of SvnRepoManager.
+     */
     public static SvnRepoManager getInstance(Project project) {
         if (instance == null) {
             return (instance = new SvnRepoManager(project));
@@ -99,7 +104,8 @@ public class SvnRepoManager extends RepoManager {
         String[] branchList = branchesFolder.list();
         if (branchList == null) {
             logger.info("Project contains no branches");
-            return new ArrayList<String>(); }
+            return new ArrayList<String>();
+        }
         List<String> branches = new ArrayList<String>();
         for (String b : branchList) {
             logger.info("Found branch: " + b);
@@ -164,8 +170,8 @@ public class SvnRepoManager extends RepoManager {
         List<Tag> tags = new ArrayList<Tag>();
         for (String t : tagList) {
             if (new File(tagFolder.getAbsolutePath() + "/" + t).isDirectory()) {
-                Tag _t = new Tag();
-                _t.setName(new File(t).getName());
+                Tag tt = new Tag();
+                tt.setName(new File(t).getName());
             }
         }
         logger.info("Found " + tags.size() + " tags.");
@@ -265,67 +271,4 @@ public class SvnRepoManager extends RepoManager {
             return commit;
         }
     }
-
-    /**
-     * Get the names of all existing branches of the repository.
-     *
-     * @return List of all branchnames
-     */
-    @Override
-    public List<String> getBranchNames() {
-        return null;
-    }
-
-    /**
-     * Get the name of the main branch.
-     *
-     * @return Name of the main branch
-     */
-    @Override
-    public String getMainBranchName() {
-        return "trunc";
-    }
-
-    /**
-     * Switches the branch of a repository .
-     *
-     * @param name Name of the branch
-     * @return true, if the switch to other branch was successfully, else false
-     */
-    @Override
-    public boolean switchBranch(String name) {
-        return true;
-    }
-
-
-    /**
-     * Get all tags of a branch.
-     *
-     * @return List with tags
-     */
-    @Override
-    public List<Tag> getTags() {
-        return null;
-    }
-
-    /**
-     * Get the last commit.
-     *
-     * @return The last commit
-     */
-    @Override
-    public Commit getLastCommit() {
-        return null;
-    }
-
-    /**
-     * Clones the repository using the repository URL stored in the project.
-     *
-     * @return True in success, else false
-     */
-    @Override
-    protected boolean cloneRepository() {
-        return true;
-    }
-
 }

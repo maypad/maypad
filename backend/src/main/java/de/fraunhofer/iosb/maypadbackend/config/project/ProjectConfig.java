@@ -42,7 +42,9 @@ public interface ProjectConfig {
 
     String getRepoWebsiteUrl();
     String getSvnTrunkDirectory();
+
     String getSvnBranchDirectory();
+
     String getSvnTagsDirectory();
 
 }
