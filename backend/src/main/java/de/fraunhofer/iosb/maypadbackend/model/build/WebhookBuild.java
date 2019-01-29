@@ -29,4 +29,9 @@ public class WebhookBuild extends BuildType {
     public WebhookBuild(ExternalWebhook buildWebhook) {
         this.buildWebhook = buildWebhook;
     }
+
+    @Override
+    public String toString() {
+        return buildWebhook.getUrl();
+    }
 }

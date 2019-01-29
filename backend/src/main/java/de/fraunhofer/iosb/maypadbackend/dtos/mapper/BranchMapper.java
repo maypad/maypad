@@ -1,6 +1,8 @@
 package de.fraunhofer.iosb.maypadbackend.dtos.mapper;
 
 import de.fraunhofer.iosb.maypadbackend.dtos.response.BranchResponse;
+import de.fraunhofer.iosb.maypadbackend.model.build.BuildType;
+import de.fraunhofer.iosb.maypadbackend.model.deployment.DeploymentType;
 import de.fraunhofer.iosb.maypadbackend.model.person.Mail;
 import de.fraunhofer.iosb.maypadbackend.model.person.Person;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Branch;
@@ -23,8 +25,8 @@ public interface BranchMapper {
             @Mapping(source = "branch", target = "dependencies",
                     qualifiedByName = "toDependencies"),
             @Mapping(source = "branch", target = "members", qualifiedByName = "toMembers"),
-            @Mapping(source = "buildType.name", target = "buildWebhook"),
-            @Mapping(source = "deploymentType.name", target = "deploymentWebhook"),
+            @Mapping(source = "buildType", target = "buildWebhook"),
+            @Mapping(source = "deploymentType", target = "deploymentWebhook"),
             @Mapping(source = "buildSuccessWebhook.url", target = "buildSuccessUrl"),
             @Mapping(source = "buildFailureWebhook.url", target = "buildFailureUrl"),
             @Mapping(source = "branch", target = "mails", qualifiedByName = "toMails")
@@ -81,5 +83,13 @@ public interface BranchMapper {
             mailsArr[i] = mails.get(i).getMailAddress();
         }
         return mailsArr;
+    }
+
+    default String map(DeploymentType deploymentType) {
+        return deploymentType.toString();
+    }
+
+    default String map(BuildType buildType) {
+        return buildType.toString();
     }
 }
