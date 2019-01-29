@@ -7,7 +7,7 @@
   </span>
   <div class="container d-flex flex-row">
     <span class="mr-1 text-dark">Build Status:</span>
-    <span class="dot dot-{{ branch.status }} mt-1 mr-2"></span>
+    <span class="dot dot-{{ branch.status }} mt-1 mr-2" data-toggle="tooltip"></span>
     <span class="text-dark" *ngIf="branch.lastCommit && branch.lastCommit.identifier">Last Commit({{
       branch.lastCommit.identifier.substr(0, 7)
       }}): {{
