@@ -26,7 +26,7 @@ public interface BranchMapper {
                     qualifiedByName = "toDependencies"),
             @Mapping(source = "branch", target = "members", qualifiedByName = "toMembers"),
             @Mapping(source = "buildType", target = "buildWebhook"),
-            @Mapping(source = "deploymentType", target = "deploymentWebhook"),
+            @Mapping(source = "deploymentType", target = "deployment"),
             @Mapping(source = "buildSuccessWebhook.url", target = "buildSuccessUrl"),
             @Mapping(source = "buildFailureWebhook.url", target = "buildFailureUrl"),
             @Mapping(source = "branch", target = "mails", qualifiedByName = "toMails")

@@ -85,7 +85,7 @@ public class BranchMapperTest {
         assertThat(response.getDependencies()).isEqualTo(dependencies);
         assertThat(response.getMembers()).isEqualTo(members);
         assertThat(response.getBuildWebhook()).isEqualTo("https://buildProject.com/1234");
-        assertThat(response.getDeploymentWebhook()).isEqualTo("https://deployProject.com/123");
+        assertThat(response.getDeployment()).isEqualTo("https://deployProject.com/123");
         assertThat(response.getBuildSuccessUrl()).isEqualTo("https://maypad.de/hook/12345");
         assertThat(response.getBuildFailureUrl()).isEqualTo("https://maypad.de/hook/123456");
         assertThat(response.getMails()).isEqualTo(mails);
