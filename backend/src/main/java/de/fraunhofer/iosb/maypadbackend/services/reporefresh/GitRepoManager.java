@@ -291,7 +291,11 @@ public class GitRepoManager extends RepoManager {
         try {
             getAuth(Git.cloneRepository().setURI(getProject().getRepositoryUrl()).setDirectory(getProjectRootDir())).call();
         } catch (GitAPIException e) {
-            getGit().close();
+            Git git = getGit();
+            if (git != null) {
+                getGit().close();
+            }
+
             getLogger().warn("Can't access to repo " + getProject().getRepositoryUrl());
             try {
                 FileUtils.deleteDirectory(getProjectRootDir());
