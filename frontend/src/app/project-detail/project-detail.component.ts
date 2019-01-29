@@ -44,7 +44,7 @@ export class ProjectDetailComponent implements OnInit {
   refreshProject() {
     this.projectService.refreshProject(this.project.id).subscribe(
       res => {
-        if (res) {
+        if (res === null) {
           this.notificationService.send('The project is now being refreshed.', 'info');
         }
       });

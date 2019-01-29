@@ -22,7 +22,7 @@ export class HeaderComponent implements OnInit {
 
     triggerDeploy(build: boolean) {
         this.branchService.triggerDeployment(
-            this.projId, this.branch.name, build, this.rebuild.nativeElement.checked
+            this.projId, this.branch.name, build, this.branch.buildWebhook ? this.rebuild.nativeElement.checked : false
         ).subscribe(
             x => { },
             error => {
@@ -34,7 +34,7 @@ export class HeaderComponent implements OnInit {
 
     triggerBuild() {
         this.branchService.triggerBuild(
-            this.projId, this.branch.name, this.rebuild.nativeElement.checked
+            this.projId, this.branch.name, this.branch.buildWebhook ? this.rebuild.nativeElement.checked : false
         ).subscribe(
             x => { },
             error => {
