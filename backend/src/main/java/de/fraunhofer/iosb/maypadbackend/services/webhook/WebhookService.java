@@ -169,11 +169,13 @@ public class WebhookService {
             for (Map.Entry<String, Branch> entry : project.getRepository().getBranches().entrySet()) {
                 if (entry.getValue().getBuildFailureWebhook() != null) {
                     mappedHooks.put(entry.getValue().getBuildFailureWebhook().getToken(),
-                            new BuildWebhookHandler(new Tuple<>(project.getId(), entry.getKey()), Status.FAILED, buildService));
+                            new BuildWebhookHandler(new Tuple<>(project.getId(), entry.getValue().getName()),
+                                    Status.FAILED, buildService));
                 }
                 if (entry.getValue().getBuildSuccessWebhook() != null) {
                     mappedHooks.put(entry.getValue().getBuildSuccessWebhook().getToken(),
-                            new BuildWebhookHandler(new Tuple<>(project.getId(), entry.getKey()), Status.SUCCESS, buildService));
+                            new BuildWebhookHandler(new Tuple<>(project.getId(), entry.getValue().getName()),
+                                    Status.SUCCESS, buildService));
                 }
             }
         }

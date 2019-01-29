@@ -75,7 +75,7 @@ public class BuildService {
      */
     public void buildBranch(int id, String ref, boolean withDependencies, String buildName) {
         Project project = projectService.getProject(id);
-        Branch branch = projectService.getBranch(id, ref);
+        Branch branch = project.getRepository().getBranches().get(ref);
         if (!runningBuilds.containsKey(new Tuple<>(id, ref))) {
             BuildType buildType = branch.getBuildType();
             if (!buildTypeMappings.containsKey(buildType.getClass())) {
@@ -130,15 +130,17 @@ public class BuildService {
      */
     public void signalStatus(int id, String ref, Status status) {
         Tuple<Integer, String> branchMapEntry = new Tuple<>(id, ref);
-        Branch branch = projectService.getBranch(id, ref);
+        Project project = projectService.getProject(id);
+        Branch branch = project.getRepository().getBranches().get(ref);
         if (!runningBuilds.containsKey(branchMapEntry)) {
             throw new NotFoundException("NO BUILD", String.format("No Build is running for %s", branch.getName()));
         }
 
         Build build = getBuild(branch, runningBuilds.get(branchMapEntry));
         build.setStatus(status);
-        runningBuilds.remove(branchMapEntry);
-        Project project = projectService.getProject(id);
+        if (status == Status.FAILED || status == Status.SUCCESS) {
+            runningBuilds.remove(branchMapEntry);
+        }
         projectService.saveProject(project);
     }
 
@@ -150,7 +152,7 @@ public class BuildService {
         Date current = new Date();
         for (Map.Entry<Tuple<Integer, String>, Integer> entry : runningBuilds.entrySet()) {
             Project project = projectService.getProject(entry.getKey().getKey());
-            Branch branch = projectService.getBranch(entry.getKey().getKey(), entry.getKey().getValue());
+            Branch branch = project.getRepository().getBranches().get(entry.getKey().getValue());
             Build build = getBuild(branch, entry.getValue());
             if ((current.getTime() - build.getTimestamp().getTime()) / 1000 >= buildTimeoutSeconds) {
                 build.setStatus(Status.TIMEOUT);

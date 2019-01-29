@@ -35,7 +35,7 @@ public class WebhookBuildExecutor implements BuildTypeExecutor {
             WebhookBuild webhookBuild = (WebhookBuild) buildType;
             CompletableFuture<ResponseEntity<String>> response = webhookService.call(webhookBuild.getBuildWebhook());
             try {
-                if (response.get().getStatusCode() == HttpStatus.OK) {
+                if (response.get().getStatusCode().is2xxSuccessful()) {
                     buildService.signalStatus(id, ref, Status.RUNNING);
                 } else {
                     buildService.signalStatus(id, ref, Status.FAILED);

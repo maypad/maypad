@@ -90,11 +90,27 @@ public interface BranchMapper {
         return mailsArr;
     }
 
+    /**
+     * Maps a DeploymentType to String.
+     * @param deploymentType the DeploymenType that should be mapped
+     * @return the mapped String
+     */
     default String map(DeploymentType deploymentType) {
+        if (deploymentType == null) {
+            return "";
+        }
         return deploymentType.toString();
     }
 
+    /**
+     * Maps a BuildType to String.
+     * @param buildType String
+     * @return the mapped String
+     */
     default String map(BuildType buildType) {
+        if (buildType == null) {
+            return "";
+        }
         return buildType.toString();
     }
 }
