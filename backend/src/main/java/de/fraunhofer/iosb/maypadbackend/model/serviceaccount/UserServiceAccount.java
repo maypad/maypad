@@ -1,8 +1,11 @@
 package de.fraunhofer.iosb.maypadbackend.model.serviceaccount;
 
+import de.fraunhofer.iosb.maypadbackend.services.security.EncryptedText;
+import de.fraunhofer.iosb.maypadbackend.services.security.EncryptionService;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -26,6 +29,9 @@ public class UserServiceAccount extends ServiceAccount {
     @Column
     private String username;
 
+    @Autowired
+    private EncryptionService encryptionService;
+
     /**
      * Constructor for a Serviceaccount with username and password.
      *
@@ -34,6 +40,12 @@ public class UserServiceAccount extends ServiceAccount {
      */
     public UserServiceAccount(String username, String password) {
         this.username = username;
-        this.password = password;
+        EncryptedText pass = encryptionService.encrypt(password);
+        this.password = pass.getText();
+        this.salt = pass.getSalt();
+    }
+
+    public String getPassword() {
+        return encryptionService.decrypt(password, salt);
     }
 }
