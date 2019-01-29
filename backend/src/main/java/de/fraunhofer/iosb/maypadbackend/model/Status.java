@@ -17,6 +17,10 @@ public enum Status {
      */
     FAILED,
     /**
+     * The process ended in an error.
+     */
+    ERROR,
+    /**
      * The process has not been completed yet.
      */
     RUNNING,
@@ -29,8 +33,20 @@ public enum Status {
      */
     UNKNOWN,
     /**
+     * Currently create / init something.
+     */
+    INIT {
+        @Override
+        public String getName() {
+            return "Initialize";
+        }
+    },
+    /**
      * The status of a process that has timed out.
      */
     TIMEOUT;
 
+    public String getName() {
+        return this.toString().substring(0, 1).toUpperCase() + this.toString().substring(1);
+    }
 }

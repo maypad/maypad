@@ -9,5 +9,5 @@ import lombok.Data;
  */
 @Data
 public class ChangeProjectRequest {
-    private ServiceAccountRequest serviceAccountRequest;
+    private ServiceAccountRequest serviceAccount;
 }

@@ -34,9 +34,9 @@ public class Deployment {
     private int id;
     @Temporal(TemporalType.TIMESTAMP)
     private Date timestamp;
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Build build;
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private DeploymentType type;
 
 

@@ -1,6 +1,7 @@
 package de.fraunhofer.iosb.maypadbackend.model.serviceaccount;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
@@ -15,6 +16,7 @@ import javax.persistence.Entity;
 @Data
 @Entity
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 public class UserServiceAccount extends ServiceAccount {
 
     @Column

@@ -21,9 +21,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,7 +45,7 @@ public class BranchMapperTest {
         DependencyDescriptor branchDependency = new DependencyDescriptor();
         branchDependency.setBranchName("master");
         branchDependency.setProjectId(12);
-        List<DependencyDescriptor> dependencies = new ArrayList<>();
+        Set<DependencyDescriptor> dependencies = new HashSet<>();
         dependencies.add(branchDependency);
         WebhookBuild webhookBuild = new WebhookBuild(new ExternalWebhook("https://buildProject.com/1234"));
         webhookBuild.setName("Webhook Build #1");
@@ -55,7 +56,7 @@ public class BranchMapperTest {
         testBranch.setName("testBranch");
         testBranch.setReadme("Test Readme");
         testBranch.setDependencies(dependencies);
-        testBranch.setMembers(new ArrayList<>(Collections.singletonList(
+        testBranch.setMembers(new HashSet<>(Collections.singletonList(
                 new Person("Max Mustermann"))));
         testBranch.setBuildType(webhookBuild);
         testBranch.setDeploymentType(webhookDeployment);
@@ -63,12 +64,12 @@ public class BranchMapperTest {
                 "12345", WebhookType.UPDATEBUILD));
         testBranch.setBuildFailureWebhook(new InternalWebhook("https://maypad.de/hook/123456",
                 "123456", WebhookType.UPDATEBUILD));
-        testBranch.setMails(new ArrayList<>(Collections.singletonList(
+        testBranch.setMails(new HashSet<>(Collections.singletonList(
                 new Mail("max.mustermann@maypad.de"))));
         testBranch.setBuildStatus(Status.SUCCESS);
         testBranch.setLastCommit(new Commit());
-        testBranch.setBuilds(new ArrayList<>(Collections.singletonList(new Build())));
-        testBranch.setDeployments(new ArrayList<>(Collections.singletonList(new Deployment())));
+        testBranch.setBuilds(new LinkedHashSet<>(Collections.singletonList(new Build())));
+        testBranch.setDeployments(new LinkedHashSet<>(Collections.singletonList(new Deployment())));
     }
 
     @Test

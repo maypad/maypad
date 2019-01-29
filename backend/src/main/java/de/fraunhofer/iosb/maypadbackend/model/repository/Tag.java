@@ -2,6 +2,7 @@ package de.fraunhofer.iosb.maypadbackend.model.repository;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -19,18 +20,29 @@ import javax.persistence.OneToOne;
  */
 @Data
 @Entity
+@NoArgsConstructor
 public class Tag {
 
     @Id
     @EqualsAndHashCode.Exclude
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)
     private int id;
 
     @Column
     private String name;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Commit commit;
 
+    /**
+     * Constructor for a Tag.
+     *
+     * @param name   Name of the tag
+     * @param commit Commit for this tag
+     */
+    public Tag(String name, Commit commit) {
+        this.name = name;
+        this.commit = commit;
+    }
 }

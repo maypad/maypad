@@ -29,7 +29,7 @@ public class Commit {
 
     @Id
     @EqualsAndHashCode.Exclude
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)
     private int id;
     @Column
@@ -38,7 +38,7 @@ public class Commit {
     private String identifier;
     @Temporal(TemporalType.TIMESTAMP)
     private Date timestamp;
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Author author;
 
     /**
@@ -53,5 +53,26 @@ public class Commit {
         this.identifier = identifier;
         this.timestamp = timestamp;
         this.author = author;
+    }
+
+    /**
+     * Compare this current commit with an other commit and update different data.
+     *
+     * @param commit Other commit
+     */
+    public void compareAndUpdate(Commit commit) {
+        if (commit == null) {
+            return;
+        }
+        setMessage(commit.getMessage());
+        setIdentifier(commit.getIdentifier());
+        author.compareAndUpdate(commit.author);
+        if (timestamp == null) {
+            timestamp = commit.getTimestamp();
+        } else if (commit.getTimestamp() == null) {
+            timestamp = null;
+        } else if (timestamp.getTime() != commit.getTimestamp().getTime()) {
+            timestamp.setTime(commit.getTimestamp().getTime());
+        }
     }
 }

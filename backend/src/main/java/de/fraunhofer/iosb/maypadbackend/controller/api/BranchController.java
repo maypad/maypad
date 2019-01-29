@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 public class BranchController implements BranchApi {
@@ -55,12 +56,12 @@ public class BranchController implements BranchApi {
     }
 
     @Override
-    public List<BuildResponse> getBuilds(int id, String ref) {
+    public Set<BuildResponse> getBuilds(int id, String ref) {
         return buildMapper.toResponseList(projectService.getBranch(id, ref).getBuilds());
     }
 
     @Override
-    public List<DeploymentResponse> getDeployments(int id, String ref) {
+    public Set<DeploymentResponse> getDeployments(int id, String ref) {
         return deploymentMapper.toResponseList(projectService.getBranch(id, ref).getDeployments());
     }
 

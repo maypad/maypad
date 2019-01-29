@@ -39,7 +39,7 @@ public class Build {
     @Temporal(TemporalType.TIMESTAMP)
     private Date timestamp;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Commit commit;
 
     @Enumerated(EnumType.STRING)

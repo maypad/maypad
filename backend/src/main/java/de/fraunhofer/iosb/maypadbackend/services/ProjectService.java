@@ -1,5 +1,6 @@
 package de.fraunhofer.iosb.maypadbackend.services;
 
+import de.fraunhofer.iosb.maypadbackend.config.server.ServerConfig;
 import de.fraunhofer.iosb.maypadbackend.dtos.request.ChangeProjectRequest;
 import de.fraunhofer.iosb.maypadbackend.dtos.request.CreateProjectRequest;
 import de.fraunhofer.iosb.maypadbackend.dtos.request.ServiceAccountRequest;
@@ -15,8 +16,10 @@ import de.fraunhofer.iosb.maypadbackend.services.scheduler.SchedulerService;
 import de.fraunhofer.iosb.maypadbackend.services.webhook.WebhookService;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -35,6 +38,7 @@ public class ProjectService {
     private ProjectgroupService projectgroupService;
     private SchedulerService schedulerService;
     private ProjectRepository projectRepository;
+    private ServerConfig serverConfig;
 
     /**
      * Constructor for ProjectService.
@@ -43,14 +47,17 @@ public class ProjectService {
      * @param projectgroupService Service for projectgroups
      * @param schedulerService    Service for scheduled tasks
      * @param projectRepository   Repository for database access
+     * @param serverConfig        Serverconfiguration
      */
     @Autowired
+    @Lazy
     public ProjectService(WebhookService webhookService, ProjectgroupService projectgroupService,
-                          SchedulerService schedulerService, ProjectRepository projectRepository) {
+                          SchedulerService schedulerService, ProjectRepository projectRepository, ServerConfig serverConfig) {
         this.webhookService = webhookService;
         this.projectgroupService = projectgroupService;
         this.schedulerService = schedulerService;
         this.projectRepository = projectRepository;
+        this.serverConfig = serverConfig;
     }
 
     /**
@@ -61,7 +68,7 @@ public class ProjectService {
      * @return Created project
      */
     public Project create(int projectgroupId, String repositoryUrl) {
-        //TODO: Webhook and Repo for model
+        //TODO: Generate Webhook and for model
         Project project = saveProject(new Project(repositoryUrl));
         addProjectToProjectgroup(projectgroupId, project);
         return project;
@@ -74,8 +81,9 @@ public class ProjectService {
      * @return Created project
      */
     public Project create(CreateProjectRequest request) {
-        ServiceAccount serviceAccount = getServiceAccount(request.getServiceAccountRequest());
+        ServiceAccount serviceAccount = getServiceAccount(request.getServiceAccount());
         Project project = saveProject(new Project(request.getRepositoryUrl(), serviceAccount));
+
         addProjectToProjectgroup(request.getGroupId(), project);
         return project;
     }
@@ -124,6 +132,29 @@ public class ProjectService {
     }
 
     /**
+     * Get the directory for the repo files for a project.
+     *
+     * @param project The project
+     * @return The directory for the repo files
+     */
+    public File getRepoDir(Project project) {
+        if (project == null) {
+            return null;
+        }
+        return getRepoDir(project.getId());
+    }
+
+    /**
+     * Get the directory for the repo files for a project with the id.
+     *
+     * @param id The id of a project
+     * @return The directory for the repo files
+     */
+    public File getRepoDir(int id) {
+        return new File(serverConfig.getRepositoryStoragePath() + File.separator + id);
+    }
+
+    /**
      * Change the data of a project.
      *
      * @param id      Id of the project
@@ -132,9 +163,8 @@ public class ProjectService {
      */
     public Project changeProject(int id, ChangeProjectRequest request) {
         Project project = getProject(id);
-        ServiceAccount serviceAccount = getServiceAccount(request.getServiceAccountRequest());
+        ServiceAccount serviceAccount = getServiceAccount(request.getServiceAccount());
         project.setServiceAccount(serviceAccount);
-        //TODO: Repo url ~> update Repo
         return saveProject(project);
     }
 
@@ -144,6 +174,7 @@ public class ProjectService {
      * @param id Id of the project
      */
     public void deleteProject(int id) {
+        //check if repo id is valid
         getProject(id);
         projectRepository.deleteById(id);
     }
@@ -169,12 +200,12 @@ public class ProjectService {
             return null;
         }
         ServiceAccount serviceAccount = null;
-        if (request.getKey() != null
-                && request.getKey().isPresent()) {
-            serviceAccount = new KeyServiceAccount(request.getKey().get());
-        } else if (request.getUserName() != null && request.getPassword() != null
-                && request.getUserName().isPresent() && request.getPassword().isPresent()) {
-            serviceAccount = new UserServiceAccount(request.getUserName().get(),
+        if (request.getSshKey() != null
+                && request.getSshKey().isPresent()) {
+            serviceAccount = new KeyServiceAccount(request.getSshKey().get());
+        } else if (request.getUsername() != null && request.getPassword() != null
+                && request.getUsername().isPresent() && request.getPassword().isPresent()) {
+            serviceAccount = new UserServiceAccount(request.getUsername().get(),
                     request.getPassword().get());
         }
         return serviceAccount;

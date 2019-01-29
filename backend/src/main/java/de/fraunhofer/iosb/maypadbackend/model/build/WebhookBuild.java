@@ -4,6 +4,7 @@ import de.fraunhofer.iosb.maypadbackend.model.webhook.ExternalWebhook;
 import de.fraunhofer.iosb.maypadbackend.services.build.BuildTypeExec;
 import de.fraunhofer.iosb.maypadbackend.services.build.WebhookBuildExecutor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.CascadeType;
@@ -19,10 +20,11 @@ import javax.persistence.OneToOne;
 @Data
 @NoArgsConstructor
 @Entity
+@EqualsAndHashCode(callSuper = true)
 @BuildTypeExec(executor = WebhookBuildExecutor.class)
 public class WebhookBuild extends BuildType {
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private ExternalWebhook buildWebhook;
 
 

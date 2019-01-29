@@ -31,14 +31,14 @@ public class Projectgroup {
 
     @Id
     @EqualsAndHashCode.Exclude
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)
     private int id;
     @Column
     private String name;
     @Enumerated(EnumType.STRING)
     private Status buildStatus;
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Project> projects;
 
     /**

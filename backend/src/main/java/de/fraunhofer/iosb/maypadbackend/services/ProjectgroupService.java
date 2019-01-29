@@ -6,6 +6,7 @@ import de.fraunhofer.iosb.maypadbackend.exceptions.httpexceptions.NotFoundExcept
 import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.Projectgroup;
 import de.fraunhofer.iosb.maypadbackend.repositories.ProjectgroupRepository;
+import de.fraunhofer.iosb.maypadbackend.services.reporefresh.RepoService;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import java.util.function.Supplier;
 public class ProjectgroupService {
 
     private ProjectgroupRepository projectgroupRepository;
+    private RepoService repoService;
 
     /**
      * Constructor for ProjectgroupService.
@@ -31,8 +33,9 @@ public class ProjectgroupService {
      * @param projectgroupRepository Repository for database access
      */
     @Autowired
-    public ProjectgroupService(ProjectgroupRepository projectgroupRepository) {
+    public ProjectgroupService(ProjectgroupRepository projectgroupRepository, RepoService repoService) {
         this.projectgroupRepository = projectgroupRepository;
+        this.repoService = repoService;
     }
 
     /**
@@ -93,7 +96,10 @@ public class ProjectgroupService {
      * @param id Id of projectgroup
      */
     public void deleteProjectgroup(int id) {
-        getProjectgroup(id);
+        Projectgroup group = getProjectgroup(id);
+        for (Project project : group.getProjects()) {
+            repoService.deleteProject(project.getId());
+        }
         projectgroupRepository.deleteById(id);
     }
 

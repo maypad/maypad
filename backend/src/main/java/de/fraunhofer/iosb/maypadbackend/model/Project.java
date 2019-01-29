@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,8 +37,11 @@ public class Project {
     @Column(name = "id", updatable = false, nullable = false)
     private int id;
 
-    @Basic
+    @Column
     private String name;
+    @Column
+    private String description;
+
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastUpdate;
@@ -47,15 +49,17 @@ public class Project {
     private Status buildStatus;
 
     //repository
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Repository repository;
     @Column
     private String repositoryUrl;
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private ServiceAccount serviceAccount;
+    @Enumerated(EnumType.STRING)
+    private Status repositoryStatus;
 
     //webhooks
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private InternalWebhook refreshWebhook;
 
     /**
@@ -76,6 +80,7 @@ public class Project {
         this.repositoryUrl = repoUrl;
         this.serviceAccount = serviceAccount;
         this.refreshWebhook = refreshWebhook;
+        this.repositoryStatus = Status.INIT;
     }
 
     /**
@@ -95,5 +100,17 @@ public class Project {
      */
     public Project(String repoUrl, ServiceAccount serviceAccount) {
         this(new Date(), Status.UNKNOWN, null, repoUrl, serviceAccount, null);
+    }
+
+    /**
+     * Get the name of this project. If this project is in error, so return the error as name.
+     *
+     * @return Name of this project
+     */
+    public String getName() {
+        if (repositoryStatus != null && repositoryStatus != Status.SUCCESS) {
+            return repositoryStatus.getName();
+        }
+        return name;
     }
 }
