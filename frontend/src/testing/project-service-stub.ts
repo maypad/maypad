@@ -23,6 +23,6 @@ export class ProjectServiceStub {
     }
 
     refreshProject(id): Observable<{}> {
-        return of({});
+        return of(null);
     }
 }
