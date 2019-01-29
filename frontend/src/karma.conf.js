@@ -40,6 +40,7 @@ module.exports = function (config) {
     files: [
       { pattern: '../node_modules/jquery/dist/jquery.min.js', watched: false },
       { pattern: './assets/hullabaloo.min.js', watched: false },
+      { pattern: '../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js', watched: false },
     ]
   });
 };
