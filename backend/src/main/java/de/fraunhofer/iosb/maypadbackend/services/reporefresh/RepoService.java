@@ -206,6 +206,7 @@ public class RepoService {
                     branch.setDependencies(new LinkedHashSet<>());
                     branch.setBuildType(null);
                     branch.setDescription("");
+                    generateAllNeededWebhooks(project.getId(), branch);
                     project.getRepository().getBranches().put(branchname, branchRepository.saveAndFlush(branch));
                 } else {
                     //update existing branch. Now it is a maypad_all branch
@@ -220,6 +221,7 @@ public class RepoService {
                     logger.info("Create new branch " + branchname + " for project with id " + project.getId());
                     Branch tempBranch = buildBranchModelFromConfig(branchConfigData.get(branchname));
                     tempBranch.setBuildStatus(Status.UNKNOWN);
+                    generateAllNeededWebhooks(project.getId(), tempBranch);
                     branch = branchRepository.saveAndFlush(tempBranch);
                     project.getRepository().getBranches().put(branchname, branch);
                 } else {
@@ -457,6 +459,7 @@ public class RepoService {
         if (branch == null) {
             return null;
         }
+        logger.info("Generate webhooks for branch " + branch.getName() + " in project with id " + projectid);
         branch.setBuildSuccessWebhook(webhookService.generateSuccessWebhook(new Tuple<>(projectid, branch.getName())));
         branch.setBuildFailureWebhook(webhookService.generateFailWebhook(new Tuple<>(projectid, branch.getName())));
         return branch;
@@ -466,6 +469,7 @@ public class RepoService {
         if (branch == null) {
             return;
         }
+        logger.info("Delete all webhooks in branch " + branch.getName());
         webhookService.removeWebhook(branch.getBuildSuccessWebhook());
         webhookService.removeWebhook(branch.getBuildFailureWebhook());
     }
