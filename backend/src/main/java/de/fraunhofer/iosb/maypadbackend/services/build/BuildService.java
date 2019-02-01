@@ -228,4 +228,17 @@ public class BuildService {
             }
         }
     }
+
+    /**
+     * Returns the build status of Branch indicated by (id, ref).
+     * @param id Id of the project that contains the branch.
+     * @param ref Reference (name) of the branch.
+     * @return BuildStatus of that branch.
+     */
+    public Status getBuildStatus(int id, String ref) {
+        Project project = projectService.getProject(id);
+        Branch branch = project.getRepository().getBranches().get(ref);
+        logger.info("Build status of " + id + ":" + ref + ": " + branch.getBuildStatus());
+        return branch.getBuildStatus();
+    }
 }

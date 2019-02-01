@@ -73,17 +73,13 @@ public class DependencyBuildHelper {
                     time = System.currentTimeMillis();
                     boolean done = true;
                     for (BuildNode node : currentLayer) {
-                        Project project = projectService.getProject(node.getProjectId());
-                        Branch branch = project.getRepository().getBranches().get(node.getBranchRef());
-                        Status status = branch.getBuildStatus();
-                        logger.info("Build status for " + project.getId() + ":" + branch.getName() + ": " + status);
-                        if (status != Status.SUCCESS) {
+                        Status buildStatus = buildService.getBuildStatus(node.getProjectId(), node.getBranchRef());
+                        if (buildStatus == Status.RUNNING) {
                             done = false;
-                            if (status == Status.ERROR) {
-                                logger.error("Error building project " + project.getName());
-                                logger.error("on branch " + branch.getName());
-                                return false;
-                            }
+                            break;
+                        } else if (buildStatus == Status.ERROR) {
+                            logger.error("Error building project " + node.getProjectId() + ":" + node.getBranchRef());
+                            return false;
                         }
                     }
                     if (done) {
