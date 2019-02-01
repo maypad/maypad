@@ -33,7 +33,7 @@ public class DependencyBuildHelper {
     private boolean warned; // Warn flag, so that cycle warning prints only once
     private List<BuildNode> nodes; // For cycle detection
     private BuildNode root;
-    private final int refreshFrequency = 60; // Seconds
+    private final int refreshFrequency = 10; // Seconds
 
     @Autowired
     private BranchRepository branchRepository;
@@ -45,53 +45,14 @@ public class DependencyBuildHelper {
     private BuildService buildService;
 
     /**
-     * Constructor for DependencyBuildHelper.
-     *
-     * @param projectId Id of the project on which to execute the build.
-     * @param branchRef Reference of the branch (usually name of branch) to build.
-     */
-    public DependencyBuildHelper(int projectId, String branchRef) {
-        this.project = projectService.getProject(projectId);
-        this.branch = project.getRepository().getBranches().get(branchRef);
-        nodes = new ArrayList<BuildNode>();
-        this.root = new BuildNode(project, branch);
-        nodes.add(root);
-        warned = false;
-    }
-
-    private void setNodeChildren(BuildNode node) {
-        for (DependencyDescriptor desc : node.getBranch().getDependencies()) {
-            Branch dep = node.getProject().getRepository().getBranches().get(desc.getBranchName());
-            Project pro = projectService.getProject(desc.getProjectId());
-            boolean cycle = false;
-            for (BuildNode n : nodes) {
-                if (n.getProject() == pro && n.getBranch() == dep) {
-                    if (!warned) {
-                        logger.warn("You have cycles in your Maypad dependencies!");
-                        logger.error("Not adding already existing dependency...");
-                        warned = true;
-                    }
-                    cycle = true;
-                }
-            }
-            if (cycle) {
-                cycle = false;
-            } else {
-                BuildNode child = new BuildNode(pro, dep);
-                child.setParent(node);
-                node.addChild(child);
-            }
-        }
-    }
-
-    /**
      * Runs a build with dependencies. It starts the lowest "layer" of builds
      * first, which are the leaves in the dependency tree. Potential cycles
      * in dependencies are ignored.
      *
      * @return true if all builds were successful, false otherwise.
      */
-    public boolean runBuildWithDependencies() {
+    public boolean runBuildWithDependencies(int id, String ref) {
+        init(id, ref);
         Stack<BuildNode> buildStack = getBuildStack(root);
         int highestLayer = buildStack.peek().getLayer();
         List<BuildNode> currentLayer = new ArrayList<BuildNode>();
@@ -102,23 +63,25 @@ public class DependencyBuildHelper {
                 currentLayer.add(buildStack.pop());
             }
             for (BuildNode node : currentLayer) {
-                buildService.buildBranch(node.getProject().getId(), node.getBranch().getName(), false, "build");
+                buildService.buildBranch(node.getProjectId(), node.getBranchRef(), false, "build");
             }
             // Wait until all builds have finished successfully
             long time = System.currentTimeMillis();
             while (true) {
                 // Dont check every cycle, but only every n seconds (60 default).
-                if (System.currentTimeMillis() - time < refreshFrequency * 1000) {
+                if (System.currentTimeMillis() - time > refreshFrequency * 1000) {
                     time = System.currentTimeMillis();
-                } else {
                     boolean done = true;
                     for (BuildNode node : currentLayer) {
-                        Status status = node.getBranch().getBuildStatus();
+                        Project project = projectService.getProject(node.getProjectId());
+                        Branch branch = project.getRepository().getBranches().get(node.getBranchRef());
+                        Status status = branch.getBuildStatus();
+                        logger.info("Build status for " + project.getId() + ":" + branch.getName() + ": " + status);
                         if (status != Status.SUCCESS) {
                             done = false;
                             if (status == Status.ERROR) {
-                                logger.error("Error building project " + node.getProject().getName());
-                                logger.error("on branch " + node.getBranch().getName());
+                                logger.error("Error building project " + project.getName());
+                                logger.error("on branch " + branch.getName());
                                 return false;
                             }
                         }
@@ -132,6 +95,42 @@ public class DependencyBuildHelper {
         return true;
     }
 
+    private void setNodeChildren(BuildNode node) {
+        logger.info("Dependencies of " + node.getProjectId() + ":" + node.getBranchRef() + ": ");
+        Project project = projectService.getProject(node.getProjectId());
+        Branch branch = project.getRepository().getBranches().get(node.getBranchRef());
+        for (DependencyDescriptor desc : branch.getDependencies()) {
+            logger.info("- " + desc.getProjectId() + ":" + desc.getBranchName());
+            Project pro = projectService.getProject(desc.getProjectId());
+            Branch dep = pro.getRepository().getBranches().get(desc.getBranchName());
+            boolean cycle = false;
+            for (BuildNode n : nodes) {
+                if (n.getProjectId() == pro.getId() && n.getBranchRef().equals(dep.getName())) {
+                    if (!warned) {
+                        logger.warn("You have cycles in your Maypad dependencies!");
+                        logger.error("Not adding already existing dependency...");
+                        warned = true;
+                    }
+                    cycle = true;
+                }
+            }
+            if (cycle) {
+                cycle = false;
+            } else {
+                BuildNode child = new BuildNode(desc.getProjectId(), desc.getBranchName());
+                child.setParent(node);
+                node.addChild(child);
+            }
+        }
+    }
+
+    private void init(int id, String ref) {
+        nodes = new ArrayList<BuildNode>();
+        this.root = new BuildNode(id, ref);
+        nodes.add(root);
+        warned = false;
+    }
+
     /*
     * Constructs a build-subtree, starting from root.
     * Runs forever if dependency graph is cyclic. Cycle checking
@@ -139,9 +138,7 @@ public class DependencyBuildHelper {
      */
     private void constructBuildTree(BuildNode root) {
         setNodeChildren(root);
-        if (root.getChildren().size() == 0) {
-            return;
-        } else {
+        if (root.getChildren().size() != 0) {
             for (BuildNode child : root.getChildren()) {
                 constructBuildTree(child);
             }
@@ -149,6 +146,7 @@ public class DependencyBuildHelper {
     }
 
     private Stack<BuildNode> getBuildStack(BuildNode root) {
+        constructBuildTree(root);
         Stack<BuildNode> ret = new Stack<BuildNode>();
         Queue<BuildNode> queue = new LinkedList<BuildNode>();
         queue.add(root);
@@ -171,17 +169,17 @@ public class DependencyBuildHelper {
     @Getter
     private class BuildNode {
 
-        private Project project;
-        private Branch branch;
+        private int projectId;
+        private String branchRef;
 
         private int layer;
 
         private BuildNode parent;
         private List<BuildNode> children;
 
-        public BuildNode(Project project, Branch branch) {
-            this.project = project;
-            this.branch = branch;
+        public BuildNode(int projectId, String branchRef) {
+            this.projectId = projectId;
+            this.branchRef = branchRef;
             this.children = new ArrayList<BuildNode>();
             this.layer = -1;
         }

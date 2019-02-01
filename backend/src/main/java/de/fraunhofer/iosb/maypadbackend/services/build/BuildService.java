@@ -46,6 +46,7 @@ public class BuildService {
     private Map<Class<? extends BuildType>, BuildTypeExecutor> buildTypeMappings;
     private static final Logger logger = LoggerFactory.getLogger(BuildService.class);
     private Map<Tuple<Integer, String>, Integer> runningBuilds;
+    private DependencyBuildHelper dependencyBuildHelper;
 
     private static final long buildTimeoutSeconds = 21600; //6h
     private static final long checkTimeoutInterval = 30000; //in ms
@@ -58,11 +59,13 @@ public class BuildService {
      * @param executors      a collection of all BuildTypeExecutor beans
      */
     @Autowired
-    public BuildService(ProjectService projectService, SseService sseService,
-                        Collection<? extends BuildTypeExecutor> executors) {
+    public BuildService(ProjectService projectService, Collection<? extends BuildTypeExecutor> executors,
+            DependencyBuildHelper dependencyBuildHelper, SseService sseService) {
         this.projectService = projectService;
         this.sseService = sseService;
         this.executors = executors;
+        this.dependencyBuildHelper = dependencyBuildHelper;
+        this.sseService = sseService;
         runningBuilds = new ConcurrentHashMap<>();
     }
 
@@ -96,9 +99,7 @@ public class BuildService {
                 throw new RuntimeException("Failed to find BuildTypeExecutor for " + buildType.getClass());
             }
             if (withDependencies) {
-                for (DependencyDescriptor dd : branch.getDependencies()) {
-                    buildBranch(dd.getProjectId(), dd.getBranchName(), false, buildName);
-                }
+                dependencyBuildHelper.runBuildWithDependencies(id, ref);
             }
             if (branch.getLastCommit() == null) {
                 throw new NotFoundException("NO_COMMIT", String.format("Nothing to build on %s.", branch.getName()));
@@ -157,7 +158,7 @@ public class BuildService {
         if (!runningBuilds.containsKey(branchMapEntry)) {
             throw new NotFoundException("NO BUILD", String.format("No Build is running for %s", branch.getName()));
         }
-
+        logger.info(id + ":" + ref + " changed status to " + status + ".");
         Build build = getBuild(branch, runningBuilds.get(branchMapEntry));
         build.setStatus(status);
         if (status == Status.RUNNING) {
