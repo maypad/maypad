@@ -1,7 +1,7 @@
 <div class="container w-50 d-flex flex-row border-bottom border-dark justify-content-between py-2">
   <div class="d-flex flex-row">
     <span>Status:</span>
-    <span class="dot ml-1 mt-1 dot-{{ build.status }}"></span>
+    <span class="dot ml-1 mt-1 dot-{{ build.status }}" data-toggle="tooltip"></span>
   </div>
   <span>Time: {{ build.timestamp | date : 'H:mm:ss, d/M/yy (z)'}}</span>
   <span *ngIf="build.commit.identifier">Commit: <<span>{{ build.commit.identifier.substr(0, 7) }}</span>></span>
