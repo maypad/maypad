@@ -232,6 +232,14 @@ public class ProjectService {
     }
 
     /**
+     * Tells the projectgroup owning the project with the given id to update its status.
+     */
+    public void statusPropagation(int id) {
+        Projectgroup projectgroup = projectgroupService.getProjectrgroupByProject(getProject(id));
+        projectgroupService.updateStatus(projectgroup.getId());
+    }
+
+    /**
      * Throw an exception if the project was not found.
      *
      * @param id Id of the project

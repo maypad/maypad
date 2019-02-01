@@ -14,8 +14,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * A projectgroup in which can have {@link Project}s.
@@ -39,6 +42,7 @@ public class Projectgroup {
     @Enumerated(EnumType.STRING)
     private Status buildStatus;
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id ASC")
     private List<Project> projects;
 
     /**
@@ -60,6 +64,20 @@ public class Projectgroup {
      */
     public Projectgroup(String name) {
         this(name, Status.UNKNOWN);
+    }
+
+    /**
+     * Updates the status of this branch.
+     * @return the new status
+     */
+    public Status updateStatus() {
+        if (projects != null) {
+            projects.stream().forEach(p -> p.updateStatus());
+            Optional<Project> maxPrioProject = projects.stream().max(Comparator.comparing(p -> p.getBuildStatus().getPriority()));
+            buildStatus = maxPrioProject.isPresent()
+                    ? maxPrioProject.get().getBuildStatus() : buildStatus;
+        }
+        return buildStatus;
     }
 
 }

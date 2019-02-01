@@ -1,5 +1,6 @@
 package de.fraunhofer.iosb.maypadbackend.repositories;
 
+import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.Projectgroup;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -15,4 +16,6 @@ public interface ProjectgroupRepository extends JpaRepository<Projectgroup, Inte
     public List<Projectgroup> findAll();
 
     public Optional<Projectgroup> findProjectgroupById(Integer id);
+
+    public Optional<Projectgroup> findProjectgroupByProjectsContaining(Project project);
 }
