@@ -46,11 +46,11 @@ public class Branch {
     private int id;
 
     //repository
-    @Column
+    @Column(length = 1024)
     private String name;
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String description;
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String readme;
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Commit lastCommit;

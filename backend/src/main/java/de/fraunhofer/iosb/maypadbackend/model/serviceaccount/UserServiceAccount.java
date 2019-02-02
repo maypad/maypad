@@ -19,7 +19,7 @@ import javax.persistence.Entity;
 @EqualsAndHashCode(callSuper = true)
 public class UserServiceAccount extends ServiceAccount {
 
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String password;
     @Column
     private String username;
