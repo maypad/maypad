@@ -37,7 +37,7 @@ public class Projectgroup {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)
     private int id;
-    @Column
+    @Column(length = 1024)
     private String name;
     @Enumerated(EnumType.STRING)
     private Status buildStatus;
@@ -72,7 +72,7 @@ public class Projectgroup {
      */
     public Status updateStatus() {
         if (projects != null) {
-            projects.stream().forEach(p -> p.updateStatus());
+            projects.forEach(Project::updateStatus);
             Optional<Project> maxPrioProject = projects.stream().max(Comparator.comparing(p -> p.getBuildStatus().getPriority()));
             buildStatus = maxPrioProject.isPresent()
                     ? maxPrioProject.get().getBuildStatus() : buildStatus;

@@ -32,7 +32,7 @@ public class Commit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)
     private int id;
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String message;
     @Column
     private String identifier;

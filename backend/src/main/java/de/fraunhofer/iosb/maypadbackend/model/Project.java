@@ -43,7 +43,7 @@ public class Project {
 
     @Column
     private String name;
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String description;
 
 

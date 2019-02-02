@@ -29,7 +29,7 @@ public class Tag {
     @Column(name = "id", updatable = false, nullable = false)
     private int id;
 
-    @Column
+    @Column(length = 1024)
     private String name;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
