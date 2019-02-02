@@ -88,8 +88,8 @@ public class ProjectService {
         Project project = new Project(request.getRepositoryUrl(), serviceAccount);
         project.setRefreshWebhook(webhookService.generateRefreshWebhook(project.getId()));
         project = saveProject(project);
-
         addProjectToProjectgroup(request.getGroupId(), project);
+        schedulerService.scheduleRepoRefresh(project.getId());
         return project;
     }
 
