@@ -41,7 +41,7 @@ public class WebhookService {
     private static final String tokenChars
             = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private static final SecureRandom rnd = new SecureRandom();
-    private static final String hookPath = "/hooks/";
+    private static final String HOOKS_PATH = "/hooks/";
 
     private static final Logger logger = LoggerFactory.getLogger(WebhookService.class);
 
@@ -92,7 +92,7 @@ public class WebhookService {
     public InternalWebhook generateSuccessWebhook(Tuple<Integer, String> branch) {
         String token = generateToken();
         mappedHooks.put(token, new BuildWebhookHandler(branch, Status.SUCCESS, buildService));
-        return new InternalWebhook(serverConfig.getDomain() + hookPath + token, token, WebhookType.UPDATEBUILD);
+        return new InternalWebhook(serverConfig.getDomain(), HOOKS_PATH + token, token, WebhookType.UPDATEBUILD);
     }
 
     /**
@@ -104,7 +104,7 @@ public class WebhookService {
     public InternalWebhook generateFailWebhook(Tuple<Integer, String> branch) {
         String token = generateToken();
         mappedHooks.put(token, new BuildWebhookHandler(branch, Status.FAILED, buildService));
-        return new InternalWebhook(serverConfig.getDomain() + hookPath + token, token, WebhookType.UPDATEBUILD);
+        return new InternalWebhook(serverConfig.getDomain(), HOOKS_PATH + token, token, WebhookType.UPDATEBUILD);
     }
 
     /**
@@ -116,7 +116,7 @@ public class WebhookService {
     public InternalWebhook generateRefreshWebhook(int projectId) {
         String token = generateToken();
         mappedHooks.put(token, new RefreshWebhookHandler(projectId, repoService));
-        return new InternalWebhook(serverConfig.getDomain() + hookPath + token, token, WebhookType.REFRESH);
+        return new InternalWebhook(serverConfig.getDomain(), HOOKS_PATH + token, token, WebhookType.REFRESH);
     }
 
     /**
@@ -171,24 +171,31 @@ public class WebhookService {
     private void initMapping() {
         List<Project> projects = projectRepository.findAll();
         for (Project project : projects) {
-            if (project.getRefreshWebhook() != null) {
-                mappedHooks.put(project.getRefreshWebhook().getToken(), new RefreshWebhookHandler(project.getId(), repoService));
+            InternalWebhook refreshWebhook = project.getRefreshWebhook();
+            if (refreshWebhook != null) {
+                mappedHooks.put(refreshWebhook.getToken(), new RefreshWebhookHandler(project.getId(), repoService));
+                refreshWebhook.setBaseUrl(serverConfig.getDomain());
             }
             if (project.getRepository() == null) {
                 continue;
             }
             for (Map.Entry<String, Branch> entry : project.getRepository().getBranches().entrySet()) {
-                if (entry.getValue().getBuildFailureWebhook() != null) {
-                    mappedHooks.put(entry.getValue().getBuildFailureWebhook().getToken(),
-                            new BuildWebhookHandler(new Tuple<>(project.getId(), entry.getValue().getName()),
-                                    Status.FAILED, buildService));
+                InternalWebhook buildFailureWebhook = entry.getValue().getBuildFailureWebhook();
+                if (buildFailureWebhook != null) {
+                    mappedHooks.put(buildFailureWebhook.getToken(), new BuildWebhookHandler(
+                            new Tuple<>(project.getId(), entry.getValue().getName()), Status.FAILED, buildService));
+                    buildFailureWebhook.setBaseUrl(serverConfig.getDomain());
+
                 }
-                if (entry.getValue().getBuildSuccessWebhook() != null) {
-                    mappedHooks.put(entry.getValue().getBuildSuccessWebhook().getToken(),
-                            new BuildWebhookHandler(new Tuple<>(project.getId(), entry.getValue().getName()),
-                                    Status.SUCCESS, buildService));
+                InternalWebhook buildSuccessWebhook = entry.getValue().getBuildSuccessWebhook();
+                if (buildSuccessWebhook != null) {
+                    mappedHooks.put(buildSuccessWebhook.getToken(), new BuildWebhookHandler(
+                            new Tuple<>(project.getId(), entry.getValue().getName()), Status.SUCCESS, buildService));
+                    buildSuccessWebhook.setBaseUrl(serverConfig.getDomain());
                 }
             }
         }
+        projectRepository.saveAll(projects);
+        projectRepository.flush();
     }
 }
