@@ -36,7 +36,7 @@ public enum RepositoryType {
     SVN {
         @Override
         public RepoManager toRepoManager(Project project) {
-            return SvnRepoManager.getInstance(project);
+            return new SvnRepoManager(project);
         }
 
         @Override

@@ -39,7 +39,6 @@ public class SvnRepoManager extends RepoManager {
     private Logger logger = LoggerFactory.getLogger(SvnRepoManager.class);
     private ProjectConfig projConfig;
 
-    private static SvnRepoManager instance = null;
 
     private String projectRoot;
 
@@ -58,7 +57,7 @@ public class SvnRepoManager extends RepoManager {
      *
      * @param project Project for which the svn-repository is to be managed
      */
-    private SvnRepoManager(Project project) {
+    public SvnRepoManager(Project project) {
         super(project);
         logger.info("Cloned project into " + projectRoot);
         if (project.getServiceAccount() != null) {
@@ -76,26 +75,13 @@ public class SvnRepoManager extends RepoManager {
     }
 
     /**
-     * Returns instance of SvnRepoManager (see singleton).
-     *
-     * @param project Project to manage
-     * @return Instance of SvnRepoManager.
-     */
-    public static SvnRepoManager getInstance(Project project) {
-        if (instance == null) {
-            return (instance = new SvnRepoManager(project));
-        }
-        return instance;
-    }
-
-    /**
      * Get the names of all existing branches of the repository.
      *
      * @return List of all branchnames
      */
     @Override
     public List<String> getBranchNames() {
-        File branchesFolder = new File(this.getProjectRootDir().getAbsolutePath() + "/branches/");
+        File branchesFolder = new File(this.getProjectRootDir().getAbsolutePath() + "/" + projConfig.getSvnBranchDirectory());
         String[] branchList = branchesFolder.list();
         if (branchList == null) {
             logger.info("Project contains no branches");
@@ -107,6 +93,9 @@ public class SvnRepoManager extends RepoManager {
             if (new File(branchesFolder.getAbsolutePath() + "/" + b).isDirectory()) {
                 branches.add(new File(b).getName());
             }
+        }
+        if (new File(this.getProjectRootDir() + "/" + projConfig.getSvnTrunkDirectory()).exists()) {
+            branches.add("trunk");
         }
         logger.info("Found " + branches.size() + " branches.");
         return branches;
@@ -153,6 +142,7 @@ public class SvnRepoManager extends RepoManager {
     @Override
     public void prepareRefresh() {
         try {
+            projConfig = getProjectConfig().getKey();
             svnClientManager.getUpdateClient().doUpdate(
                     this.getProjectRootDir(),
                     SVNRevision.HEAD,
