@@ -2,7 +2,6 @@ package de.fraunhofer.iosb.maypadbackend.services.reporefresh;
 
 import de.fraunhofer.iosb.maypadbackend.config.project.ProjectConfig;
 import de.fraunhofer.iosb.maypadbackend.config.project.YamlProjectConfig;
-import de.fraunhofer.iosb.maypadbackend.config.server.ServerConfig;
 import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.person.Author;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Commit;
@@ -12,7 +11,6 @@ import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.UserServiceAccount;
 import de.fraunhofer.iosb.maypadbackend.util.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.tmatesoft.svn.core.ISVNLogEntryHandler;
 import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNException;
@@ -31,7 +29,7 @@ import java.util.List;
 /**
  * Manager for a svn repository.
  *
- * @author Lukas Brosch
+ * @author Max Willich
  * @version 1.0
  */
 public class SvnRepoManager extends RepoManager {
@@ -44,9 +42,6 @@ public class SvnRepoManager extends RepoManager {
     private static SvnRepoManager instance = null;
 
     private String projectRoot;
-
-    @Autowired
-    ServerConfig config;
 
     /**
      * Constructor, prepare the SvnRepoManager.
@@ -69,7 +64,6 @@ public class SvnRepoManager extends RepoManager {
         if (project.getServiceAccount() != null) {
             if (project.getServiceAccount() instanceof KeyServiceAccount) {
                 KeyFileManager kfm = new KeyFileManager(this.getProjectRootDir(), this.getProject());
-                KeyServiceAccount sa = (KeyServiceAccount) project.getServiceAccount();
                 File sshFile = kfm.getSshFile();
                 int sshPort = (this.getSshPort() == -1) ? 22 : getSshPort();
                 authManager = new BasicAuthenticationManager("", sshFile, "", sshPort);
@@ -105,9 +99,9 @@ public class SvnRepoManager extends RepoManager {
         String[] branchList = branchesFolder.list();
         if (branchList == null) {
             logger.info("Project contains no branches");
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
-        List<String> branches = new ArrayList<String>();
+        List<String> branches = new ArrayList<>();
         for (String b : branchList) {
             logger.info("Found branch: " + b);
             if (new File(branchesFolder.getAbsolutePath() + "/" + b).isDirectory()) {
@@ -166,9 +160,9 @@ public class SvnRepoManager extends RepoManager {
         String[] tagList = tagFolder.list();
         if (tagList == null) {
             logger.info("Project contains no tags.");
-            return new ArrayList<Tag>();
+            return new ArrayList<>();
         }
-        List<Tag> tags = new ArrayList<Tag>();
+        List<Tag> tags = new ArrayList<>();
         for (String t : tagList) {
             if (new File(tagFolder.getAbsolutePath() + "/" + t).isDirectory()) {
                 Tag tt = new Tag();
@@ -241,26 +235,20 @@ public class SvnRepoManager extends RepoManager {
         try {
             File f = new File(this.getProjectRootDir().getAbsolutePath() + "/maypad.yaml");
             logger.info("Searching for config at " + f.getAbsolutePath());
-            return new Tuple<ProjectConfig, File>(new YamlProjectConfig(f), f);
+            return new Tuple<>(new YamlProjectConfig(f), f);
         } catch (IOException ex) {
             logger.error("Can't find project configuration (maypad.yaml).");
             return null;
         }
     }
 
-    private boolean checkFolderStructure() {
-        File trunk = new File(projectRoot + "/trunk/");
-        File tags = new File(projectRoot + "/tags");
-        File branches = new File(projectRoot + "/branches/");
-        return trunk.exists() && tags.exists() && branches.exists();
-    }
 
     private class RecentCommitHandler implements ISVNLogEntryHandler {
 
         private Commit commit;
 
         @Override
-        public void handleLogEntry(SVNLogEntry svnLogEntry) throws SVNException {
+        public void handleLogEntry(SVNLogEntry svnLogEntry) {
             commit = new Commit();
             commit.setAuthor(new Author(svnLogEntry.getAuthor(), null));
             commit.setTimestamp(svnLogEntry.getDate());
