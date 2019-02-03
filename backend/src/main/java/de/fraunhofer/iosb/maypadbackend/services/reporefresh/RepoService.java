@@ -20,7 +20,7 @@ import de.fraunhofer.iosb.maypadbackend.services.ProjectService;
 import de.fraunhofer.iosb.maypadbackend.services.webhook.WebhookService;
 import de.fraunhofer.iosb.maypadbackend.util.FileUtil;
 import de.fraunhofer.iosb.maypadbackend.util.Tuple;
-import de.fraunhofer.iosb.maypadbackend.util.datastructures.ExpiredKeyRemover;
+import de.fraunhofer.iosb.maypadbackend.util.datastructures.ExpiredElementRemover;
 import de.fraunhofer.iosb.maypadbackend.util.datastructures.ExpiringElement;
 import de.fraunhofer.iosb.maypadbackend.util.datastructures.Util;
 import lombok.NoArgsConstructor;
@@ -64,7 +64,7 @@ public class RepoService {
     private WebhookService webhookService;
     private Set<Integer> lockedProjects; //boolean: allows init while locked
     private Logger logger = LoggerFactory.getLogger(RepoService.class);
-    private List<de.fraunhofer.iosb.maypadbackend.util.datastructures.ExpiringElement> refreshCounter;
+    private List<ExpiringElement> refreshCounter;
 
     /**
      * Constructor for the RepoService.
@@ -85,7 +85,7 @@ public class RepoService {
         if (serverConfig.isMaximumRefreshRequestsEnabled()) {
             refreshCounter = Collections.synchronizedList(new ArrayList<>());
             ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-            executor.scheduleAtFixedRate(new ExpiredKeyRemover(refreshCounter), 0, 15, TimeUnit.SECONDS);
+            executor.scheduleAtFixedRate(new ExpiredElementRemover(refreshCounter), 0, 15, TimeUnit.SECONDS);
         }
 
     }

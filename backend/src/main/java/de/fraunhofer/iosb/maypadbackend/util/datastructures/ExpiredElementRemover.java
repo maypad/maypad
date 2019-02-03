@@ -11,7 +11,7 @@ import java.util.List;
  * @version 1.0
  */
 @AllArgsConstructor
-public class ExpiredKeyRemover implements Runnable {
+public class ExpiredElementRemover implements Runnable {
 
     private final List<ExpiringElement> elements;
 
