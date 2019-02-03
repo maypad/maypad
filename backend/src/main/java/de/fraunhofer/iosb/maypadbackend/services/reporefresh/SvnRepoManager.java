@@ -59,7 +59,7 @@ public class SvnRepoManager extends RepoManager {
      */
     public SvnRepoManager(Project project) {
         super(project);
-        logger.info("Cloned project into " + projectRoot);
+        logger.info("Cloned project into " + getProjectRootDir().getAbsolutePath());
         if (project.getServiceAccount() != null) {
             if (project.getServiceAccount() instanceof KeyServiceAccount) {
                 KeyFileManager kfm = new KeyFileManager(this.getProjectRootDir(), this.getProject());
@@ -224,7 +224,11 @@ public class SvnRepoManager extends RepoManager {
                     SVNDepth.INFINITY, // How far to clone the history tree
                     true
             );
-            projConfig = this.getProjectConfig().getKey();
+            if (getProjectConfig() != null) {
+                projConfig = this.getProjectConfig().getKey();
+            } else {
+                return false;
+            }
             switchBranch("trunk");
             return true;
         } catch (SVNException ex) {
