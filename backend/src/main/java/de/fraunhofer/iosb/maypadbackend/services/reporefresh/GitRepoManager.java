@@ -168,6 +168,14 @@ public class GitRepoManager extends RepoManager {
     }
 
     /**
+     * Prepare the repomanager for the refresh.
+     */
+    @Override
+    public void prepareRefresh() {
+        switchBranch(getMainBranchName());
+    }
+
+    /**
      * Get all tags of a branch.
      *
      * @return List with tags
