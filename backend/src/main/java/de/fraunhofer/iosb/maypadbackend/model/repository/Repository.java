@@ -2,7 +2,6 @@ package de.fraunhofer.iosb.maypadbackend.model.repository;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -16,8 +15,10 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Repository of a version management system.
@@ -27,7 +28,6 @@ import java.util.Map;
  */
 @Data
 @Entity
-@NoArgsConstructor
 public class Repository {
 
     @Id
@@ -50,5 +50,21 @@ public class Repository {
     @MapKeyColumn(name = "name", length = 200)
     private Map<String, Branch> branches;
 
+    /**
+     * Constructor for Repository.
+     */
+    public Repository() {
+        this(RepositoryType.NONE);
+    }
 
+    /**
+     * Constructor for Repository.
+     *
+     * @param repositoryType Type of new Repository
+     */
+    public Repository(RepositoryType repositoryType) {
+        this.repositoryType = repositoryType;
+        this.branches = new ConcurrentHashMap<>();
+        this.tags = new ArrayList<>();
+    }
 }

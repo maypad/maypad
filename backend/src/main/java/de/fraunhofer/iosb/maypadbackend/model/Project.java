@@ -2,6 +2,7 @@ package de.fraunhofer.iosb.maypadbackend.model;
 
 import de.fraunhofer.iosb.maypadbackend.model.repository.Branch;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Repository;
+import de.fraunhofer.iosb.maypadbackend.model.repository.RepositoryType;
 import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.ServiceAccount;
 import de.fraunhofer.iosb.maypadbackend.model.webhook.InternalWebhook;
 import lombok.Data;
@@ -103,7 +104,7 @@ public class Project {
      * @param serviceAccount the serviceaccount
      */
     public Project(String repoUrl, ServiceAccount serviceAccount) {
-        this(new Date(), Status.UNKNOWN, null, repoUrl, serviceAccount, null);
+        this(new Date(), Status.INIT, new Repository(RepositoryType.NONE), repoUrl, serviceAccount, null);
     }
 
     /**
@@ -124,7 +125,7 @@ public class Project {
      */
     public Status updateStatus() {
         if (repository != null) {
-            repository.getBranches().entrySet().stream().forEach(e -> e.getValue().updateStatus());
+            repository.getBranches().forEach((key, value) -> value.updateStatus());
             Optional<Map.Entry<String, Branch>> maxPrioBranchEntry =
                     repository.getBranches().entrySet().stream()
                             .max(Comparator.comparing(e -> e.getValue().getBuildStatus().getPriority()));
