@@ -10,7 +10,7 @@ import java.util.Set;
 
 
 /**
- *  Interface for mapping a Deployment-Entity to a Deployment-Response DTO.
+ * Interface for mapping a Deployment-Entity to a Deployment-Response DTO.
  */
 @Mapper(componentModel = "spring", uses = {BuildMapper.class})
 public interface DeploymentMapper {

@@ -10,12 +10,13 @@ import java.util.List;
 
 
 /**
- *  Interface for mapping a Project-Entity to a Project-Response DTO.
+ * Interface for mapping a Project-Entity to a Project-Response DTO.
  */
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = CommitMapper.class)
 public interface ProjectMapper {
     @Mappings({
-            @Mapping(source = "refreshWebhook.url", target = "refreshUrl")
+            @Mapping(source = "refreshWebhook.url", target = "refreshUrl"),
+            @Mapping(source = "repository.tags", target = "tags")
     })
     public ProjectResponse toResponse(Project project);
 

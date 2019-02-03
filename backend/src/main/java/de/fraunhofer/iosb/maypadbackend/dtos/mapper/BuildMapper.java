@@ -8,7 +8,7 @@ import java.util.Set;
 
 
 /**
- *  Interface for mapping a Build-Entity to a Build-Response DTO.
+ * Interface for mapping a Build-Entity to a Build-Response DTO.
  */
 @Mapper(componentModel = "spring", uses = {CommitMapper.class})
 public interface BuildMapper {

@@ -9,7 +9,6 @@ import org.mapstruct.Mappings;
 import java.util.List;
 
 
-
 /**
  * Interface for mapping a Commit-Entity to a Commit-Response DTO.
  */
