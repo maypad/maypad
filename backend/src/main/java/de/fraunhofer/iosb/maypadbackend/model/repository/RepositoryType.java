@@ -42,7 +42,7 @@ public enum RepositoryType {
         @Override
         public boolean isUrlBelongToRepotype(String url) {
             // TODO: More protocols, no clashes with git.
-            return url.startsWith("svn://") || url.startsWith("svn+ssh://");
+            return url.startsWith("svn://") || url.startsWith("svn+ssh://") || url.startsWith("http");
         }
     },
 
