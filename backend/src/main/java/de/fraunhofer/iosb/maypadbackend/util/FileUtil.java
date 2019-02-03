@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Objects;
 
 import static com.google.common.io.Files.asCharSource;
 
@@ -112,6 +113,19 @@ public class FileUtil {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * Checks whether a directory is empty.
+     *
+     * @param file File to the directory
+     * @return true if the directory is empty, else false
+     */
+    public static boolean isDirectoryEmpty(File file) {
+        if (file == null || !file.exists() || !file.isDirectory()) {
+            return false;
+        }
+        return Objects.requireNonNull(file.list()).length == 0;
     }
 
 }

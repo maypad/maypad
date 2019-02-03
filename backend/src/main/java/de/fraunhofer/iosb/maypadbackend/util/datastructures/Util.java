@@ -1,4 +1,4 @@
-package de.fraunhofer.iosb.maypadbackend.util;
+package de.fraunhofer.iosb.maypadbackend.util.datastructures;
 
 import java.util.List;
 import java.util.Set;
