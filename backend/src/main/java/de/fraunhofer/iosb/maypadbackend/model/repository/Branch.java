@@ -8,7 +8,7 @@ import de.fraunhofer.iosb.maypadbackend.model.deployment.DeploymentType;
 import de.fraunhofer.iosb.maypadbackend.model.person.Mail;
 import de.fraunhofer.iosb.maypadbackend.model.person.Person;
 import de.fraunhofer.iosb.maypadbackend.model.webhook.InternalWebhook;
-import de.fraunhofer.iosb.maypadbackend.util.Util;
+import de.fraunhofer.iosb.maypadbackend.util.datastructures.Util;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -128,6 +128,7 @@ public class Branch {
 
     /**
      * Updates the status of this branch.
+     *
      * @return the new status
      */
     public Status updateStatus() {

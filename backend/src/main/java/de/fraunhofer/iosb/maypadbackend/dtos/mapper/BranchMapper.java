@@ -92,6 +92,7 @@ public interface BranchMapper {
 
     /**
      * Maps a DeploymentType to String.
+     *
      * @param deploymentType the DeploymenType that should be mapped
      * @return the mapped String
      */
@@ -104,6 +105,7 @@ public interface BranchMapper {
 
     /**
      * Maps a BuildType to String.
+     *
      * @param buildType String
      * @return the mapped String
      */
