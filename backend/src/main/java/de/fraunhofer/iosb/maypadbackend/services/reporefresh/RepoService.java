@@ -20,6 +20,9 @@ import de.fraunhofer.iosb.maypadbackend.services.ProjectService;
 import de.fraunhofer.iosb.maypadbackend.services.webhook.WebhookService;
 import de.fraunhofer.iosb.maypadbackend.util.FileUtil;
 import de.fraunhofer.iosb.maypadbackend.util.Tuple;
+import de.fraunhofer.iosb.maypadbackend.util.datastructures.ExpiredKeyRemover;
+import de.fraunhofer.iosb.maypadbackend.util.datastructures.ExpiringElement;
+import de.fraunhofer.iosb.maypadbackend.util.datastructures.Util;
 import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +33,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -38,6 +42,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -57,7 +64,7 @@ public class RepoService {
     private WebhookService webhookService;
     private Set<Integer> lockedProjects; //boolean: allows init while locked
     private Logger logger = LoggerFactory.getLogger(RepoService.class);
-
+    private List<de.fraunhofer.iosb.maypadbackend.util.datastructures.ExpiringElement> refreshCounter;
 
     /**
      * Constructor for the RepoService.
@@ -75,6 +82,12 @@ public class RepoService {
         this.lockedProjects = ConcurrentHashMap.newKeySet();
         this.branchRepository = branchRepository;
         this.webhookService = webhookService;
+        if (serverConfig.isMaximumRefreshRequestsEnabled()) {
+            refreshCounter = Collections.synchronizedList(new ArrayList<>());
+            ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+            executor.scheduleAtFixedRate(new ExpiredKeyRemover(refreshCounter), 0, 15, TimeUnit.SECONDS);
+        }
+
     }
 
     private synchronized boolean repoLock(Project project) {
@@ -102,6 +115,11 @@ public class RepoService {
             logger.info("Project with id " + project.getId() + " is currently updated");
             return;
         }
+        //check if max refresh amount is reached
+        if (isRefreshCapReached(id)) {
+            removeLock(project);
+            return;
+        }
         try {
             doRefreshProject(project);
         } finally {
@@ -122,12 +140,31 @@ public class RepoService {
             logger.info("Project with id " + project.getId() + " is currently initializing");
             return;
         }
+        //check if max refresh amount is reached
+        if (isRefreshCapReached(id)) {
+            setFailStatusAndSave(project);
+            removeLock(project);
+            return;
+        }
         try {
             doInitProject(project);
         } finally {
             KeyFileManager.deleteSshFile(new File(serverConfig.getRepositoryStoragePath()), id);
             removeLock(project);
         }
+    }
+
+    private boolean isRefreshCapReached(int id) {
+        if (serverConfig.isMaximumRefreshRequestsEnabled()) {
+            if (refreshCounter.size() >= serverConfig.getMaximumRefreshRequests()) {
+                logger.warn("Cap limit of " + serverConfig.getMaximumRefreshRequests() + " for max refresh requests "
+                        + "was reched. Skip refresh of project with id " + id);
+                return true;
+
+            }
+            refreshCounter.add(new ExpiringElement(serverConfig.getMaximumRefreshRequestsSeconds(), TimeUnit.SECONDS));
+        }
+        return false;
     }
 
     private void doRefreshProject(Project project) {
@@ -146,7 +183,7 @@ public class RepoService {
         //clone project, if data were deleted
         if (!projectService.getRepoDir(project.getId()).exists()) {
             if (!repoManager.cloneRepository()) {
-                project.setRepositoryStatus(Status.FAILED);
+                setFailStatusAndSave(project);
                 return;
             }
         }
@@ -187,6 +224,8 @@ public class RepoService {
         List<String> branchNamesRepo = repoManager.getBranchNames();
 
         for (String branchname : branchNamesRepo) {
+            boolean generateWebhooks = false;
+            Branch savedBranch = null;
             if (!branchConfigData.containsKey(branchname)) {
                 if (!allBranches) {
                     //we haven't to check this branch cause it isn't needed. But remove it, if it exists
@@ -206,12 +245,13 @@ public class RepoService {
                     branch.setDependencies(new LinkedHashSet<>());
                     branch.setBuildType(null);
                     branch.setDescription("");
-                    generateAllNeededWebhooks(project.getId(), branch);
-                    project.getRepository().getBranches().put(branchname, branchRepository.saveAndFlush(branch));
+                    savedBranch = branchRepository.saveAndFlush(branch);
+                    generateWebhooks = true;
+                    project.getRepository().getBranches().put(branchname, savedBranch);
                 } else {
                     //update existing branch. Now it is a maypad_all branch
                     removeProjectConfigDataInBranch(branch);
-                    branchRepository.saveAndFlush(branch);
+                    savedBranch = branchRepository.saveAndFlush(branch);
                 }
             } else {
                 //branch is a "real" maypad branch
@@ -221,16 +261,21 @@ public class RepoService {
                     logger.info("Create new branch " + branchname + " for project with id " + project.getId());
                     Branch tempBranch = buildBranchModelFromConfig(branchConfigData.get(branchname));
                     tempBranch.setBuildStatus(Status.UNKNOWN);
-                    generateAllNeededWebhooks(project.getId(), tempBranch);
-                    branch = branchRepository.saveAndFlush(tempBranch);
+                    generateWebhooks = true;
+                    savedBranch = branch = branchRepository.saveAndFlush(tempBranch);
                     project.getRepository().getBranches().put(branchname, branch);
                 } else {
                     //branch already exists. So compare Branch and update
                     if (hasMaypadConfigChanged) {
                         branch.compareAndUpdate(buildBranchModelFromConfig(branchConfigData.get(branchname)));
                     }
-                    branchRepository.saveAndFlush(branch);
+                    savedBranch = branchRepository.saveAndFlush(branch);
                 }
+            }
+            //generate webhooks
+            if (generateWebhooks && savedBranch != null) {
+                generateAllNeededWebhooks(project.getId(), savedBranch);
+                savedBranch = branchRepository.saveAndFlush(savedBranch);
             }
         }
 
@@ -272,7 +317,11 @@ public class RepoService {
 
 
         //tags
-        //TODO
+        if (project.getRepository().getTags() == null) {
+            project.getRepository().setTags(repoManager.getTags());
+        } else {
+            Util.updateList(project.getRepository().getTags(), repoManager.getTags());
+        }
 
 
         project.setLastUpdate(new Date());
@@ -298,7 +347,7 @@ public class RepoService {
         if (!FileUtil.hasWriteAccess(parentDir)) {
             logger.error("Can't read / write to " + parentDir.getAbsolutePath());
             initNullRepository(repository);
-            project.setRepositoryStatus(Status.FAILED);
+            setFailStatusAndSave(project);
             return;
         }
         File file = new File(parentDir.getAbsolutePath() + File.separator + project.getId());
@@ -307,7 +356,7 @@ public class RepoService {
         } else if (!file.mkdirs()) {
             logger.error("Can't create directories for " + file.getAbsolutePath());
             initNullRepository(repository);
-            project.setRepositoryStatus(Status.FAILED);
+            setFailStatusAndSave(project);
             return;
         }
         RepositoryType repositoryType = getCorrectRepositoryType(project.getRepositoryUrl());
@@ -320,18 +369,18 @@ public class RepoService {
         RepoManager repoManager = repositoryType.toRepoManager(project);
         repoManager.initRepoManager(parentDir, projectService.getRepoDir(project.getId()));
 
-        boolean cloneSuccess = repoManager.cloneRepository();
+        boolean cloneSuccess = (repoManager.cloneRepository() && repositoryType != RepositoryType.NONE);
         if (!cloneSuccess) {
-            project.setRepositoryStatus(Status.FAILED);
-        } else {
-            project.setRepositoryStatus(Status.INIT);
+            setFailStatusAndSave(project);
+            return;
         }
+
+        project.setRepositoryStatus(Status.INIT);
+
 
         project = projectService.saveProject(project);
         //if repo isn't null, so we can refresh the data. Preventing call this method twice.
-        if (repositoryType != RepositoryType.NONE && cloneSuccess) {
-            doRefreshProject(project);
-        }
+        doRefreshProject(project);
     }
 
     /**
@@ -360,6 +409,14 @@ public class RepoService {
             return;
         }
         repository.setRepositoryType(RepositoryType.NONE);
+    }
+
+    private Project setFailStatusAndSave(Project project) {
+        if (project == null) {
+            return null;
+        }
+        project.setRepositoryStatus(Status.FAILED);
+        return projectService.saveProject(project);
     }
 
     private void removeProjectConfigDataInBranch(Branch branch) {

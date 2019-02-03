@@ -85,6 +85,8 @@ public class ProjectService {
     public Project create(CreateProjectRequest request) {
         ServiceAccount serviceAccount = getServiceAccount(request.getServiceAccount());
         Project project = new Project(request.getRepositoryUrl(), serviceAccount);
+        //we have to get the projectid, so save it first
+        project = saveProject(project);
         project.setRefreshWebhook(webhookService.generateRefreshWebhook(project.getId()));
         project = saveProject(project);
 

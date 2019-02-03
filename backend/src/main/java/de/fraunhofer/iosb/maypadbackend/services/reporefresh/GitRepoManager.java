@@ -11,12 +11,14 @@ import de.fraunhofer.iosb.maypadbackend.model.repository.Tag;
 import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.KeyServiceAccount;
 import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.ServiceAccount;
 import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.UserServiceAccount;
+import de.fraunhofer.iosb.maypadbackend.util.FileUtil;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LsRemoteCommand;
 import org.eclipse.jgit.api.TransportCommand;
 import org.eclipse.jgit.api.TransportConfigCallback;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.merge.MergeStrategy;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -177,9 +179,10 @@ public class GitRepoManager extends RepoManager {
                 commit = revWalk.parseCommit(ref.getObjectId().toObjectId());
             } catch (IOException e) {
                 getLogger().warn("Can't get tag of branch " + ref.getName() + " in " + getProjectRootDir().getAbsolutePath());
+                continue;
             }
 
-            tags.add(new Tag(ref.getName(), getCommit(commit)));
+            tags.add(new Tag(ref.getName().replace("refs/tags/", ""), getCommit(commit)));
         }
 
         return tags;
@@ -288,15 +291,19 @@ public class GitRepoManager extends RepoManager {
      */
     @Override
     protected boolean cloneRepository() {
+        if (!FileUtil.isDirectoryEmpty(getProjectRootDir())) {
+            getLogger().error("Folder " + getProjectRootDir().getAbsolutePath() + " isn't empty, so can't clone.");
+            return false;
+        }
         try {
             getAuth(Git.cloneRepository().setURI(getProject().getRepositoryUrl()).setDirectory(getProjectRootDir())).call();
-        } catch (GitAPIException e) {
+        } catch (GitAPIException | JGitInternalException e) {
             Git git = getGit();
             if (git != null) {
                 getGit().close();
             }
 
-            getLogger().warn("Can't access to repo " + getProject().getRepositoryUrl());
+            getLogger().warn("Can't access to repo " + getProject().getRepositoryUrl() + " or an internal error occured.");
             try {
                 FileUtils.deleteDirectory(getProjectRootDir());
             } catch (IOException e1) {
