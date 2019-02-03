@@ -73,6 +73,14 @@ public class NullRepoManager extends RepoManager {
     }
 
     /**
+     * Prepare the repomanager for the refresh.
+     */
+    @Override
+    public void prepareRefresh() {
+        //nothing to do
+    }
+
+    /**
      * Get the readme file of branch.
      *
      * @return Input of readme file

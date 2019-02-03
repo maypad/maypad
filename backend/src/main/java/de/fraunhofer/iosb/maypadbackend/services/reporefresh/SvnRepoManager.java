@@ -147,6 +147,14 @@ public class SvnRepoManager extends RepoManager {
         }
     }
 
+    /**
+     * Prepare the repomanager for the refresh.
+     */
+    @Override
+    public void prepareRefresh() {
+        //TODO
+    }
+
 
     /**
      * Get all tags of a branch.

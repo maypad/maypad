@@ -86,6 +86,11 @@ public abstract class RepoManager {
     public abstract boolean switchBranch(String name);
 
     /**
+     * Prepare the repomanager for the refresh.
+     */
+    public abstract void prepareRefresh();
+
+    /**
      * Get all tags of a branch.
      *
      * @return List with tags
