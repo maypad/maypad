@@ -152,7 +152,18 @@ public class SvnRepoManager extends RepoManager {
      */
     @Override
     public void prepareRefresh() {
-        //TODO
+        try {
+            svnClientManager.getUpdateClient().doUpdate(
+                    this.getProjectRootDir(),
+                    SVNRevision.HEAD,
+                    SVNDepth.INFINITY,
+                    true,
+                    true
+            );
+        } catch (SVNException ex) {
+            logger.error("Failed to update project");
+            logger.error(ex.getMessage());
+        }
     }
 
 
