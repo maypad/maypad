@@ -69,12 +69,12 @@ public class SvnRepoManager extends RepoManager {
         if (project.getServiceAccount() != null) {
             if (project.getServiceAccount() instanceof KeyServiceAccount) {
                 KeyFileManager kfm = new KeyFileManager(this.getProjectRootDir(), this.getProject());
-                KeyServiceAccount sa = (KeyServiceAccount)project.getServiceAccount();
+                KeyServiceAccount sa = (KeyServiceAccount) project.getServiceAccount();
                 File sshFile = kfm.getSshFile();
                 int sshPort = (this.getSshPort() == -1) ? 22 : getSshPort();
                 authManager = new BasicAuthenticationManager("", sshFile, "", sshPort);
             } else if (project.getServiceAccount() instanceof UserServiceAccount) {
-                UserServiceAccount sa = (UserServiceAccount)project.getServiceAccount();
+                UserServiceAccount sa = (UserServiceAccount) project.getServiceAccount();
                 authManager = new BasicAuthenticationManager(sa.getUsername(), sa.getPassword());
             }
             svnClientManager.setAuthenticationManager(authManager);
@@ -83,6 +83,7 @@ public class SvnRepoManager extends RepoManager {
 
     /**
      * Returns instance of SvnRepoManager (see singleton).
+     *
      * @param project Project to manage
      * @return Instance of SvnRepoManager.
      */
@@ -188,7 +189,7 @@ public class SvnRepoManager extends RepoManager {
         try {
             RecentCommitHandler rcm = new RecentCommitHandler();
             svnClientManager.getLogClient().doLog(
-                    new File[] { this.getProjectRootDir() },
+                    new File[]{this.getProjectRootDir()},
                     SVNRevision.HEAD,
                     SVNRevision.HEAD,
                     true,
