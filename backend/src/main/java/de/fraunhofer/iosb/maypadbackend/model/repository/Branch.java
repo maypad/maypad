@@ -8,7 +8,7 @@ import de.fraunhofer.iosb.maypadbackend.model.deployment.DeploymentType;
 import de.fraunhofer.iosb.maypadbackend.model.person.Mail;
 import de.fraunhofer.iosb.maypadbackend.model.person.Person;
 import de.fraunhofer.iosb.maypadbackend.model.webhook.InternalWebhook;
-import de.fraunhofer.iosb.maypadbackend.util.Util;
+import de.fraunhofer.iosb.maypadbackend.util.datastructures.Util;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -24,6 +24,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -44,11 +46,11 @@ public class Branch {
     private int id;
 
     //repository
-    @Column
+    @Column(length = 1024)
     private String name;
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String description;
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String readme;
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Commit lastCommit;
@@ -65,6 +67,7 @@ public class Branch {
     @OneToOne(cascade = CascadeType.ALL)
     private BuildType buildType;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OrderBy("id ASC")
     private Set<Build> builds;
     @Enumerated(EnumType.STRING)
     private Status buildStatus;
@@ -123,5 +126,16 @@ public class Branch {
 
     }
 
-
+    /**
+     * Updates the status of this branch.
+     *
+     * @return the new status
+     */
+    public Status updateStatus() {
+        if (builds != null) {
+            Optional<Build> lastBuild = builds.stream().reduce((a, b) -> b);
+            buildStatus = lastBuild.isPresent() ? lastBuild.get().getStatus() : buildStatus;
+        }
+        return buildStatus;
+    }
 }

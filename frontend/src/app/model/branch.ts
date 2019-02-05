@@ -10,7 +10,7 @@ export class Branch {
     readme: string;
     buildWebhook: string;
     buildSuccessUrl: string;
-    buildFailUrl: string;
+    buildFailureUrl: string;
     tags: string[];
     status: BuildStatus;
     lastCommit: Commit;

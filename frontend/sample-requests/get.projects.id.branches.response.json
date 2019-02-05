@@ -26,7 +26,7 @@
         ],
         "buildStatus":"SUCCESS",
         "buildSuccessUrl":"https://maypad.de/projects/1/branches/master/builds/success?token=djhbvjskbfavhbkdfbvlfbva",
-        "buildFailUrl":"https://maypad.de/projects/1/branches/master/builds/fail?token=jhdsbfajdbfhjbhvjdafb"
+        "buildFailureUrl":"https://maypad.de/projects/1/branches/master/builds/fail?token=jhdsbfajdbfhjbhvjdafb"
     },
     {
         "projectName":"One Test Project",
@@ -55,6 +55,6 @@
         ],
         "buildStatus":"RUNNING",
         "buildSuccessUrl":"https://maypad.de/projects/1/branches/dev/builds/success?token=adjvnfjkvadnfjkvnkjsfd",
-        "buildFailUrl":"https://maypad.de/projects/1/branches/dev/builds/fail?token=sajkvdbfdjkvnfjksvnjkfdv"
+        "buildFailureUrl":"https://maypad.de/projects/1/branches/dev/builds/fail?token=sajkvdbfdjkvnfjksvnjkfdv"
     }
 ]

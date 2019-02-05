@@ -141,7 +141,8 @@ public class BuildService {
         if (status == Status.FAILED || status == Status.SUCCESS) {
             runningBuilds.remove(branchMapEntry);
         }
-        projectService.saveProject(project);
+        project = projectService.saveProject(project);
+        projectService.statusPropagation(project.getId());
     }
 
     /**

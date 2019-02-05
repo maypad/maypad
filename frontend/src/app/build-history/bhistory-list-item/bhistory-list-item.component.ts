@@ -11,6 +11,21 @@ export class BhistoryListItemComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip({
+        title: function (this: Element) {
+          if (this.className.includes('dot-0')) {
+            return 'Successful';
+          } else if (this.className.includes('dot-1')) {
+            return 'Failing';
+          } else if (this.className.includes('dot-2')) {
+            return 'Running';
+          } else if (this.className.includes('dot-3')) {
+            return 'Unknown';
+          }
+        }
+      });
+    });
   }
 
 }

@@ -1,6 +1,8 @@
 package de.fraunhofer.iosb.maypadbackend.model;
 
+import de.fraunhofer.iosb.maypadbackend.model.repository.Branch;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Repository;
+import de.fraunhofer.iosb.maypadbackend.model.repository.RepositoryType;
 import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.ServiceAccount;
 import de.fraunhofer.iosb.maypadbackend.model.webhook.InternalWebhook;
 import lombok.Data;
@@ -18,7 +20,10 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * A project in maypad which has a {@link Repository}.
@@ -39,7 +44,7 @@ public class Project {
 
     @Column
     private String name;
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String description;
 
 
@@ -99,7 +104,7 @@ public class Project {
      * @param serviceAccount the serviceaccount
      */
     public Project(String repoUrl, ServiceAccount serviceAccount) {
-        this(new Date(), Status.UNKNOWN, null, repoUrl, serviceAccount, null);
+        this(new Date(), Status.INIT, new Repository(RepositoryType.NONE), repoUrl, serviceAccount, null);
     }
 
     /**
@@ -112,5 +117,21 @@ public class Project {
             return repositoryStatus.getName();
         }
         return name;
+    }
+
+    /**
+     * Updates the status of this project.
+     * @return the new status
+     */
+    public Status updateStatus() {
+        if (repository != null) {
+            repository.getBranches().forEach((key, value) -> value.updateStatus());
+            Optional<Map.Entry<String, Branch>> maxPrioBranchEntry =
+                    repository.getBranches().entrySet().stream()
+                            .max(Comparator.comparing(e -> e.getValue().getBuildStatus().getPriority()));
+            buildStatus = maxPrioBranchEntry.isPresent()
+                    ? maxPrioBranchEntry.get().getValue().getBuildStatus() : buildStatus;
+        }
+        return buildStatus;
     }
 }

@@ -73,6 +73,7 @@ public class ProjectService {
         //get the saved project, with correct id
         project = saveProject(project);
         addProjectToProjectgroup(projectgroupId, project);
+        schedulerService.scheduleRepoRefresh(project.getId());
         return project;
     }
 
@@ -85,10 +86,12 @@ public class ProjectService {
     public Project create(CreateProjectRequest request) {
         ServiceAccount serviceAccount = getServiceAccount(request.getServiceAccount());
         Project project = new Project(request.getRepositoryUrl(), serviceAccount);
+        //we have to get the projectid, so save it first
+        project = saveProject(project);
         project.setRefreshWebhook(webhookService.generateRefreshWebhook(project.getId()));
         project = saveProject(project);
-
         addProjectToProjectgroup(request.getGroupId(), project);
+        schedulerService.scheduleRepoRefresh(project.getId());
         return project;
     }
 
@@ -180,6 +183,8 @@ public class ProjectService {
     public void deleteProject(int id) {
         //check if repo id is valid and remove webhook
         webhookService.removeWebhook(getProject(id).getRefreshWebhook());
+        getProject(id);
+        schedulerService.unscheduleRepoRefresh(id);
         projectRepository.deleteById(id);
     }
 
@@ -229,6 +234,14 @@ public class ProjectService {
         Projectgroup projectgroup = projectgroupService.getProjectgroup(projectgroupId);
         projectgroup.getProjects().add(project);
         projectgroupService.saveProjectgroup(projectgroup);
+    }
+
+    /**
+     * Tells the projectgroup owning the project with the given id to update its status.
+     */
+    public void statusPropagation(int id) {
+        Projectgroup projectgroup = projectgroupService.getProjectrgroupByProject(getProject(id));
+        projectgroupService.updateStatus(projectgroup.getId());
     }
 
     /**
