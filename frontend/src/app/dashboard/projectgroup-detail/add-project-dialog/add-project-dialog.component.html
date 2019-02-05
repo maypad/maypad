@@ -9,24 +9,33 @@
     <input type="text" class="form-control" [(ngModel)]="repoUrl" aria-describedby="repoField" placeholder="Git clone / SVN checkout Url"
       required />
   </div>
-  <div class="dropdown mb-3 d-flex justify-content-end">
-    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
-      aria-haspopup="true" aria-expanded="false" i18n="auth method|Authentification method to be used for the repository">
-      Authentification Method
-    </button>
-    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-      <button class="dropdown-item" [ngClass]="{ active: selectedIndex == 1 }" (mousedown)="setSelected(1)" i18n="None|No authentification method">None</button>
-      <button class="dropdown-item" [ngClass]="{ active: selectedIndex == 2 }" (mousedown)="setSelected(2)" i18n="SSH-Key|Repo Auth: SSH-Key">SSH-Key</button>
-      <button class="dropdown-item" [ngClass]="{ active: selectedIndex == 3 }" (mousedown)="setSelected(3)" i18n="Service Account|Repo Auth: Service account">Service
-        Account</button>
+  <div class="container px-0 mb-3 d-flex justify-content-between">
+    <div class="col col-sm-4 px-0 input-group mb-3">
+      <div class="input-group-prepend">
+        <label class="input-group-text" for="repoSelection" i18n="repo type">Repository Type</label>
+      </div>
+      <select class="custom-select" id="repoSelection" (change)="setRepoSelected($event.target.value)">
+        <option selected value="git">Git</option>
+        <option value="svn">SVN</option>
+      </select>
+    </div>
+    <div class="col col-sm-6 px-0 input-group mb-3">
+      <div class="input-group-prepend">
+        <label class="input-group-text" for="authSelection" i18n="auth method">Authentification Method</label>
+      </div>
+      <select class="custom-select" id="authSelection" (change)="setAuthSelected($event.target.value)">
+        <option selected value="1" i18n="None">None</option>
+        <option value="2" i18n="SSH-Key">SSH-Key</option>
+        <option value="3" i18n="Service Account">Service Account</option>
+      </select>
     </div>
   </div>
-  <div class="input-group mb-3" [ngClass]="{ 'd-none': selectedIndex != 2 }">
+  <div class="input-group mb-3" [ngClass]="{ 'd-none': authSelectedIndex != 2 }">
     <div class="input-group-prepend"><span class="input-group-text" id="sshField" i18n="SSH-Key|Repo Auth: SSH-Key">SSH
         Key</span></div>
     <input type="text" class="form-control" [(ngModel)]="sshKey" aria-describedby="sshField" required />
   </div>
-  <div [ngClass]="{ 'd-none': selectedIndex != 3 }">
+  <div [ngClass]="{ 'd-none': authSelectedIndex != 3 }">
     <div class="input-group mb-3">
       <div class="input-group-prepend"><span class="input-group-text" id="usernameField" i18n="Username|Repo Auth: service account username">Username</span></div>
       <input type="text" class="form-control" [(ngModel)]="username" aria-describedby="usernameField" required />

@@ -17,11 +17,16 @@ export class AddProjectDialogComponent implements OnInit {
   password = '';
 
   /* Values:
+    "git", "svn"
+  */
+  repoSelectedIndex = 'git';
+
+  /* Values:
   1 = No authentification method
   2 = Authentification via SSH-Key
   3 = Authentification via Serviceaccount
   */
-  selectedIndex = 1;
+  authSelectedIndex = 1;
 
   constructor(
     private groupService: ProjectgroupService,
@@ -38,13 +43,17 @@ export class AddProjectDialogComponent implements OnInit {
     this.ref.detectChanges();
   }
 
-  setSelected(num) {
-    this.selectedIndex = num;
+  setAuthSelected(num) {
+    this.authSelectedIndex = num;
+  }
+
+  setRepoSelected(val) {
+    this.repoSelectedIndex = val;
   }
 
   addProject() {
     let serviceAccount: ServiceAccount;
-    switch (this.selectedIndex) {
+    switch (this.authSelectedIndex) {
       case 1:
         serviceAccount = null;
         break;
@@ -62,7 +71,7 @@ export class AddProjectDialogComponent implements OnInit {
         this.clearInput();
         return;
     }
-    this.groupService.createProject(this.projGroup.id, this.repoUrl, serviceAccount).subscribe(
+    this.groupService.createProject(this.projGroup.id, this.repoUrl, serviceAccount, this.repoSelectedIndex).subscribe(
       proj => { this.projGroup.projects.push(proj); }
     );
     this.clearInput();

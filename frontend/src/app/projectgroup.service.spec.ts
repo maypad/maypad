@@ -85,7 +85,7 @@ describe('Service: ProjectgroupService', () => {
       const serviceAccount = new UserServiceAccount();
       serviceAccount.username = 'maypad-git';
       serviceAccount.password = 'ultrageheim';
-      service.createProject(2, 'https://git.maypad.de/one-test-project.git', serviceAccount).subscribe((data) => {
+      service.createProject(2, 'https://git.maypad.de/one-test-project.git', serviceAccount, 'git').subscribe((data) => {
         expect(data.id).toEqual(2);
         expect(data.name).toEqual('');
         expect(data.status).toEqual(BuildStatus.UNKNOWN);

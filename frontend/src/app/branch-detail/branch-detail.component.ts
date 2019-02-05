@@ -12,6 +12,7 @@ import { Project } from '../model/project';
 export class BranchDetailComponent implements OnInit {
   branch: Branch;
   project: Project;
+  fmtTimestamp: string;
   constructor(private route: ActivatedRoute, private crumbs: BreadcrumbService) { }
 
   ngOnInit() {
@@ -23,5 +24,7 @@ export class BranchDetailComponent implements OnInit {
         { name: this.branch.name, path: '/projects/' + this.project.id + '/branches/' + this.branch.name }
       ]);
     });
+    const mom = moment(this.branch.lastCommit.timestamp, moment.ISO_8601);
+    this.fmtTimestamp = mom.fromNow();
   }
 }

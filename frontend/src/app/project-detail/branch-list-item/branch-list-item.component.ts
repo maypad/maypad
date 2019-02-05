@@ -8,6 +8,7 @@ import { Branch } from 'src/app/model/branch';
 })
 export class BranchListItemComponent implements OnInit {
   @Input() branch: Branch;
+  fmtTimestamp: string;
   constructor() { }
 
   ngOnInit() {
@@ -26,6 +27,8 @@ export class BranchListItemComponent implements OnInit {
         }
       });
     });
+    const mom = moment(this.branch.lastCommit.timestamp, moment.ISO_8601);
+    this.fmtTimestamp = mom.fromNow();
   }
 
 }

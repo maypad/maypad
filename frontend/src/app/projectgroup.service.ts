@@ -56,12 +56,13 @@ export class ProjectgroupService {
       );
   }
 
-  createProject(id: number, repoUrl: string, serviceAccount: ServiceAccount): Observable<Project> {
+  createProject(id: number, repoUrl: string, serviceAccount: ServiceAccount, repoType: string): Observable<Project> {
     const url = `${this.api.backendUrl}projects`;
     const project = new Project();
     project.groupId = id;
     project.repositoryUrl = repoUrl;
     project.serviceAccount = serviceAccount;
+    project.versionControlSystem = repoType;
 
     return this.api.http.post<Project>(url, project, this.api.httpOptions)
       .pipe(

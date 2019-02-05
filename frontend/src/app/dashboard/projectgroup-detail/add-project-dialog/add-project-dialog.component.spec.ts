@@ -41,9 +41,9 @@ describe('AddProjectDialogComponent', () => {
   });
 
   it('should select index', () => {
-    component.selectedIndex = 0;
-    component.setSelected(2);
-    expect(component.selectedIndex).toBe(2);
+    component.authSelectedIndex = 0;
+    component.setAuthSelected(2);
+    expect(component.authSelectedIndex).toBe(2);
   });
 
 });

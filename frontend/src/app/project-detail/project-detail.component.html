@@ -8,20 +8,47 @@
         Project</button>
     </div>
   </div>
-  <div *ngIf="project.description" class="container">
-    {{ project.description }}
+  <a *ngIf="project.name !== 'Initialize' && project.name !=='Error'" class="container infoCollapse" data-toggle="collapse"
+    href="#collapse" role="button" aria-expanded="true" attr.aria-controls="collapse">
+    <h6 class="text-dark mr-2" i18n="Show more project info">Show more information about the project</h6>
+  </a>
+  <div class="container collapse" id="collapse">
+    <div *ngIf="project.refreshUrl">
+      <b>Refresh Url:</b> {{ project.refreshUrl }}
+    </div>
+    <div *ngIf="project.description">
+      <b>Description:</b> {{ project.description }}
+    </div>
+    <div *ngIf="project.tags && project.tags.length > 0" i18n="tags">
+      <b>Tags:</b>
+      <ul>
+        <li *ngFor="let tag of project.tags">
+          {{ tag.name }}
+          <ul *ngIf="tag.commit">
+            <li *ngIf="tag.commit.identifier"><b i18n="Commit identifier">Identifier: </b>
+              {{ tag.commit.identifier.substr(0, 7) }}
+            </li>
+            <li><b i18n="Commit author" *ngIf="tag.commit.author">Author: </b>{{ tag.commit.author }}</li>
+            <li><b i18n="Commit Message" *ngIf="tag.commit.message">Message: </b>{{
+              tag.commit.message }}</li>
+            <li><b i18n="Timestamp" *ngIf="tag.commit.timestamp">Timestamp: </b>{{
+              tag.commit.timestamp }}</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
   </div>
   <div *ngIf="branches.length > 0">
     <app-branch-list-item *ngFor="let branch of branches;" [branch]="branch">
     </app-branch-list-item>
   </div>
-  <div *ngIf="!branches.length" [ngSwitch]="project.description">
-    <div *ngSwitchCase="Error" class="container">
+  <div *ngIf="!branches.length" [ngSwitch]="project.name">
+    <div *ngSwitchCase="'Error'" class="container">
       <h5 class="text-center" i18n="No branch available info">
         An error has occured while initializing the project. Please check the project configuration.
       </h5>
     </div>
-    <div *ngSwitchCase="Initialize" class="container">
+    <div *ngSwitchCase="'Initialize'" class="container">
       <h5 class="text-center" i18n="No branch available info">
         The project is initializing. Please reload the page after a few moments.
       </h5>

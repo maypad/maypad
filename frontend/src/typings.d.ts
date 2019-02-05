@@ -5,3 +5,4 @@ declare module "*.json" {
 
 // Notification library
 declare var hullabaloo: any;
+declare var moment: any;

@@ -14,4 +14,5 @@ export class Project {
     description: string;
     refreshUrl: string;
     tags: Tag[];
+    versionControlSystem: string;
 }
