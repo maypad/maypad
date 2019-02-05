@@ -301,7 +301,8 @@ public class GitRepoManager extends RepoManager {
             cleanUp();
         }
         try {
-            localGit = (Git) getAuth(Git.cloneRepository().setURI(getProject().getRepositoryUrl()).setDirectory(getProjectRootDir())).call();
+            localGit = (Git) getAuth(Git.cloneRepository().setURI(getProject().getRepositoryUrl())
+                    .setDirectory(getProjectRootDir())).call();
         } catch (GitAPIException | JGitInternalException e) {
             Git git = getGit();
             if (git != null) {
