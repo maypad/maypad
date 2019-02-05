@@ -4,6 +4,7 @@ import de.fraunhofer.iosb.maypadbackend.config.project.ProjectConfig;
 import de.fraunhofer.iosb.maypadbackend.config.project.YamlProjectConfig;
 import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.person.Author;
+import de.fraunhofer.iosb.maypadbackend.model.person.Mail;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Commit;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Tag;
 import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.KeyServiceAccount;
@@ -59,7 +60,6 @@ public class SvnRepoManager extends RepoManager {
      */
     public SvnRepoManager(Project project) {
         super(project);
-        logger.info("Cloned project into " + getProjectRootDir().getAbsolutePath());
         if (project.getServiceAccount() != null) {
             if (project.getServiceAccount() instanceof KeyServiceAccount) {
                 KeyFileManager kfm = new KeyFileManager(this.getProjectRootDir(), this.getProject());
@@ -165,7 +165,7 @@ public class SvnRepoManager extends RepoManager {
     @Override
     public List<Tag> getTags() {
         String tagPath = projConfig.getSvnTagsDirectory();
-        File tagFolder = new File(projectRoot + "/" + tagPath);
+        File tagFolder = new File(getProjectRootDir().getAbsolutePath() + "/" + tagPath);
         String[] tagList = tagFolder.list();
         if (tagList == null) {
             logger.info("Project contains no tags.");
@@ -176,6 +176,7 @@ public class SvnRepoManager extends RepoManager {
             if (new File(tagFolder.getAbsolutePath() + "/" + t).isDirectory()) {
                 Tag tt = new Tag();
                 tt.setName(new File(t).getName());
+                tags.add(tt);
             }
         }
         logger.info("Found " + tags.size() + " tags.");
@@ -200,6 +201,7 @@ public class SvnRepoManager extends RepoManager {
                     1,
                     rcm
             );
+            Commit ret = rcm.getCommit();
             return rcm.getCommit();
         } catch (SVNException ex) {
             logger.error(ex.getMessage());
@@ -263,9 +265,10 @@ public class SvnRepoManager extends RepoManager {
         @Override
         public void handleLogEntry(SVNLogEntry svnLogEntry) {
             commit = new Commit();
-            commit.setAuthor(new Author(svnLogEntry.getAuthor(), null));
+            logger.info("Log entry found");
+            commit.setAuthor(new Author(svnLogEntry.getAuthor(), new Mail("")));
             commit.setTimestamp(svnLogEntry.getDate());
-            commit.setIdentifier(null); // No SVN commit identifier
+            commit.setIdentifier(""); // No SVN commit identifier
             commit.setMessage(svnLogEntry.getMessage());
         }
 
