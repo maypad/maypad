@@ -16,6 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -129,29 +131,34 @@ public class WebhookService {
     }
 
     /**
-     * Calls the given webhook and returns the ResponseEntity with the given type.
+     * Calls the webhook with the given method and returns the ResponseEntity with the given type.
      *
-     * @param webhook      the webhook that should be called
+     * @param webhook the webhook that should be called
+     * @param method the HTTP method (GET, POST, etc)
+     * @param requestEntity the entity (headers and/or body) to write to the request may be null)
      * @param responseType the type of the ResponseEntity
      * @param uriVariables the variables to expand the url of the given webhook
      * @return Future of ResponseEntity
      */
     @Async
-    public <T> CompletableFuture<ResponseEntity<T>> call(Webhook webhook, Class<T> responseType, Object... uriVariables) {
+    public <T> CompletableFuture<ResponseEntity<T>> call(Webhook webhook, HttpMethod method, HttpEntity<?> requestEntity,
+                                                         Class<T> responseType, Object... uriVariables) {
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<T> response = restTemplate.postForEntity(webhook.getUrl(), null, responseType, uriVariables);
+        ResponseEntity<T> response = restTemplate.exchange(webhook.getUrl(), method, requestEntity, responseType,
+                uriVariables);
         return CompletableFuture.completedFuture(response);
     }
 
     /**
-     * Calls the given webhook and returns the ReponseEntity as String.
+     * Calls the webhook with the given method and returns the ReponseEntity as String.
      *
      * @param webhook the webhook that should be called
+     * @param method the HTTP method (GET, POST, etc)
      * @return Future of ResponseEntity
      */
     @Async
-    public CompletableFuture<ResponseEntity<String>> call(Webhook webhook) {
-        return call(webhook, String.class);
+    public CompletableFuture<ResponseEntity<String>> call(Webhook webhook, HttpMethod method) {
+        return call(webhook, method, null, String.class);
     }
 
     /**

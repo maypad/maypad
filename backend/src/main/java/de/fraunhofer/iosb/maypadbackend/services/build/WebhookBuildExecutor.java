@@ -6,6 +6,7 @@ import de.fraunhofer.iosb.maypadbackend.model.build.WebhookBuild;
 import de.fraunhofer.iosb.maypadbackend.services.webhook.WebhookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -32,7 +33,8 @@ public class WebhookBuildExecutor implements BuildTypeExecutor {
     public void build(BuildType buildType, int id, String ref) {
         if (buildType instanceof WebhookBuild) {
             WebhookBuild webhookBuild = (WebhookBuild) buildType;
-            CompletableFuture<ResponseEntity<String>> response = webhookService.call(webhookBuild.getBuildWebhook());
+            CompletableFuture<ResponseEntity<String>> response = webhookService.call(webhookBuild.getBuildWebhook(),
+                    webhookBuild.getMethod(), new HttpEntity<>(webhookBuild.getBody(), webhookBuild.getHeaders()), String.class);
             try {
                 if (response.get().getStatusCode().is2xxSuccessful()) {
                     buildService.signalStatus(id, ref, Status.RUNNING);

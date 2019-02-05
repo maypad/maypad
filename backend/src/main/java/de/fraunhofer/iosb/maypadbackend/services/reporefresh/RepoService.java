@@ -2,6 +2,7 @@ package de.fraunhofer.iosb.maypadbackend.services.reporefresh;
 
 import de.fraunhofer.iosb.maypadbackend.config.project.ProjectConfig;
 import de.fraunhofer.iosb.maypadbackend.config.project.data.BranchProperty;
+import de.fraunhofer.iosb.maypadbackend.config.project.data.BuildProperty;
 import de.fraunhofer.iosb.maypadbackend.config.server.ServerConfig;
 import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.Status;
@@ -452,8 +453,26 @@ public class RepoService {
         branch.setMails(mails);
 
         //build
-        if (branchProperty.getBuild() != null) {
-            branch.setBuildType(new WebhookBuild(new ExternalWebhook(branchProperty.getBuild())));
+        BuildProperty buildProperty = branchProperty.getBuild();
+        if (buildProperty != null && buildProperty.getType() != null) {
+            switch (buildProperty.getType().toLowerCase()) {
+                case "webhook":
+                    if (buildProperty.getUrl() != null) {
+                        HttpMethod method = buildProperty.getMethod() == null ? HttpMethod.POST : buildProperty.getMethod();
+                        String body = buildProperty.getBody() == null ? "{}" : buildProperty.getBody();
+                        HttpHeaders headers = new HttpHeaders();
+                        if (buildProperty.getHeaders() != null) {
+                            Arrays.stream(buildProperty.getHeaders())
+                                    .forEach(h -> headers.put(h.getKey(), Arrays.asList(h.getValues())));
+                        }
+                        branch.setBuildType(new WebhookBuild(new ExternalWebhook(buildProperty.getUrl()), method, headers, body));
+                        break;
+                    }
+                    logger.warn(String.format("Missing parameter for BuildType %s.", buildProperty.getType()));
+                    break;
+                default:
+                    logger.warn(String.format("Unknown BuildType %s.", buildProperty.getType()));
+            }
         }
 
         //deployment
