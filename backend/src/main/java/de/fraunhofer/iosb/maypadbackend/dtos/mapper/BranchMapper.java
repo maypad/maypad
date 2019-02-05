@@ -13,7 +13,6 @@ import org.mapstruct.Mappings;
 import org.mapstruct.Named;
 
 import java.util.List;
-import java.util.Set;
 
 
 /**
@@ -43,7 +42,7 @@ public interface BranchMapper {
      */
     @Named("toDependencies")
     default String[] toDependencies(Branch branch) {
-        Set<DependencyDescriptor> dependencies = branch.getDependencies();
+        List<DependencyDescriptor> dependencies = branch.getDependencies();
         String[] dependenciesArr = new String[dependencies.size()];
         int i = 0;
         for (DependencyDescriptor d : dependencies) {
@@ -62,7 +61,7 @@ public interface BranchMapper {
      */
     @Named("toMembers")
     default String[] toMembers(Branch branch) {
-        Set<Person> members = branch.getMembers();
+        List<Person> members = branch.getMembers();
         String[] membersArr = new String[members.size()];
         int i = 0;
         for (Person person : members) {
@@ -80,7 +79,7 @@ public interface BranchMapper {
      */
     @Named("toMails")
     default String[] toMails(Branch branch) {
-        Set<Mail> mails = branch.getMails();
+        List<Mail> mails = branch.getMails();
         String[] mailsArr = new String[mails.size()];
         int i = 0;
         for (Mail mail : mails) {
