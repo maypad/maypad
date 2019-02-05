@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
@@ -99,6 +100,13 @@ public abstract class RepoManager {
     public abstract Commit getLastCommit();
 
     /**
+     * Clean the RepoManager after usage.
+     */
+    protected void cleanUp() {
+        //default: nothing to do.
+    }
+
+    /**
      * Clones the repository using the repository URL stored in the project.
      *
      * @return True in success, else false
@@ -133,6 +141,8 @@ public abstract class RepoManager {
         if (mapaydConfigPath.exists() && mapaydConfigPath.canRead()) {
             try {
                 return new Tuple<>(new YamlProjectConfig(mapaydConfigPath), mapaydConfigPath);
+            } catch (FileNotFoundException e) {
+                logger.error("Projectconfiguration is missing at " + mapaydConfigPath.getAbsolutePath());
             } catch (IOException e) {
                 logger.error("Projectconfiguration at " + mapaydConfigPath.getAbsolutePath() + " hasn't valid YAML syntax");
             }

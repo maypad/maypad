@@ -147,7 +147,7 @@ public class RepoService {
         }
         //check if max refresh amount is reached
         if (isRefreshCapReached(id)) {
-            setFailStatusAndSave(project);
+            setStatusAndSave(project, Status.ERROR);
             removeLock(project);
             return;
         }
@@ -174,7 +174,7 @@ public class RepoService {
 
     private void doRefreshProject(Project project) {
         if (project.getRepository() == null || project.getRepository().getRepositoryType() == RepositoryType.NONE
-                || project.getRepositoryStatus() == Status.FAILED) {
+                || project.getRepositoryStatus() == Status.ERROR) {
             doInitProject(project);
             //lock is removed in init
             return;
@@ -188,7 +188,8 @@ public class RepoService {
         //clone project, if data were deleted
         if (!projectService.getRepoDir(project.getId()).exists()) {
             if (!repoManager.cloneRepository()) {
-                setFailStatusAndSave(project);
+                setStatusAndSave(project, Status.ERROR);
+                repoManager.cleanUp();
                 return;
             }
         }
@@ -197,13 +198,17 @@ public class RepoService {
         //compare Maypad config hash
         Tuple<ProjectConfig, File> projectConfigData = repoManager.getProjectConfig();
         if (projectConfigData == null) {
-            logger.error("No maypad configuration were found in project with id " + project.getId());
+            logger.error("Error with maypad configuration in project with id " + project.getId());
+            setStatusAndSave(project, Status.FAILED);
+            repoManager.cleanUp();
             return;
         }
 
         String hash = FileUtil.calcSha256(projectConfigData.getValue());
         if (hash == null) {
             logger.error("Can't read maypad config with projectid " + project.getId());
+            setStatusAndSave(project, Status.FAILED);
+            repoManager.cleanUp();
             return;
         }
 
@@ -352,7 +357,7 @@ public class RepoService {
         if (!FileUtil.hasWriteAccess(parentDir)) {
             logger.error("Can't read / write to " + parentDir.getAbsolutePath());
             initNullRepository(repository);
-            setFailStatusAndSave(project);
+            setStatusAndSave(project, Status.ERROR);
             return;
         }
         File file = new File(parentDir.getAbsolutePath() + File.separator + project.getId());
@@ -361,7 +366,7 @@ public class RepoService {
         } else if (!file.mkdirs()) {
             logger.error("Can't create directories for " + file.getAbsolutePath());
             initNullRepository(repository);
-            setFailStatusAndSave(project);
+            setStatusAndSave(project, Status.ERROR);
             return;
         }
         RepositoryType repositoryType = getCorrectRepositoryType(project.getRepositoryUrl());
@@ -376,7 +381,8 @@ public class RepoService {
 
         boolean cloneSuccess = (repoManager.cloneRepository() && repositoryType != RepositoryType.NONE);
         if (!cloneSuccess) {
-            setFailStatusAndSave(project);
+            setStatusAndSave(project, Status.ERROR);
+            repoManager.cleanUp();
             return;
         }
 
@@ -416,11 +422,11 @@ public class RepoService {
         repository.setRepositoryType(RepositoryType.NONE);
     }
 
-    private Project setFailStatusAndSave(Project project) {
+    private Project setStatusAndSave(Project project, Status status) {
         if (project == null) {
             return null;
         }
-        project.setRepositoryStatus(Status.FAILED);
+        project.setRepositoryStatus(status);
         return projectService.saveProject(project);
     }
 
