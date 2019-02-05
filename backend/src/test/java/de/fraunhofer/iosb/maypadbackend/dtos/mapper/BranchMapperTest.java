@@ -49,7 +49,8 @@ public class BranchMapperTest {
         dependencies.add(branchDependency);
         WebhookBuild webhookBuild = new WebhookBuild(new ExternalWebhook("https://buildProject.com/1234"), null, null, null);
         webhookBuild.setName("Webhook Build #1");
-        WebhookDeployment webhookDeployment = new WebhookDeployment(new ExternalWebhook("https://deployProject.com/123"));
+        WebhookDeployment webhookDeployment = new WebhookDeployment("",
+                new ExternalWebhook("https://deployProject.com/123"), null, null, null);
         webhookDeployment.setName("Webhook Deployment #1");
 
         testBranch = new Branch();

@@ -29,9 +29,10 @@ branches:
             - value2
       body: "{}"
     deployment: # optional
-      type: webhook
       name: Great-Deployment
-      arguments: https://greatDeployment.com/54321abcd
+      type: webhook
+      method: POST
+      url: https://greatDeployment.com/54321abcd
     dependsOn: # optional, format: <projectID>@<branchName>
       - 2:master
       - 5:master

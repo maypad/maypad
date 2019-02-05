@@ -6,6 +6,7 @@ import de.fraunhofer.iosb.maypadbackend.model.deployment.WebhookDeployment;
 import de.fraunhofer.iosb.maypadbackend.services.webhook.WebhookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
@@ -33,7 +34,9 @@ public class WebhookDeploymentExecutor implements DeploymentTypeExecutor {
     public void deploy(DeploymentType deploymentType, int id, String ref) {
         if (deploymentType instanceof WebhookDeployment) {
             WebhookDeployment webhookDeployment = (WebhookDeployment) deploymentType;
-            CompletableFuture<ResponseEntity<String>> response = webhookService.call(webhookDeployment.getDeploymentWebhook());
+            CompletableFuture<ResponseEntity<String>> response = webhookService.call(webhookDeployment.getDeploymentWebhook(),
+                    webhookDeployment.getMethod(),
+                    new HttpEntity<>(webhookDeployment.getBody(), webhookDeployment.getHeaders()), String.class);
             try {
                 if (response.get().getStatusCode().is2xxSuccessful()) {
                     deploymentService.signalStatus(id, ref, Status.SUCCESS);

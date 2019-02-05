@@ -3,6 +3,7 @@ package de.fraunhofer.iosb.maypadbackend.services.reporefresh;
 import de.fraunhofer.iosb.maypadbackend.config.project.ProjectConfig;
 import de.fraunhofer.iosb.maypadbackend.config.project.data.BranchProperty;
 import de.fraunhofer.iosb.maypadbackend.config.project.data.BuildProperty;
+import de.fraunhofer.iosb.maypadbackend.config.project.data.DeploymentProperty;
 import de.fraunhofer.iosb.maypadbackend.config.server.ServerConfig;
 import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.Status;
@@ -479,16 +480,23 @@ public class RepoService {
         }
 
         //deployment
-        if (branchProperty.getDeployment() != null) {
-            switch (branchProperty.getDeployment().getType().toLowerCase()) {
+        DeploymentProperty deploymentProperty = branchProperty.getDeployment();
+        if (deploymentProperty != null) {
+            switch (deploymentProperty.getType().toLowerCase()) {
                 case "webhook":
-                    branch.setDeploymentType(
-                            new WebhookDeployment(new ExternalWebhook(branchProperty.getDeployment().getArguments()),
-                                    branchProperty.getDeployment().getName()));
-                    break;
-                case "script":
-                    branch.setDeploymentType(new ScriptDeployment(new File(branchProperty.getDeployment().getArguments()),
-                            branchProperty.getDeployment().getName()));
+                    if (deploymentProperty.getUrl() != null) {
+                        HttpMethod method = deploymentProperty.getMethod() == null ? HttpMethod.POST : deploymentProperty.getMethod();
+                        String body = deploymentProperty.getBody() == null ? "{}" : deploymentProperty.getBody();
+                        HttpHeaders headers = new HttpHeaders();
+                        if (deploymentProperty.getHeaders() != null) {
+                            Arrays.stream(deploymentProperty.getHeaders())
+                                    .forEach(h -> headers.put(h.getKey(), Arrays.asList(h.getValues())));
+                        }
+                        branch.setDeploymentType(new WebhookDeployment(deploymentProperty.getName(),
+                                new ExternalWebhook(deploymentProperty.getUrl()), method, headers, body));
+                        break;
+                    }
+                    logger.warn(String.format("Missing parameter for DeploymentType %s.", deploymentProperty.getType()));
                     break;
                 default:
                     logger.warn("Unknown deploymenttype " + branchProperty.getDeployment().getType() + " in branch " + branch.getName());
