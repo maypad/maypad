@@ -15,7 +15,7 @@ public class BranchProperty {
     private String description;
     private List<String> members;
     private List<String> mails;
-    private String build;
+    private BuildProperty build;
     private DeploymentProperty deployment;
     private List<String> dependsOn;
 

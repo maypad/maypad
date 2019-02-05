@@ -16,6 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -41,7 +43,7 @@ public class WebhookService {
     private static final String tokenChars
             = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private static final SecureRandom rnd = new SecureRandom();
-    private static final String hookPath = "/hooks/";
+    private static final String HOOKS_PATH = "/hooks/";
 
     private static final Logger logger = LoggerFactory.getLogger(WebhookService.class);
 
@@ -92,7 +94,7 @@ public class WebhookService {
     public InternalWebhook generateSuccessWebhook(Tuple<Integer, String> branch) {
         String token = generateToken();
         mappedHooks.put(token, new BuildWebhookHandler(branch, Status.SUCCESS, buildService));
-        return new InternalWebhook(serverConfig.getDomain() + hookPath + token, token, WebhookType.UPDATEBUILD);
+        return new InternalWebhook(serverConfig.getDomain(), HOOKS_PATH + token, token, WebhookType.UPDATEBUILD);
     }
 
     /**
@@ -104,7 +106,7 @@ public class WebhookService {
     public InternalWebhook generateFailWebhook(Tuple<Integer, String> branch) {
         String token = generateToken();
         mappedHooks.put(token, new BuildWebhookHandler(branch, Status.FAILED, buildService));
-        return new InternalWebhook(serverConfig.getDomain() + hookPath + token, token, WebhookType.UPDATEBUILD);
+        return new InternalWebhook(serverConfig.getDomain(), HOOKS_PATH + token, token, WebhookType.UPDATEBUILD);
     }
 
     /**
@@ -116,7 +118,7 @@ public class WebhookService {
     public InternalWebhook generateRefreshWebhook(int projectId) {
         String token = generateToken();
         mappedHooks.put(token, new RefreshWebhookHandler(projectId, repoService));
-        return new InternalWebhook(serverConfig.getDomain() + hookPath + token, token, WebhookType.REFRESH);
+        return new InternalWebhook(serverConfig.getDomain(), HOOKS_PATH + token, token, WebhookType.REFRESH);
     }
 
     /**
@@ -129,29 +131,34 @@ public class WebhookService {
     }
 
     /**
-     * Calls the given webhook and returns the ResponseEntity with the given type.
+     * Calls the webhook with the given method and returns the ResponseEntity with the given type.
      *
-     * @param webhook      the webhook that should be called
+     * @param webhook the webhook that should be called
+     * @param method the HTTP method (GET, POST, etc)
+     * @param requestEntity the entity (headers and/or body) to write to the request may be null)
      * @param responseType the type of the ResponseEntity
      * @param uriVariables the variables to expand the url of the given webhook
      * @return Future of ResponseEntity
      */
     @Async
-    public <T> CompletableFuture<ResponseEntity<T>> call(Webhook webhook, Class<T> responseType, Object... uriVariables) {
+    public <T> CompletableFuture<ResponseEntity<T>> call(Webhook webhook, HttpMethod method, HttpEntity<?> requestEntity,
+                                                         Class<T> responseType, Object... uriVariables) {
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<T> response = restTemplate.postForEntity(webhook.getUrl(), null, responseType, uriVariables);
+        ResponseEntity<T> response = restTemplate.exchange(webhook.getUrl(), method, requestEntity, responseType,
+                uriVariables);
         return CompletableFuture.completedFuture(response);
     }
 
     /**
-     * Calls the given webhook and returns the ReponseEntity as String.
+     * Calls the webhook with the given method and returns the ReponseEntity as String.
      *
      * @param webhook the webhook that should be called
+     * @param method the HTTP method (GET, POST, etc)
      * @return Future of ResponseEntity
      */
     @Async
-    public CompletableFuture<ResponseEntity<String>> call(Webhook webhook) {
-        return call(webhook, String.class);
+    public CompletableFuture<ResponseEntity<String>> call(Webhook webhook, HttpMethod method) {
+        return call(webhook, method, null, String.class);
     }
 
     /**
@@ -171,24 +178,31 @@ public class WebhookService {
     private void initMapping() {
         List<Project> projects = projectRepository.findAll();
         for (Project project : projects) {
-            if (project.getRefreshWebhook() != null) {
-                mappedHooks.put(project.getRefreshWebhook().getToken(), new RefreshWebhookHandler(project.getId(), repoService));
+            InternalWebhook refreshWebhook = project.getRefreshWebhook();
+            if (refreshWebhook != null) {
+                mappedHooks.put(refreshWebhook.getToken(), new RefreshWebhookHandler(project.getId(), repoService));
+                refreshWebhook.setBaseUrl(serverConfig.getDomain());
             }
             if (project.getRepository() == null) {
                 continue;
             }
             for (Map.Entry<String, Branch> entry : project.getRepository().getBranches().entrySet()) {
-                if (entry.getValue().getBuildFailureWebhook() != null) {
-                    mappedHooks.put(entry.getValue().getBuildFailureWebhook().getToken(),
-                            new BuildWebhookHandler(new Tuple<>(project.getId(), entry.getValue().getName()),
-                                    Status.FAILED, buildService));
+                InternalWebhook buildFailureWebhook = entry.getValue().getBuildFailureWebhook();
+                if (buildFailureWebhook != null) {
+                    mappedHooks.put(buildFailureWebhook.getToken(), new BuildWebhookHandler(
+                            new Tuple<>(project.getId(), entry.getValue().getName()), Status.FAILED, buildService));
+                    buildFailureWebhook.setBaseUrl(serverConfig.getDomain());
+
                 }
-                if (entry.getValue().getBuildSuccessWebhook() != null) {
-                    mappedHooks.put(entry.getValue().getBuildSuccessWebhook().getToken(),
-                            new BuildWebhookHandler(new Tuple<>(project.getId(), entry.getValue().getName()),
-                                    Status.SUCCESS, buildService));
+                InternalWebhook buildSuccessWebhook = entry.getValue().getBuildSuccessWebhook();
+                if (buildSuccessWebhook != null) {
+                    mappedHooks.put(buildSuccessWebhook.getToken(), new BuildWebhookHandler(
+                            new Tuple<>(project.getId(), entry.getValue().getName()), Status.SUCCESS, buildService));
+                    buildSuccessWebhook.setBaseUrl(serverConfig.getDomain());
                 }
             }
         }
+        projectRepository.saveAll(projects);
+        projectRepository.flush();
     }
 }

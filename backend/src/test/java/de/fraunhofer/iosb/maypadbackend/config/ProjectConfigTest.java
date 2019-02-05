@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpMethod;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.File;
@@ -55,11 +56,18 @@ public class ProjectConfigTest {
         assertThat(branch.getDescription()).isEqualTo("Lorem Ipsum");
         assertThat(branch.getMembers().size()).isEqualTo(5);
         assertThat(branch.getMails().size()).isEqualTo(2);
-        assertThat(branch.getBuild()).isEqualTo("https://greatBuild.com/12345abc");
         assertThat(branch.getDeployment().getType()).isEqualTo("webhook");
         assertThat(branch.getDeployment().getName()).isEqualTo("Great-Deployment");
         assertThat(branch.getDeployment().getArguments()).isEqualTo("https://greatDeployment.com/54321abcd");
         assertThat(branch.getDependsOn().size()).isEqualTo(2);
+        assertThat(branch.getBuild().getType()).isEqualTo("webhook");
+        assertThat(branch.getBuild().getMethod()).isEqualTo(HttpMethod.POST);
+        assertThat(branch.getBuild().getUrl()).isEqualTo("https://greatBuild.com/12345abc");
+        assertThat(branch.getBuild().getHeaders().length).isEqualTo(2);
+        assertThat(branch.getBuild().getHeaders()[0].getKey()).isEqualTo("key1");
+        assertThat(branch.getBuild().getHeaders()[0].getValues().length).isEqualTo(2);
+        assertThat(branch.getBuild().getHeaders()[0].getValues()[0]).isEqualTo("value1");
+        assertThat(branch.getBuild().getBody()).isEqualTo("{}");
     }
 
 

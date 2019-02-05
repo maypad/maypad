@@ -2,6 +2,7 @@ package de.fraunhofer.iosb.maypadbackend.services.reporefresh;
 
 import de.fraunhofer.iosb.maypadbackend.config.project.ProjectConfig;
 import de.fraunhofer.iosb.maypadbackend.config.project.data.BranchProperty;
+import de.fraunhofer.iosb.maypadbackend.config.project.data.BuildProperty;
 import de.fraunhofer.iosb.maypadbackend.config.server.ServerConfig;
 import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.Status;
@@ -27,12 +28,15 @@ import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -452,8 +456,26 @@ public class RepoService {
         branch.setMails(mails);
 
         //build
-        if (branchProperty.getBuild() != null) {
-            branch.setBuildType(new WebhookBuild(new ExternalWebhook(branchProperty.getBuild())));
+        BuildProperty buildProperty = branchProperty.getBuild();
+        if (buildProperty != null && buildProperty.getType() != null) {
+            switch (buildProperty.getType().toLowerCase()) {
+                case "webhook":
+                    if (buildProperty.getUrl() != null) {
+                        HttpMethod method = buildProperty.getMethod() == null ? HttpMethod.POST : buildProperty.getMethod();
+                        String body = buildProperty.getBody() == null ? "{}" : buildProperty.getBody();
+                        HttpHeaders headers = new HttpHeaders();
+                        if (buildProperty.getHeaders() != null) {
+                            Arrays.stream(buildProperty.getHeaders())
+                                    .forEach(h -> headers.put(h.getKey(), Arrays.asList(h.getValues())));
+                        }
+                        branch.setBuildType(new WebhookBuild(new ExternalWebhook(buildProperty.getUrl()), method, headers, body));
+                        break;
+                    }
+                    logger.warn(String.format("Missing parameter for BuildType %s.", buildProperty.getType()));
+                    break;
+                default:
+                    logger.warn(String.format("Unknown BuildType %s.", buildProperty.getType()));
+            }
         }
 
         //deployment

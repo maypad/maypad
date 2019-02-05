@@ -25,16 +25,25 @@ public class InternalWebhook extends Webhook {
     private String token;
     @Enumerated(EnumType.STRING)
     private WebhookType type;
+    @Column
+    private String baseUrl;
 
     /**
      * Constructor for InternalWebhook.
-     * @param url the URL of the webhook.
+     * @param baseUrl the domain of the webhook
+     * @param url the relative URL of the webhook.
      * @param token the token that identifies the webhook in maypad
      * @param type the type of the webhook
      */
-    public InternalWebhook(String url, String token, WebhookType type) {
+    public InternalWebhook(String baseUrl, String url, String token, WebhookType type) {
         super(url);
+        this.baseUrl = baseUrl;
         this.token = token;
         this.type = type;
+    }
+
+    @Override
+    public String getUrl() {
+        return baseUrl + super.getUrl();
     }
 }

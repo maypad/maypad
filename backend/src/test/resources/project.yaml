@@ -14,7 +14,20 @@ branches:
     mails: # optional
       - example.mail@gmail.com
       - mail.example@protonmail.com
-    build: https://greatBuild.com/12345abc # optional
+    build:
+      type: webhook
+      method: POST
+      url: https://greatBuild.com/12345abc
+      headers:
+        - key: key1
+          values:
+            - value1
+            - value2
+        - key: key2
+          values:
+            - value1
+            - value2
+      body: "{}"
     deployment: # optional
       type: webhook
       name: Great-Deployment
