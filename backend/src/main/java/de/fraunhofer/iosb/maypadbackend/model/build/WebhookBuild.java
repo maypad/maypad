@@ -35,7 +35,7 @@ public class WebhookBuild extends BuildType {
     private HttpMethod method;
     @Column(columnDefinition = "longblob")
     private HttpHeaders headers;
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String body;
 
     /**
