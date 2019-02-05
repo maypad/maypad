@@ -15,10 +15,22 @@
     <app-branch-list-item *ngFor="let branch of branches;" [branch]="branch">
     </app-branch-list-item>
   </div>
-  <div *ngIf="!branches.length " class="container">
-    <h5 class="text-center" i18n="No branch available info">
-      No branch has been added yet. Please check your project configuration.
-    </h5>
+  <div *ngIf="!branches.length" [ngSwitch]="project.description">
+    <div *ngSwitchCase="Error" class="container">
+      <h5 class="text-center" i18n="No branch available info">
+        An error has occured while initializing the project. Please check the project configuration.
+      </h5>
+    </div>
+    <div *ngSwitchCase="Initialize" class="container">
+      <h5 class="text-center" i18n="No branch available info">
+        The project is initializing. Please reload the page after a few moments.
+      </h5>
+    </div>
+    <div *ngSwitchDefault class="container">
+      <h5 class="text-center" i18n="No branch available info">
+        No branches could be loaded.
+      </h5>
+    </div>
   </div>
 </div>
 

@@ -67,8 +67,10 @@ export class EditProjectDialogComponent implements OnInit {
   }
 
   deleteProject() {
-    this.groupService.deleteProject(this.project.id).subscribe(() => {
-      this.router.navigateByUrl('/');
+    this.groupService.deleteProject(this.project.id).subscribe((res) => {
+      if (res === null) {
+        this.router.navigateByUrl('/');
+      }
     });
   }
 
