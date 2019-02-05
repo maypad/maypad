@@ -104,7 +104,7 @@ public class Project {
      * @param serviceAccount the serviceaccount
      */
     public Project(String repoUrl, ServiceAccount serviceAccount) {
-        this(new Date(), Status.INIT, new Repository(RepositoryType.NONE), repoUrl, serviceAccount, null);
+        this(new Date(), Status.UNKNOWN, new Repository(RepositoryType.NONE), repoUrl, serviceAccount, null);
     }
 
     /**
