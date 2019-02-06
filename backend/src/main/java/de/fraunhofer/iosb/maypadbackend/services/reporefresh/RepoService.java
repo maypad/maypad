@@ -18,6 +18,9 @@ import de.fraunhofer.iosb.maypadbackend.model.repository.Repository;
 import de.fraunhofer.iosb.maypadbackend.model.repository.RepositoryType;
 import de.fraunhofer.iosb.maypadbackend.model.webhook.ExternalWebhook;
 import de.fraunhofer.iosb.maypadbackend.services.ProjectService;
+import de.fraunhofer.iosb.maypadbackend.services.sse.EventData;
+import de.fraunhofer.iosb.maypadbackend.services.sse.SseEventType;
+import de.fraunhofer.iosb.maypadbackend.services.sse.SseService;
 import de.fraunhofer.iosb.maypadbackend.services.webhook.WebhookService;
 import de.fraunhofer.iosb.maypadbackend.util.FileUtil;
 import de.fraunhofer.iosb.maypadbackend.util.Tuple;
@@ -64,6 +67,7 @@ public class RepoService {
     private ProjectService projectService;
     private ServerConfig serverConfig;
     private WebhookService webhookService;
+    private SseService sseService;
     private Set<Integer> lockedProjects; //boolean: allows init while locked
     private Logger logger = LoggerFactory.getLogger(RepoService.class);
     private List<ExpiringElement> refreshCounter;
@@ -76,11 +80,13 @@ public class RepoService {
      * @param webhookService Webhookservice
      */
     @Autowired
-    public RepoService(ProjectService projectService, ServerConfig serverConfig, WebhookService webhookService) {
+    public RepoService(ProjectService projectService, ServerConfig serverConfig,
+                       WebhookService webhookService, SseService sseService) {
         this.projectService = projectService;
         this.serverConfig = serverConfig;
         this.lockedProjects = ConcurrentHashMap.newKeySet();
         this.webhookService = webhookService;
+        this.sseService = sseService;
         if (serverConfig.isMaximumRefreshRequestsEnabled()) {
             refreshCounter = Collections.synchronizedList(new ArrayList<>());
             ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
@@ -327,6 +333,7 @@ public class RepoService {
         project.setRepositoryStatus(Status.SUCCESS);
 
         projectService.saveProject(project);
+        sseService.push(EventData.builder(SseEventType.PROJECT_REFRESHED).projectId(project.getId()).build());
         logger.info("Project with id " + project.getId() + " has refreshed.");
     }
 

@@ -10,6 +10,9 @@ import de.fraunhofer.iosb.maypadbackend.model.build.BuildType;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Branch;
 import de.fraunhofer.iosb.maypadbackend.model.repository.DependencyDescriptor;
 import de.fraunhofer.iosb.maypadbackend.services.ProjectService;
+import de.fraunhofer.iosb.maypadbackend.services.sse.EventData;
+import de.fraunhofer.iosb.maypadbackend.services.sse.SseEventType;
+import de.fraunhofer.iosb.maypadbackend.services.sse.SseService;
 import de.fraunhofer.iosb.maypadbackend.util.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class BuildService {
 
     private ProjectService projectService;
+    private SseService sseService;
     private Collection<? extends BuildTypeExecutor> executors;
     private Map<Class<? extends BuildType>, BuildTypeExecutor> buildTypeMappings;
     private Logger logger = LoggerFactory.getLogger(BuildService.class);
@@ -49,8 +53,10 @@ public class BuildService {
      * @param executors a collection of all BuildTypeExecutor beans
      */
     @Autowired
-    public BuildService(ProjectService projectService, Collection<? extends BuildTypeExecutor> executors) {
+    public BuildService(ProjectService projectService, SseService sseService,
+                        Collection<? extends BuildTypeExecutor> executors) {
         this.projectService = projectService;
+        this.sseService = sseService;
         this.executors = executors;
         runningBuilds = new ConcurrentHashMap<>();
     }
@@ -138,7 +144,11 @@ public class BuildService {
 
         Build build = getBuild(branch, runningBuilds.get(branchMapEntry));
         build.setStatus(status);
-        if (status == Status.FAILED || status == Status.SUCCESS) {
+        if (status == Status.RUNNING) {
+            sseService.push(EventData.builder(SseEventType.BUILD_RUNNING).projectId(id).branch(ref).build());
+        }
+        if (status == Status.FAILED || status == Status.SUCCESS || status == Status.TIMEOUT) {
+            sseService.push(EventData.builder(SseEventType.BUILD_DONE).projectId(id).branch(ref).build());
             runningBuilds.remove(branchMapEntry);
         }
         project = projectService.saveProject(project);
@@ -156,9 +166,7 @@ public class BuildService {
             Branch branch = project.getRepository().getBranches().get(entry.getKey().getValue());
             Build build = getBuild(branch, entry.getValue());
             if ((current.getTime() - build.getTimestamp().getTime()) / 1000 >= buildTimeoutSeconds) {
-                build.setStatus(Status.TIMEOUT);
-                runningBuilds.remove(entry.getKey());
-                projectService.saveProject(project);
+                signalStatus(project.getId(), branch.getName(), Status.TIMEOUT);
             }
         }
     }

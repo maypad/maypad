@@ -24,4 +24,5 @@ public class SseController {
     public Flux<ServerSentEvent<EventData>> sse() {
         return sseService.get();
     }
+
 }
