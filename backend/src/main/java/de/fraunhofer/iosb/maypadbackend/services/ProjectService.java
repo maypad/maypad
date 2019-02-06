@@ -13,6 +13,9 @@ import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.ServiceAccount;
 import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.UserServiceAccount;
 import de.fraunhofer.iosb.maypadbackend.repositories.ProjectRepository;
 import de.fraunhofer.iosb.maypadbackend.services.scheduler.SchedulerService;
+import de.fraunhofer.iosb.maypadbackend.services.sse.EventData;
+import de.fraunhofer.iosb.maypadbackend.services.sse.SseEventType;
+import de.fraunhofer.iosb.maypadbackend.services.sse.SseService;
 import de.fraunhofer.iosb.maypadbackend.services.webhook.WebhookService;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +39,7 @@ public class ProjectService {
 
     private WebhookService webhookService;
     private ProjectgroupService projectgroupService;
+    private SseService sseService;
     private SchedulerService schedulerService;
     private ProjectRepository projectRepository;
     private ServerConfig serverConfig;
@@ -51,10 +55,11 @@ public class ProjectService {
      */
     @Autowired
     @Lazy
-    public ProjectService(WebhookService webhookService, ProjectgroupService projectgroupService,
+    public ProjectService(WebhookService webhookService, ProjectgroupService projectgroupService, SseService sseService,
                           SchedulerService schedulerService, ProjectRepository projectRepository, ServerConfig serverConfig) {
         this.webhookService = webhookService;
         this.projectgroupService = projectgroupService;
+        this.sseService = sseService;
         this.schedulerService = schedulerService;
         this.projectRepository = projectRepository;
         this.serverConfig = serverConfig;
@@ -186,6 +191,7 @@ public class ProjectService {
         getProject(id);
         schedulerService.unscheduleRepoRefresh(id);
         projectRepository.deleteById(id);
+        sseService.push(EventData.builder(SseEventType.PROJECT_DELETED).projectId(id).build());
     }
 
     /**

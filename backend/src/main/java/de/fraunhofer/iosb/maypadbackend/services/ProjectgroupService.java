@@ -7,6 +7,9 @@ import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.Projectgroup;
 import de.fraunhofer.iosb.maypadbackend.repositories.ProjectgroupRepository;
 import de.fraunhofer.iosb.maypadbackend.services.reporefresh.RepoService;
+import de.fraunhofer.iosb.maypadbackend.services.sse.EventData;
+import de.fraunhofer.iosb.maypadbackend.services.sse.SseEventType;
+import de.fraunhofer.iosb.maypadbackend.services.sse.SseService;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +29,7 @@ public class ProjectgroupService {
 
     private ProjectgroupRepository projectgroupRepository;
     private RepoService repoService;
+    private SseService sseService;
 
     /**
      * Constructor for ProjectgroupService.
@@ -33,7 +37,7 @@ public class ProjectgroupService {
      * @param projectgroupRepository Repository for database access
      */
     @Autowired
-    public ProjectgroupService(ProjectgroupRepository projectgroupRepository, RepoService repoService) {
+    public ProjectgroupService(ProjectgroupRepository projectgroupRepository, RepoService repoService, SseService sseService) {
         this.projectgroupRepository = projectgroupRepository;
         this.repoService = repoService;
     }
@@ -101,6 +105,7 @@ public class ProjectgroupService {
             repoService.deleteProject(project.getId());
         }
         projectgroupRepository.deleteById(id);
+        sseService.push(EventData.builder(SseEventType.PROJECTGROUP_DELETED).projectgroupId(id).build());
     }
 
     /**
