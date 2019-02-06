@@ -215,8 +215,10 @@ public class GitRepoManager extends RepoManager {
     /**
      * Clean the RepoManager after usage.
      */
+    @Override
     public void cleanUp() {
         getGit().close();
+        localGit = null;
     }
 
     /**
@@ -295,8 +297,12 @@ public class GitRepoManager extends RepoManager {
             getLogger().error("Folder " + getProjectRootDir().getAbsolutePath() + " isn't empty, so can't clone.");
             return false;
         }
+        if (localGit != null) {
+            cleanUp();
+        }
         try {
-            getAuth(Git.cloneRepository().setURI(getProject().getRepositoryUrl()).setDirectory(getProjectRootDir())).call();
+            localGit = (Git) getAuth(Git.cloneRepository().setURI(getProject().getRepositoryUrl())
+                    .setDirectory(getProjectRootDir())).call();
         } catch (GitAPIException | JGitInternalException e) {
             Git git = getGit();
             if (git != null) {

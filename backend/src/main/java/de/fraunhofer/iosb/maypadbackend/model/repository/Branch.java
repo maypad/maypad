@@ -11,6 +11,8 @@ import de.fraunhofer.iosb.maypadbackend.model.webhook.InternalWebhook;
 import de.fraunhofer.iosb.maypadbackend.util.datastructures.Util;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -25,8 +27,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * A branch within a {@link Repository}.
@@ -57,18 +59,22 @@ public class Branch {
 
     //maypad-data
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<Person> members;
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<Person> members;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<Mail> mails;
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<Mail> mails;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<DependencyDescriptor> dependencies;
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<DependencyDescriptor> dependencies;
 
     //build
     @OneToOne(cascade = CascadeType.ALL)
     private BuildType buildType;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     @OrderBy("id ASC")
-    private Set<Build> builds;
+    private List<Build> builds;
     @Enumerated(EnumType.STRING)
     private Status buildStatus;
 
@@ -76,12 +82,13 @@ public class Branch {
     @OneToOne(cascade = CascadeType.ALL)
     private DeploymentType deploymentType;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<Deployment> deployments;
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<Deployment> deployments;
 
     //webhooks
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private InternalWebhook buildSuccessWebhook;
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private InternalWebhook buildFailureWebhook;
 
 
@@ -105,15 +112,15 @@ public class Branch {
         }
 
         if (branch.getMembers() != null) {
-            Util.updateSet(members, branch.getMembers());
+            Util.updateList(members, branch.getMembers());
         }
 
         if (branch.getMails() != null) {
-            Util.updateSet(mails, branch.getMails());
+            Util.updateList(mails, branch.getMails());
         }
 
         if (branch.getDependencies() != null) {
-            Util.updateSet(dependencies, branch.getDependencies());
+            Util.updateList(dependencies, branch.getDependencies());
         }
 
         if (buildType == null || !buildType.equals(branch.getBuildType())) {

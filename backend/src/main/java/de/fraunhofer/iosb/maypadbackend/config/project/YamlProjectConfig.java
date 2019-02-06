@@ -2,11 +2,14 @@ package de.fraunhofer.iosb.maypadbackend.config.project;
 
 import de.fraunhofer.iosb.maypadbackend.config.project.data.BranchProperty;
 import de.fraunhofer.iosb.maypadbackend.config.project.data.ProjectConfigData;
+import de.fraunhofer.iosb.maypadbackend.exceptions.FormatParseException;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.scanner.ScannerException;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
@@ -26,7 +29,9 @@ public class YamlProjectConfig implements ProjectConfig {
             this.yamlObject = yaml.load(in);
             in.close();
         } catch (IOException e) {
-            throw new IOException("File " + yamlFile.getAbsolutePath() + " does not exist!");
+            throw new FileNotFoundException("File " + yamlFile.getAbsolutePath() + " does not exist!");
+        } catch (ScannerException e) {
+            throw new FormatParseException("File " + yamlFile.getAbsolutePath() + " could not be parsed!");
         }
     }
 

@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Set;
 
 @RequestMapping("/api/projects/{id}/branches")
 public interface BranchApi {
@@ -43,7 +42,7 @@ public interface BranchApi {
      * @return list of all builds as BuildResponse
      */
     @GetMapping("/{ref}/builds")
-    public Set<BuildResponse> getBuilds(@PathVariable int id, @PathVariable String ref);
+    public List<BuildResponse> getBuilds(@PathVariable int id, @PathVariable String ref);
 
     /**
      * Returns a list of all deployments of the branch specified by ref and id.
@@ -52,7 +51,7 @@ public interface BranchApi {
      * @return list of all deployments as DeploymentResponse
      */
     @GetMapping("/{ref}/deployments")
-    public Set<DeploymentResponse> getDeployments(@PathVariable int id, @PathVariable String ref);
+    public List<DeploymentResponse> getDeployments(@PathVariable int id, @PathVariable String ref);
 
     /**
      * Triggers a build for the branch specified by ref and id.

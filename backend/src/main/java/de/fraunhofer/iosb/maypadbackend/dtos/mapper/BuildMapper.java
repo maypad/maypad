@@ -4,7 +4,7 @@ import de.fraunhofer.iosb.maypadbackend.dtos.response.BuildResponse;
 import de.fraunhofer.iosb.maypadbackend.model.build.Build;
 import org.mapstruct.Mapper;
 
-import java.util.Set;
+import java.util.List;
 
 
 /**
@@ -15,5 +15,5 @@ public interface BuildMapper {
 
     public BuildResponse toResponse(Build build);
 
-    public Set<BuildResponse> toResponseList(Set<Build> builds);
+    public List<BuildResponse> toResponseList(List<Build> builds);
 }

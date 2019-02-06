@@ -127,6 +127,9 @@ public class WebhookService {
      * @param webhook the webhook that should be unmapped.
      */
     public void removeWebhook(InternalWebhook webhook) {
+        if (webhook == null) {
+            return;
+        }
         mappedHooks.remove(webhook.getToken());
     }
 

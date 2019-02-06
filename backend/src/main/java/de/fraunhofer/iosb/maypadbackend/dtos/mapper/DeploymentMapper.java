@@ -6,7 +6,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
-import java.util.Set;
+import java.util.List;
 
 
 /**
@@ -19,5 +19,5 @@ public interface DeploymentMapper {
     })
     public DeploymentResponse toResponse(Deployment deployment);
 
-    public Set<DeploymentResponse> toResponseList(Set<Deployment> deployments);
+    public List<DeploymentResponse> toResponseList(List<Deployment> deployments);
 }

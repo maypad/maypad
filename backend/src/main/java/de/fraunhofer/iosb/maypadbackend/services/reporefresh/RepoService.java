@@ -16,7 +16,6 @@ import de.fraunhofer.iosb.maypadbackend.model.repository.DependencyDescriptor;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Repository;
 import de.fraunhofer.iosb.maypadbackend.model.repository.RepositoryType;
 import de.fraunhofer.iosb.maypadbackend.model.webhook.ExternalWebhook;
-import de.fraunhofer.iosb.maypadbackend.repositories.BranchRepository;
 import de.fraunhofer.iosb.maypadbackend.services.ProjectService;
 import de.fraunhofer.iosb.maypadbackend.services.webhook.WebhookService;
 import de.fraunhofer.iosb.maypadbackend.util.FileUtil;
@@ -40,7 +39,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -64,7 +62,6 @@ public class RepoService {
 
     private ProjectService projectService;
     private ServerConfig serverConfig;
-    private BranchRepository branchRepository;
     private WebhookService webhookService;
     private Set<Integer> lockedProjects; //boolean: allows init while locked
     private Logger logger = LoggerFactory.getLogger(RepoService.class);
@@ -73,18 +70,15 @@ public class RepoService {
     /**
      * Constructor for the RepoService.
      *
-     * @param projectService   Projectservice
-     * @param serverConfig     Configuration for server
-     * @param branchRepository Database-Repository for branches
-     * @param webhookService   Webhookservice
+     * @param projectService Projectservice
+     * @param serverConfig   Configuration for server
+     * @param webhookService Webhookservice
      */
     @Autowired
-    public RepoService(ProjectService projectService, ServerConfig serverConfig, BranchRepository branchRepository,
-                       WebhookService webhookService) {
+    public RepoService(ProjectService projectService, ServerConfig serverConfig, WebhookService webhookService) {
         this.projectService = projectService;
         this.serverConfig = serverConfig;
         this.lockedProjects = ConcurrentHashMap.newKeySet();
-        this.branchRepository = branchRepository;
         this.webhookService = webhookService;
         if (serverConfig.isMaximumRefreshRequestsEnabled()) {
             refreshCounter = Collections.synchronizedList(new ArrayList<>());
@@ -146,7 +140,7 @@ public class RepoService {
         }
         //check if max refresh amount is reached
         if (isRefreshCapReached(id)) {
-            setFailStatusAndSave(project);
+            setStatusAndSave(project, Status.ERROR);
             removeLock(project);
             return;
         }
@@ -173,7 +167,7 @@ public class RepoService {
 
     private void doRefreshProject(Project project) {
         if (project.getRepository() == null || project.getRepository().getRepositoryType() == RepositoryType.NONE
-                || project.getRepositoryStatus() == Status.FAILED) {
+                || project.getRepositoryStatus() == Status.ERROR) {
             doInitProject(project);
             //lock is removed in init
             return;
@@ -187,7 +181,8 @@ public class RepoService {
         //clone project, if data were deleted
         if (!projectService.getRepoDir(project.getId()).exists()) {
             if (!repoManager.cloneRepository()) {
-                setFailStatusAndSave(project);
+                setStatusAndSave(project, Status.ERROR);
+                repoManager.cleanUp();
                 return;
             }
         }
@@ -196,13 +191,17 @@ public class RepoService {
         //compare Maypad config hash
         Tuple<ProjectConfig, File> projectConfigData = repoManager.getProjectConfig();
         if (projectConfigData == null) {
-            logger.error("No maypad configuration were found in project with id " + project.getId());
+            logger.error("Error with maypad configuration in project with id " + project.getId());
+            setStatusAndSave(project, Status.FAILED);
+            repoManager.cleanUp();
             return;
         }
 
         String hash = FileUtil.calcSha256(projectConfigData.getValue());
         if (hash == null) {
             logger.error("Can't read maypad config with projectid " + project.getId());
+            setStatusAndSave(project, Status.FAILED);
+            repoManager.cleanUp();
             return;
         }
 
@@ -226,10 +225,9 @@ public class RepoService {
 
         List<String> deleteBranches = new LinkedList<>();
         List<String> branchNamesRepo = repoManager.getBranchNames();
+        List<Branch> generateWebhooks = new LinkedList<>();
 
         for (String branchname : branchNamesRepo) {
-            boolean generateWebhooks = false;
-            Branch savedBranch = null;
             if (!branchConfigData.containsKey(branchname)) {
                 if (!allBranches) {
                     //we haven't to check this branch cause it isn't needed. But remove it, if it exists
@@ -246,16 +244,14 @@ public class RepoService {
                     branch = new Branch();
                     branch.setName(branchname);
                     branch.setBuildStatus(Status.UNKNOWN);
-                    branch.setDependencies(new LinkedHashSet<>());
+                    branch.setDependencies(new ArrayList<>());
                     branch.setBuildType(null);
                     branch.setDescription("");
-                    savedBranch = branchRepository.saveAndFlush(branch);
-                    generateWebhooks = true;
-                    project.getRepository().getBranches().put(branchname, savedBranch);
+                    generateWebhooks.add(branch);
+                    project.getRepository().getBranches().put(branchname, branch);
                 } else {
                     //update existing branch. Now it is a maypad_all branch
                     removeProjectConfigDataInBranch(branch);
-                    savedBranch = branchRepository.saveAndFlush(branch);
                 }
             } else {
                 //branch is a "real" maypad branch
@@ -265,23 +261,24 @@ public class RepoService {
                     logger.info("Create new branch " + branchname + " for project with id " + project.getId());
                     Branch tempBranch = buildBranchModelFromConfig(branchConfigData.get(branchname));
                     tempBranch.setBuildStatus(Status.UNKNOWN);
-                    generateWebhooks = true;
-                    savedBranch = branch = branchRepository.saveAndFlush(tempBranch);
-                    project.getRepository().getBranches().put(branchname, branch);
+                    generateWebhooks.add(tempBranch);
+                    project.getRepository().getBranches().put(branchname, tempBranch);
                 } else {
                     //branch already exists. So compare Branch and update
                     if (hasMaypadConfigChanged) {
                         branch.compareAndUpdate(buildBranchModelFromConfig(branchConfigData.get(branchname)));
                     }
-                    savedBranch = branchRepository.saveAndFlush(branch);
                 }
             }
-            //generate webhooks
-            if (generateWebhooks && savedBranch != null) {
-                generateAllNeededWebhooks(project.getId(), savedBranch);
-                savedBranch = branchRepository.saveAndFlush(savedBranch);
-            }
+
         }
+        project = projectService.saveProject(project);
+        for (Branch webhookBranch : generateWebhooks) {
+            //generate webhooks
+            generateAllNeededWebhooks(project.getId(), webhookBranch);
+        }
+
+        // project = projectService.getProject(project.getId());
 
         //remove not existing branches
         for (String branchname : project.getRepository().getBranches().keySet()) {
@@ -293,7 +290,6 @@ public class RepoService {
             logger.info("Remove branch " + branchname + " in project with id " + project.getId());
             Branch branch = project.getRepository().getBranches().get(branchname);
             removeAllWebhooks(branch);
-            branchRepository.delete(branch);
             project.getRepository().getBranches().remove(branchname);
         }
 
@@ -315,8 +311,6 @@ public class RepoService {
             if (!readme.equals(branch.getReadme())) {
                 branch.setReadme(readme);
             }
-
-            branchRepository.saveAndFlush(branch);
         }
 
 
@@ -351,7 +345,7 @@ public class RepoService {
         if (!FileUtil.hasWriteAccess(parentDir)) {
             logger.error("Can't read / write to " + parentDir.getAbsolutePath());
             initNullRepository(repository);
-            setFailStatusAndSave(project);
+            setStatusAndSave(project, Status.ERROR);
             return;
         }
         File file = new File(parentDir.getAbsolutePath() + File.separator + project.getId());
@@ -360,7 +354,7 @@ public class RepoService {
         } else if (!file.mkdirs()) {
             logger.error("Can't create directories for " + file.getAbsolutePath());
             initNullRepository(repository);
-            setFailStatusAndSave(project);
+            setStatusAndSave(project, Status.ERROR);
             return;
         }
         RepositoryType repositoryType = getCorrectRepositoryType(project.getRepositoryUrl());
@@ -375,7 +369,8 @@ public class RepoService {
 
         boolean cloneSuccess = (repoManager.cloneRepository() && repositoryType != RepositoryType.NONE);
         if (!cloneSuccess) {
-            setFailStatusAndSave(project);
+            setStatusAndSave(project, Status.ERROR);
+            repoManager.cleanUp();
             return;
         }
 
@@ -399,7 +394,6 @@ public class RepoService {
         if (project.getRepository().getBranches() != null) {
             for (Branch branch : project.getRepository().getBranches().values()) {
                 removeAllWebhooks(branch);
-                branchRepository.deleteById(branch.getId());
             }
         }
 
@@ -415,11 +409,11 @@ public class RepoService {
         repository.setRepositoryType(RepositoryType.NONE);
     }
 
-    private Project setFailStatusAndSave(Project project) {
+    private Project setStatusAndSave(Project project, Status status) {
         if (project == null) {
             return null;
         }
-        project.setRepositoryStatus(Status.FAILED);
+        project.setRepositoryStatus(status);
         return projectService.saveProject(project);
     }
 
@@ -429,7 +423,7 @@ public class RepoService {
         branch.setMails(null);
         branch.setBuildType(null);
         branch.setDeploymentType(null);
-        branch.setDependencies(new LinkedHashSet<>());
+        branch.setDependencies(new ArrayList<>());
     }
 
     private Branch buildBranchModelFromConfig(BranchProperty branchProperty) {
@@ -438,7 +432,7 @@ public class RepoService {
         branch.setDescription(branchProperty.getDescription() != null ? branchProperty.getDescription() : "");
 
         //members
-        Set<Person> members = new LinkedHashSet<>();
+        List<Person> members = new ArrayList<>();
         if (branchProperty.getMembers() != null) {
             for (String member : branchProperty.getMembers()) {
                 members.add(new Person(member));
@@ -447,7 +441,7 @@ public class RepoService {
         branch.setMembers(members);
 
         //mails
-        Set<Mail> mails = new LinkedHashSet<>();
+        List<Mail> mails = new ArrayList<>();
         if (branchProperty.getMails() != null) {
             for (String mail : branchProperty.getMails()) {
                 mails.add(new Mail(mail));
@@ -497,7 +491,7 @@ public class RepoService {
         }
 
         //dependencies
-        Set<DependencyDescriptor> dependencies = new LinkedHashSet<>();
+        List<DependencyDescriptor> dependencies = new ArrayList<>();
         if (branchProperty.getDependsOn() != null) {
             for (String dependOn : branchProperty.getDependsOn()) {
                 String[] dependParts = dependOn.split(":");
