@@ -44,7 +44,7 @@ public class DeploymentMapperTest {
      */
     @Before
     public void setup() {
-        testDeployment = new Deployment(deployDate, new Build(buildDate, buildCommit, buildStatus));
+        testDeployment = new Deployment(deployDate, new Build(buildDate, buildCommit, buildStatus), Status.SUCCESS);
         testDeployment.setType(new WebhookDeployment());
     }
 
@@ -55,5 +55,6 @@ public class DeploymentMapperTest {
         assertThat(response).isNotNull();
         assertThat(response.getTimestamp()).isEqualTo(deployDate);
         assertThat(response.getType()).isEqualTo(testDeployment.getType().getName());
+        assertThat(response.getStatus()).isEqualTo(Status.SUCCESS);
     }
 }

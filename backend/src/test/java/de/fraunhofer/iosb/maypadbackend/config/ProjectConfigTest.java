@@ -58,7 +58,9 @@ public class ProjectConfigTest {
         assertThat(branch.getMails().size()).isEqualTo(2);
         assertThat(branch.getDeployment().getType()).isEqualTo("webhook");
         assertThat(branch.getDeployment().getName()).isEqualTo("Great-Deployment");
-        assertThat(branch.getDeployment().getArguments()).isEqualTo("https://greatDeployment.com/54321abcd");
+        assertThat(branch.getDeployment().getType()).isEqualTo("webhook");
+        assertThat(branch.getDeployment().getUrl()).isEqualTo("https://greatDeployment.com/54321abcd");
+        assertThat(branch.getDeployment().getMethod()).isEqualTo(HttpMethod.POST);
         assertThat(branch.getDependsOn().size()).isEqualTo(2);
         assertThat(branch.getBuild().getType()).isEqualTo("webhook");
         assertThat(branch.getBuild().getMethod()).isEqualTo(HttpMethod.POST);

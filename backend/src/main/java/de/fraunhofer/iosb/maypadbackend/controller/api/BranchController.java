@@ -11,6 +11,7 @@ import de.fraunhofer.iosb.maypadbackend.dtos.response.DeploymentResponse;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Branch;
 import de.fraunhofer.iosb.maypadbackend.services.ProjectService;
 import de.fraunhofer.iosb.maypadbackend.services.build.BuildService;
+import de.fraunhofer.iosb.maypadbackend.services.deployment.DeploymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,6 +26,7 @@ public class BranchController implements BranchApi {
     private BuildMapper buildMapper;
     private DeploymentMapper deploymentMapper;
     private BuildService buildService;
+    private DeploymentService deploymentService;
 
     /**
      * Constructor for BranchController.
@@ -33,15 +35,17 @@ public class BranchController implements BranchApi {
      * @param buildMapper the mapper used to map builds to build-responses
      * @param deploymentMapper the mapper used to map deployments to deployment-responses
      * @param buildService the service used to build branches
+     * @param deploymentService the DeploymentService used to deploy
      */
     @Autowired
     public BranchController(ProjectService projectService, BranchMapper branchMapper, BuildMapper buildMapper,
-                            DeploymentMapper deploymentMapper, BuildService buildService) {
+                            DeploymentMapper deploymentMapper, BuildService buildService, DeploymentService deploymentService) {
         this.projectService = projectService;
         this.branchMapper = branchMapper;
         this.buildMapper = buildMapper;
         this.deploymentMapper = deploymentMapper;
         this.buildService = buildService;
+        this.deploymentService = deploymentService;
     }
 
     @Override
@@ -73,8 +77,7 @@ public class BranchController implements BranchApi {
     @Override
     public void triggerDeployment(int id, String ref, @Valid DeploymentRequest request) {
         Branch branch = projectService.getBranch(id, ref);
-
-        //TODO: Call DeploymentService
+        deploymentService.deployBuild(id, ref, request, null);
     }
 
     @Override
