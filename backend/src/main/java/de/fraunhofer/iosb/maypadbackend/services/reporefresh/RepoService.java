@@ -62,7 +62,6 @@ public class RepoService {
 
     private ProjectService projectService;
     private ServerConfig serverConfig;
-    //private BranchRepository branchRepository;
     private WebhookService webhookService;
     private Set<Integer> lockedProjects; //boolean: allows init while locked
     private Logger logger = LoggerFactory.getLogger(RepoService.class);
@@ -76,12 +75,10 @@ public class RepoService {
      * @param webhookService Webhookservice
      */
     @Autowired
-    public RepoService(ProjectService projectService, ServerConfig serverConfig,
-                       WebhookService webhookService) {
+    public RepoService(ProjectService projectService, ServerConfig serverConfig, WebhookService webhookService) {
         this.projectService = projectService;
         this.serverConfig = serverConfig;
         this.lockedProjects = ConcurrentHashMap.newKeySet();
-        //this.branchRepository = branchRepository;
         this.webhookService = webhookService;
         if (serverConfig.isMaximumRefreshRequestsEnabled()) {
             refreshCounter = Collections.synchronizedList(new ArrayList<>());
@@ -231,8 +228,6 @@ public class RepoService {
         List<Branch> generateWebhooks = new LinkedList<>();
 
         for (String branchname : branchNamesRepo) {
-            //boolean generateWebhooks = false;
-            //Branch savedBranch = null;
             if (!branchConfigData.containsKey(branchname)) {
                 if (!allBranches) {
                     //we haven't to check this branch cause it isn't needed. But remove it, if it exists
@@ -252,14 +247,11 @@ public class RepoService {
                     branch.setDependencies(new ArrayList<>());
                     branch.setBuildType(null);
                     branch.setDescription("");
-                    //savedBranch = branchRepository.saveAndFlush(branch);
                     generateWebhooks.add(branch);
-                    //generateWebhooks = true;
                     project.getRepository().getBranches().put(branchname, branch);
                 } else {
                     //update existing branch. Now it is a maypad_all branch
                     removeProjectConfigDataInBranch(branch);
-                    //savedBranch = branchRepository.saveAndFlush(branch);
                 }
             } else {
                 //branch is a "real" maypad branch
@@ -270,15 +262,12 @@ public class RepoService {
                     Branch tempBranch = buildBranchModelFromConfig(branchConfigData.get(branchname));
                     tempBranch.setBuildStatus(Status.UNKNOWN);
                     generateWebhooks.add(tempBranch);
-                    //generateWebhooks = true;
-                    //savedBranch = branch = branchRepository.saveAndFlush(tempBranch);
                     project.getRepository().getBranches().put(branchname, tempBranch);
                 } else {
                     //branch already exists. So compare Branch and update
                     if (hasMaypadConfigChanged) {
                         branch.compareAndUpdate(buildBranchModelFromConfig(branchConfigData.get(branchname)));
                     }
-                    //savedBranch = branchRepository.saveAndFlush(branch);
                 }
             }
 
@@ -287,10 +276,6 @@ public class RepoService {
         for (Branch webhookBranch : generateWebhooks) {
             //generate webhooks
             generateAllNeededWebhooks(project.getId(), webhookBranch);
-            /*if (generateWebhooks && webhookBranch != null) {
-                generateAllNeededWebhooks(project.getId(), savedBranch);
-                branchRepository.saveAndFlush(savedBranch);
-            }*/
         }
 
         // project = projectService.getProject(project.getId());
@@ -305,7 +290,6 @@ public class RepoService {
             logger.info("Remove branch " + branchname + " in project with id " + project.getId());
             Branch branch = project.getRepository().getBranches().get(branchname);
             removeAllWebhooks(branch);
-            //branchRepository.delete(branch);
             project.getRepository().getBranches().remove(branchname);
         }
 
@@ -327,8 +311,6 @@ public class RepoService {
             if (!readme.equals(branch.getReadme())) {
                 branch.setReadme(readme);
             }
-
-            //branchRepository.saveAndFlush(branch);
         }
 
 
@@ -412,7 +394,6 @@ public class RepoService {
         if (project.getRepository().getBranches() != null) {
             for (Branch branch : project.getRepository().getBranches().values()) {
                 removeAllWebhooks(branch);
-                //branchRepository.deleteById(branch.getId());
             }
         }
 
