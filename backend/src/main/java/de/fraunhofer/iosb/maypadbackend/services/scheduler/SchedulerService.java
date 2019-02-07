@@ -15,6 +15,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 
+/**
+ * Schedule the project updates.
+ */
 @Service
 public class SchedulerService {
     private ThreadPoolTaskScheduler threadPoolTaskScheduler;
@@ -27,9 +30,10 @@ public class SchedulerService {
 
     /**
      * Initializes the threadPoolTaskScheduler and the taskMapping.
-     * @param serverConfig the serverconfig
+     *
+     * @param serverConfig      the serverconfig
      * @param projectRepository the ProjectRepository used to access project
-     * @param repoService the RepoService used to update repositories
+     * @param repoService       the RepoService used to update repositories
      */
     @Autowired
     public SchedulerService(ServerConfig serverConfig, RepoService repoService, ProjectRepository projectRepository) {
@@ -45,6 +49,7 @@ public class SchedulerService {
 
     /**
      * Adds a project to the scheduling.
+     *
      * @param projectId the id of the project that should be updated
      */
     public void scheduleRepoRefresh(int projectId) {
@@ -59,6 +64,7 @@ public class SchedulerService {
 
     /**
      * Removes a project from the scheduling.
+     *
      * @param projectId the id of the project that should be unscheduled
      */
     public void unscheduleRepoRefresh(int projectId) {

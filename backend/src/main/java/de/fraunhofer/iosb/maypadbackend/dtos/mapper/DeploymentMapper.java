@@ -17,7 +17,7 @@ public interface DeploymentMapper {
     @Mappings({
             @Mapping(source = "type.name", target = "type")
     })
-    public DeploymentResponse toResponse(Deployment deployment);
+    DeploymentResponse toResponse(Deployment deployment);
 
-    public List<DeploymentResponse> toResponseList(List<Deployment> deployments);
+    List<DeploymentResponse> toResponseList(List<Deployment> deployments);
 }

@@ -68,6 +68,7 @@ public class Projectgroup {
 
     /**
      * Updates the status of this branch.
+     *
      * @return the new status
      */
     public Status updateStatus() {

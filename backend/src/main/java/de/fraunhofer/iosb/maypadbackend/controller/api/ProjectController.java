@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.List;
 
+/**
+ * Controller for project API calls.
+ */
 @RestController
 public class ProjectController implements ProjectApi {
 
@@ -58,8 +61,6 @@ public class ProjectController implements ProjectApi {
 
     @Override
     public void refreshProject(int id) {
-        //TODO: Implement RepoService
-
         repoService.refreshProject(id);
     }
 

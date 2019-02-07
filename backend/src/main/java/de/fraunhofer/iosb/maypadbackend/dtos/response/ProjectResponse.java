@@ -4,7 +4,7 @@ import de.fraunhofer.iosb.maypadbackend.model.Status;
 import lombok.Data;
 
 /**
- *  Data transfer object for transferring information about a Project entity.
+ * Data transfer object for transferring information about a Project entity.
  *
  * @author Max Willich
  */

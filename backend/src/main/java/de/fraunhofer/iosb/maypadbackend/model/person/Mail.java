@@ -31,6 +31,7 @@ public class Mail {
 
     /**
      * Constructor for Mail.
+     *
      * @param mailAddress the Mailaddress
      */
     public Mail(String mailAddress) {

@@ -13,7 +13,7 @@ import java.util.Optional;
  */
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Integer> {
-    public List<Project> findAll();
+    List<Project> findAll();
 
-    public Optional<Project> findProjectById(Integer id);
+    Optional<Project> findProjectById(Integer id);
 }

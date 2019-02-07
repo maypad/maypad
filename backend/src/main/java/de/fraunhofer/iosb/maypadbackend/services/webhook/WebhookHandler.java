@@ -7,5 +7,5 @@ public interface WebhookHandler {
     /**
      * Executes the defined action for a specific WebhookHandler.
      */
-    public void handle();
+    void handle();
 }

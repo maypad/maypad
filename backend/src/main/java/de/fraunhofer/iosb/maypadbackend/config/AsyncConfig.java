@@ -7,7 +7,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import java.util.concurrent.Executor;
 
 /**
- * Threadpool executer for reporefresh.
+ * Threadpool executor for reporefresh.
  *
  * @author Lukas Brosch
  * @version 1.0
@@ -16,7 +16,7 @@ import java.util.concurrent.Executor;
 public class AsyncConfig {
 
     /**
-     * Get a executer.
+     * Get a executor.
      *
      * @return Executer with limited poolsize.
      */

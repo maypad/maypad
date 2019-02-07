@@ -3,6 +3,9 @@ package de.fraunhofer.iosb.maypadbackend.exceptions.httpexceptions;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+/**
+ * Exception if the same deployment is already running.
+ */
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class DeploymentRunningException extends RestException {
     /**

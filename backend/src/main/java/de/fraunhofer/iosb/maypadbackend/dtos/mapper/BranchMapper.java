@@ -30,9 +30,9 @@ public interface BranchMapper {
             @Mapping(source = "buildFailureWebhook.url", target = "buildFailureUrl"),
             @Mapping(source = "branch", target = "mails", qualifiedByName = "toMails")
     })
-    public BranchResponse toResponse(Branch branch);
+    BranchResponse toResponse(Branch branch);
 
-    public List<BranchResponse> toResponseList(List<Branch> branches);
+    List<BranchResponse> toResponseList(List<Branch> branches);
 
     /**
      * Maps a branch to an array of dependencies (branch-ids).

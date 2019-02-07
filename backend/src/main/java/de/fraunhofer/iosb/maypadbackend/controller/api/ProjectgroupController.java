@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.List;
 
+/**
+ * Controller for projectgroup API calls.
+ */
 @RestController
 public class ProjectgroupController implements ProjectgroupApi {
 
@@ -24,9 +27,10 @@ public class ProjectgroupController implements ProjectgroupApi {
 
     /**
      * Constructor for ProjectgroupController.
+     *
      * @param projectgroupService the ProjectgroupService used to access projectgroups
-     * @param projectgroupMapper the ProjectgroupMapper used to map projectgroups to projectgroup-responses
-     * @param projectMapper the ProjectMapper used to map projects to project-responses
+     * @param projectgroupMapper  the ProjectgroupMapper used to map projectgroups to projectgroup-responses
+     * @param projectMapper       the ProjectMapper used to map projects to project-responses
      */
     @Autowired
     public ProjectgroupController(ProjectgroupService projectgroupService, ProjectgroupMapper projectgroupMapper,
@@ -58,7 +62,7 @@ public class ProjectgroupController implements ProjectgroupApi {
     }
 
     @Override
-    public void deleteProjectgroup(@PathVariable  int id) {
+    public void deleteProjectgroup(@PathVariable int id) {
         projectgroupService.deleteProjectgroup(id);
     }
 

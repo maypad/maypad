@@ -24,7 +24,7 @@ import static com.google.common.io.Files.asCharSource;
  */
 public class FileUtil {
 
-    private static Logger logger = LoggerFactory.getLogger(FileUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(FileUtil.class);
 
     /**
      * Check whether write and read access exists.

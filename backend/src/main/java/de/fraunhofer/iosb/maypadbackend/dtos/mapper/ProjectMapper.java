@@ -19,9 +19,9 @@ public interface ProjectMapper {
             @Mapping(source = "refreshWebhook.url", target = "refreshUrl"),
             @Mapping(source = "repository.tags", target = "tags")
     })
-    public ProjectResponse toResponse(Project project);
+    ProjectResponse toResponse(Project project);
 
-    public List<ProjectResponse> toResponseList(List<Project> projects);
+    List<ProjectResponse> toResponseList(List<Project> projects);
 
     default String map(Person person) {
         return person.getName();

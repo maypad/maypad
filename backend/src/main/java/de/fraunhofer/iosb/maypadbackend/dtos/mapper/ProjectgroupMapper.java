@@ -12,8 +12,8 @@ import java.util.List;
  */
 @Mapper(componentModel = "spring")
 public interface ProjectgroupMapper {
-    public ProjectgroupResponse toResponse(Projectgroup projectgroup);
+    ProjectgroupResponse toResponse(Projectgroup projectgroup);
 
-    public List<ProjectgroupResponse> toResponseList(List<Projectgroup> projectgroups);
+    List<ProjectgroupResponse> toResponseList(List<Projectgroup> projectgroups);
 
 }

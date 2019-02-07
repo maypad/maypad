@@ -30,6 +30,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Manage the deployment for a project.
+ */
 @Service
 @EnableScheduling
 public class DeploymentService {
@@ -92,6 +95,12 @@ public class DeploymentService {
         }
     }
 
+    /**
+     * Get the latest deployment from a branch.
+     *
+     * @param branch Branch to find the last deployment
+     * @return Last deployment
+     */
     private Deployment getLatestDeployment(Branch branch) {
         return branch.getDeployments().stream().reduce((a, b) -> b).orElseThrow(
                 () -> new NotFoundException("DEPLOYMENT_NOT_FOUND", "Deployment not found."));
@@ -113,6 +122,13 @@ public class DeploymentService {
         runningDeployments = new ConcurrentHashMap<>();
     }
 
+    /**
+     * Get the deployment with given id.
+     *
+     * @param branch       Branch with deployments
+     * @param deploymentId id of deployment
+     * @return Deployment with given id in given branch
+     */
     private Deployment getDeployment(Branch branch, int deploymentId) {
         return branch.getDeployments().stream().filter(d -> d.getId() == deploymentId).findAny()
                 .orElseThrow(() -> new NotFoundException("DEPLOYMENT_NOT_FOUND", "Deployment not found."));

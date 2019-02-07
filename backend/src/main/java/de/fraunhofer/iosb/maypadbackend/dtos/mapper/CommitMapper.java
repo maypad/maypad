@@ -17,7 +17,7 @@ public interface CommitMapper {
     @Mappings({
             @Mapping(source = "author.name", target = "author")
     })
-    public CommitResponse toResponse(Commit commit);
+    CommitResponse toResponse(Commit commit);
 
-    public List<CommitResponse> toResponseList(List<Commit> commits);
+    List<CommitResponse> toResponseList(List<Commit> commits);
 }

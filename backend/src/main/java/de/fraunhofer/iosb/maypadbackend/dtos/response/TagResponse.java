@@ -3,7 +3,7 @@ package de.fraunhofer.iosb.maypadbackend.dtos.response;
 import lombok.Data;
 
 /**
- *  Data transfer object for transferring information about a Tag entity.
+ * Data transfer object for transferring information about a Tag entity.
  *
  * @author Max Willich
  */

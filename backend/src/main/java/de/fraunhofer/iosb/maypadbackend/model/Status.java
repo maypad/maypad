@@ -49,12 +49,13 @@ public enum Status {
 
     private final int priority;
 
-    private Status(int priority) {
+    Status(int priority) {
         this.priority = priority;
     }
 
     /**
      * Returns the priority of the status.
+     *
      * @return the priority of the status
      */
     public int getPriority() {
@@ -63,15 +64,20 @@ public enum Status {
 
     /**
      * Returns the Status to the given priority.
+     *
      * @param priority the priority of the wanted Status
      * @return the Status to the given priority.
      */
     public static Status fromPriority(int priority) {
         switch (priority) {
-            case 1: return INIT;
-            case 2: return SUCCESS;
-            case 3: return FAILED;
-            default: return UNKNOWN;
+            case 1:
+                return INIT;
+            case 2:
+                return SUCCESS;
+            case 3:
+                return FAILED;
+            default:
+                return UNKNOWN;
         }
     }
 

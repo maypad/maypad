@@ -13,9 +13,9 @@ import java.util.Optional;
  */
 @Repository
 public interface ProjectgroupRepository extends JpaRepository<Projectgroup, Integer> {
-    public List<Projectgroup> findAll();
+    List<Projectgroup> findAll();
 
-    public Optional<Projectgroup> findProjectgroupById(Integer id);
+    Optional<Projectgroup> findProjectgroupById(Integer id);
 
-    public Optional<Projectgroup> findProjectgroupByProjectsContaining(Project project);
+    Optional<Projectgroup> findProjectgroupByProjectsContaining(Project project);
 }

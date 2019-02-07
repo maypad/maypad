@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * The data object needed for the server sent event.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -19,6 +22,14 @@ public class EventData {
     private Integer projectId;
     private String branch;
 
+    /**
+     * Constrcutor for EventData.
+     *
+     * @param eventId        the id of the event
+     * @param projectgroupId the if of the projectgoup
+     * @param projectId      the id of the project
+     * @param branch         the branch
+     */
     private EventData(String eventId, Integer projectgroupId, Integer projectId, String branch) {
         this.eventId = eventId;
         this.projectgroupId = projectgroupId;
@@ -28,6 +39,7 @@ public class EventData {
 
     /**
      * Returns a builder for an EventData object.
+     *
      * @return the builder
      */
     public static Builder builder() {
@@ -36,6 +48,7 @@ public class EventData {
 
     /**
      * Returns a builder for an EventData object populated with the given eventType.
+     *
      * @param eventType the type of the event
      * @return the builder
      */
@@ -43,10 +56,12 @@ public class EventData {
         return new BuilderImpl().eventId(eventType.getEventId());
     }
 
-    public static interface Builder {
+
+    public interface Builder {
 
         /**
          * Sets the eventId.
+         *
          * @param id the value of the eventId field
          * @return this builder
          */
@@ -54,6 +69,7 @@ public class EventData {
 
         /**
          * Sets the projectgroupId.
+         *
          * @param id the value of the projectgroupId field
          * @return this builder
          */
@@ -61,6 +77,7 @@ public class EventData {
 
         /**
          * Sets the projectId.
+         *
          * @param id the value of the projectId field
          * @return this builder
          */
@@ -68,6 +85,7 @@ public class EventData {
 
         /**
          * Sets the branch.
+         *
          * @param ref the value of the branch field
          * @return this builder
          */
@@ -75,6 +93,7 @@ public class EventData {
 
         /**
          * Builds the eventdata.
+         *
          * @return the built eventdata object
          */
         EventData build();
@@ -91,6 +110,7 @@ public class EventData {
 
         private String branch;
 
+        @Override
         public Builder eventId(String id) {
             this.eventId = id;
             return this;

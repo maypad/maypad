@@ -33,6 +33,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Manage the builds for a project.
+ */
 @Service
 @EnableScheduling
 public class BuildService {
@@ -41,7 +44,7 @@ public class BuildService {
     private SseService sseService;
     private Collection<? extends BuildTypeExecutor> executors;
     private Map<Class<? extends BuildType>, BuildTypeExecutor> buildTypeMappings;
-    private Logger logger = LoggerFactory.getLogger(BuildService.class);
+    private static final Logger logger = LoggerFactory.getLogger(BuildService.class);
     private Map<Tuple<Integer, String>, Integer> runningBuilds;
 
     private static final long buildTimeoutSeconds = 21600; //6h
@@ -49,8 +52,10 @@ public class BuildService {
 
     /**
      * Constructor for BuildService.
+     *
      * @param projectService the ProjectService used to access projects
-     * @param executors a collection of all BuildTypeExecutor beans
+     * @param sseService     Service for server sent events
+     * @param executors      a collection of all BuildTypeExecutor beans
      */
     @Autowired
     public BuildService(ProjectService projectService, SseService sseService,
@@ -63,9 +68,10 @@ public class BuildService {
 
     /**
      * Triggers a build for the given branch.
-     * @param id the id of the project
-     * @param ref the name of the Branch
-     * @param request the request that contains the build parameters
+     *
+     * @param id        the id of the project
+     * @param ref       the name of the Branch
+     * @param request   the request that contains the build parameters
      * @param buildName the name of the build type (currently not used)
      */
     public void buildBranch(int id, String ref, BuildRequest request, String buildName) {
@@ -74,10 +80,11 @@ public class BuildService {
 
     /**
      * Triggers a build for the given branch.
-     * @param id the id of the project
-     * @param ref the name of the Branch
+     *
+     * @param id               the id of the project
+     * @param ref              the name of the Branch
      * @param withDependencies if the dependencies should be build
-     * @param buildName the name of the build type (currently not used)
+     * @param buildName        the name of the build type (currently not used)
      */
     public void buildBranch(int id, String ref, boolean withDependencies, String buildName) {
         Project project = projectService.getProject(id);
@@ -111,6 +118,7 @@ public class BuildService {
 
     /**
      * Returns the latest build of a given branch.
+     *
      * @param branch the branch
      * @return the latest build on the given branch
      */
@@ -122,6 +130,13 @@ public class BuildService {
         return branch.getBuilds().stream().skip(branch.getBuilds().size() - 1).findFirst().get();
     }
 
+    /**
+     * Get the build in a branch with given id.
+     *
+     * @param branch  the branch
+     * @param buildId id of the build
+     * @return Build in branch with given id
+     */
     private Build getBuild(Branch branch, int buildId) {
         return branch.getBuilds().stream().filter(b -> b.getId() == buildId).findFirst()
                 .orElseThrow(() -> new NotFoundException("BUILD_NOT_FOUND", "Build not found."));
@@ -130,8 +145,9 @@ public class BuildService {
     /**
      * Updates the status of a running build for the given branch, if there is a running build. If status is RUNNING no
      * update is required.
-     * @param id the id of the project
-     * @param ref the name of the Branch
+     *
+     * @param id     the id of the project
+     * @param ref    the name of the Branch
      * @param status the new status
      */
     public void signalStatus(int id, String ref, Status status) {
@@ -195,7 +211,7 @@ public class BuildService {
                 for (BuildTypeExecutor exec : executors) {
                     if (exec.getClass() == execClass
                             || (AopUtils.isJdkDynamicProxy(exec)
-                                    && ((Advised)exec).getTargetSource().getTargetClass() == execClass)) {
+                            && ((Advised) exec).getTargetSource().getTargetClass() == execClass)) {
                         logger.debug("Mapped " + typeClass.getName() + " to " + exec.getClass().getName());
                         buildTypeMappings.put(typeClass, exec);
                         break;

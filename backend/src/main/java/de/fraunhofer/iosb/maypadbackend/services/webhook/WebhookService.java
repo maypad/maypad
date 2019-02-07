@@ -30,6 +30,9 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Service for generate and handling webhooks.
+ */
 @Service
 public class WebhookService {
 
@@ -40,8 +43,7 @@ public class WebhookService {
     private ProjectRepository projectRepository;
     private char[] buf;
 
-    private static final String tokenChars
-            = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private static final String tokenChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private static final SecureRandom rnd = new SecureRandom();
     private static final String HOOKS_PATH = "/hooks/";
 
@@ -136,11 +138,11 @@ public class WebhookService {
     /**
      * Calls the webhook with the given method and returns the ResponseEntity with the given type.
      *
-     * @param webhook the webhook that should be called
-     * @param method the HTTP method (GET, POST, etc)
+     * @param webhook       the webhook that should be called
+     * @param method        the HTTP method (GET, POST, etc)
      * @param requestEntity the entity (headers and/or body) to write to the request may be null)
-     * @param responseType the type of the ResponseEntity
-     * @param uriVariables the variables to expand the url of the given webhook
+     * @param responseType  the type of the ResponseEntity
+     * @param uriVariables  the variables to expand the url of the given webhook
      * @return Future of ResponseEntity
      */
     @Async
@@ -156,7 +158,7 @@ public class WebhookService {
      * Calls the webhook with the given method and returns the ReponseEntity as String.
      *
      * @param webhook the webhook that should be called
-     * @param method the HTTP method (GET, POST, etc)
+     * @param method  the HTTP method (GET, POST, etc)
      * @return Future of ResponseEntity
      */
     @Async
@@ -177,6 +179,9 @@ public class WebhookService {
         }
     }
 
+    /**
+     * Init (after start) the mapping for webhooks.
+     */
     @PostConstruct
     private void initMapping() {
         List<Project> projects = projectRepository.findAll();

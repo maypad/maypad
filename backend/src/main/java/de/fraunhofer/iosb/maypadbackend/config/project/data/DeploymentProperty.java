@@ -4,7 +4,7 @@ import lombok.Data;
 import org.springframework.http.HttpMethod;
 
 /**
- * Property for a deployment.
+ * Class to store deployment properties as listed in Maypad YAML-File.
  */
 @Data
 public class DeploymentProperty {

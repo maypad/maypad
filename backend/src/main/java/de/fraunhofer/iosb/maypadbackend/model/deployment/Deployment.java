@@ -45,9 +45,10 @@ public class Deployment {
 
     /**
      * Constructor for Deployment.
+     *
      * @param timestamp the exact time of the deployment start
-     * @param build the build that is deployed
-     * @param status the status of the deployment
+     * @param build     the build that is deployed
+     * @param status    the status of the deployment
      */
     public Deployment(Date timestamp, Build build, Status status) {
         this.timestamp = timestamp;

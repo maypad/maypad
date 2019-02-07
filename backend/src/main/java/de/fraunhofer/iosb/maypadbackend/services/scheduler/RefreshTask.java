@@ -15,7 +15,8 @@ public class RefreshTask implements Runnable {
 
     /**
      * Constructor for RefreshTask.
-     * @param projectId the id of the project that should be updated
+     *
+     * @param projectId   the id of the project that should be updated
      * @param repoService the RepoService used to refresh a repository
      */
     public RefreshTask(int projectId, RepoService repoService) {

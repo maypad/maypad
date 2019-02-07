@@ -306,7 +306,7 @@ public class GitRepoManager extends RepoManager {
         } catch (GitAPIException | JGitInternalException e) {
             Git git = getGit();
             if (git != null) {
-                getGit().close();
+                git.close();
             }
 
             getLogger().warn("Can't access to repo " + getProject().getRepositoryUrl() + " or an internal error occured.");

@@ -15,6 +15,7 @@ public class InvalidTokenException extends RestException {
         super(error, message);
     }
 
+    @Override
     public HttpStatus getStatus() {
         return HttpStatus.FORBIDDEN;
     }

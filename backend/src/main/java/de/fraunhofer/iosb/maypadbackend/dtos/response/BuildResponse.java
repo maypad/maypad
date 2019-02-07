@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.Date;
 
 /**
- *  Data transfer object for transferring information about a Build entity.
+ * Data transfer object for transferring information about a Build entity.
  *
  * @author Max Willich
  */

@@ -40,10 +40,11 @@ public class WebhookBuild extends BuildType {
 
     /**
      * Constructor for WebhookBuild.
+     *
      * @param buildWebhook the url that should be called
-     * @param method the HTTP method (POST, GET, etc)
-     * @param headers the HttpHeaders
-     * @param body the RequestBody
+     * @param method       the HTTP method (POST, GET, etc)
+     * @param headers      the HttpHeaders
+     * @param body         the RequestBody
      */
     public WebhookBuild(ExternalWebhook buildWebhook, HttpMethod method, HttpHeaders headers, String body) {
         this.buildWebhook = buildWebhook;

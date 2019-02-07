@@ -35,6 +35,7 @@ public class ProjectgroupService {
      * Constructor for ProjectgroupService.
      *
      * @param projectgroupRepository Repository for database access
+     * @param sseService             Service for server sent events
      */
     @Autowired
     public ProjectgroupService(ProjectgroupRepository projectgroupRepository, RepoService repoService, SseService sseService) {
@@ -132,6 +133,7 @@ public class ProjectgroupService {
 
     /**
      * Updates the status of the projectgroup with the given id.
+     *
      * @param id the id of the projectgroup that should be updated
      */
     public void updateStatus(int id) {
@@ -142,6 +144,7 @@ public class ProjectgroupService {
 
     /**
      * Returns the projectgroup containing the given project.
+     *
      * @param project the project that should be contained in the projectgroup
      * @return the projectgroup containing the given project
      */

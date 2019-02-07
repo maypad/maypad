@@ -14,6 +14,7 @@ import java.lang.annotation.Target;
 public @interface BuildTypeExec {
     /**
      * Returns the executor associated with annotated class.
+     *
      * @return the executor
      */
     Class<? extends BuildTypeExecutor> executor();

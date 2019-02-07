@@ -41,11 +41,12 @@ public class WebhookDeployment extends DeploymentType {
 
     /**
      * Constructor for WebhookDeployment.
-     * @param name Name of the deployment
+     *
+     * @param name              Name of the deployment
      * @param deploymentWebhook the webhook used for deploying
-     * @param method the HTTP method (POST, GET, etc)
-     * @param headers the HttpHeaders
-     * @param body the RequestBody
+     * @param method            the HTTP method (POST, GET, etc)
+     * @param headers           the HttpHeaders
+     * @param body              the RequestBody
      */
     public WebhookDeployment(String name, ExternalWebhook deploymentWebhook, HttpMethod method,
                              HttpHeaders headers, String body) {

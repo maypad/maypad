@@ -26,7 +26,7 @@ public class KeyFileManager {
 
     private File projectRootDir;
     private Project project;
-    private static Logger logger = LoggerFactory.getLogger(KeyFileManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(KeyFileManager.class);
 
     /**
      * Create a SSH pem File.

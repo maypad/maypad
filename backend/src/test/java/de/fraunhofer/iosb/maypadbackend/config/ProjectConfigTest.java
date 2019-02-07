@@ -25,7 +25,7 @@ public class ProjectConfigTest {
     private ProjectConfig projectConfig;
     private boolean isLoaded;
 
-    private Logger logger = LoggerFactory.getLogger(ProjectConfigTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProjectConfigTest.class);
 
     /**
      * Setup test.

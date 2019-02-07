@@ -15,12 +15,21 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 
+/**
+ * Executor for a build with a webhook.
+ */
 @Component
 public class WebhookBuildExecutor implements BuildTypeExecutor {
 
     private WebhookService webhookService;
     private BuildService buildService;
 
+    /**
+     * Constructor for the WebhookBuildExecutor.
+     *
+     * @param webhookService Service for webhooks
+     * @param buildService   Service for builds
+     */
     @Autowired
     @Lazy
     public WebhookBuildExecutor(WebhookService webhookService, BuildService buildService) {
@@ -28,6 +37,13 @@ public class WebhookBuildExecutor implements BuildTypeExecutor {
         this.buildService = buildService;
     }
 
+    /**
+     * Start a build.
+     *
+     * @param buildType the type that specifies how the branch should be build
+     * @param id        the id of the project
+     * @param ref       the name of the Branch
+     */
     @Override
     @Async
     public void build(BuildType buildType, int id, String ref) {
