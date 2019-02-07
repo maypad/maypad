@@ -11,6 +11,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
@@ -52,10 +54,12 @@ public class SchedulerService {
             logger.info("Scheduled Project " + projectId);
             RefreshTask task = new RefreshTask(projectId, repoService);
             ScheduledFuture<?> sf = threadPoolTaskScheduler.scheduleWithFixedDelay(task,
-                    serverConfig.getReloadRepositoriesSeconds() * 1000);
+                    Instant.now().plusSeconds(serverConfig.getReloadRepositoriesSeconds()),
+                    Duration.ofSeconds(serverConfig.getReloadRepositoriesSeconds()));
             taskMapping.put(projectId, sf);
         }
     }
+
 
     /**
      * Removes a project from the scheduling.
@@ -73,7 +77,11 @@ public class SchedulerService {
     @PostConstruct
     private void init() {
         for (Project project : projectRepository.findAll()) {
-            scheduleRepoRefresh(project.getId());
+            logger.info("Scheduled Project " + project.getId());
+            RefreshTask task = new RefreshTask(project.getId(), repoService);
+            ScheduledFuture<?> sf = threadPoolTaskScheduler.scheduleWithFixedDelay(task,
+                    serverConfig.getReloadRepositoriesSeconds() * 1000);
+            taskMapping.put(project.getId(), sf);
         }
     }
 }
