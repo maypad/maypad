@@ -105,11 +105,13 @@ public class RepoService {
         Project project = projectService.getProject(id);
 
         if (repoLock(project)) {
+            sseService.push(EventData.builder(SseEventType.PROJECT_CURRENTLY_UPDATE).projectId(id).build());
             logger.info("Project with id " + project.getId() + " is currently updated");
             return;
         }
         //check if max refresh amount is reached
         if (isRefreshCapReached(id)) {
+            sseService.push(EventData.builder(SseEventType.PROJECT_CAP_REACHED).projectId(id).build());
             removeLock(project);
             return;
         }
@@ -130,11 +132,13 @@ public class RepoService {
     public void initProject(int id) {
         Project project = projectService.getProject(id);
         if (repoLock(project)) {
+            sseService.push(EventData.builder(SseEventType.PROJECT_CURRENTLY_UPDATE).projectId(id).build());
             logger.info("Project with id " + project.getId() + " is currently initializing");
             return;
         }
         //check if max refresh amount is reached
         if (isRefreshCapReached(id)) {
+            sseService.push(EventData.builder(SseEventType.PROJECT_CAP_REACHED).projectId(id).build());
             setStatusAndSave(project, Status.ERROR);
             removeLock(project);
             return;
@@ -210,6 +214,7 @@ public class RepoService {
         //clone project, if data were deleted
         if (!projectService.getRepoDir(project.getId()).exists()) {
             if (!repoManager.cloneRepository()) {
+                sseService.push(EventData.builder(SseEventType.PROJECT_REFRESH_FAILED).projectId(project.getId()).build());
                 setStatusAndSave(project, Status.ERROR);
                 repoManager.cleanUp();
                 return;
@@ -220,6 +225,7 @@ public class RepoService {
         //compare Maypad config hash
         Tuple<ProjectConfig, File> projectConfigData = repoManager.getProjectConfig();
         if (projectConfigData == null) {
+            sseService.push(EventData.builder(SseEventType.PROJECT_CONFIG_INVALID).projectId(project.getId()).build());
             logger.error("Error with maypad configuration in project with id " + project.getId());
             setStatusAndSave(project, Status.FAILED);
             repoManager.cleanUp();
@@ -228,6 +234,7 @@ public class RepoService {
 
         String hash = FileUtil.calcSha256(projectConfigData.getValue());
         if (hash == null) {
+            sseService.push(EventData.builder(SseEventType.FILESYSTEM_ERROR).projectId(project.getId()).build());
             logger.error("Can't read maypad config with projectid " + project.getId());
             setStatusAndSave(project, Status.FAILED);
             repoManager.cleanUp();
@@ -378,6 +385,7 @@ public class RepoService {
         File parentDir = new File(serverConfig.getRepositoryStoragePath());
 
         if (!FileUtil.hasWriteAccess(parentDir)) {
+            sseService.push(EventData.builder(SseEventType.FILESYSTEM_ERROR).projectId(project.getId()).build());
             logger.error("Can't read / write to " + parentDir.getAbsolutePath());
             initNullRepository(repository);
             setStatusAndSave(project, Status.ERROR);
@@ -385,8 +393,10 @@ public class RepoService {
         }
         File file = new File(parentDir.getAbsolutePath() + File.separator + project.getId());
         if (file.isDirectory() && file.exists()) {
+            sseService.push(EventData.builder(SseEventType.FILESYSTEM_ERROR).projectId(project.getId()).build());
             logger.warn("Folder already exists at " + file.getAbsolutePath());
         } else if (!file.mkdirs()) {
+            sseService.push(EventData.builder(SseEventType.FILESYSTEM_ERROR).projectId(project.getId()).build());
             logger.error("Can't create directories for " + file.getAbsolutePath());
             initNullRepository(repository);
             setStatusAndSave(project, Status.ERROR);
@@ -394,6 +404,7 @@ public class RepoService {
         }
         RepositoryType repositoryType = getCorrectRepositoryType(project.getRepositoryUrl());
         if (repositoryType == RepositoryType.NONE) {
+            sseService.push(EventData.builder(SseEventType.PROJECT_URL_INVALID).projectId(project.getId()).build());
             logger.warn("URL is missing or invalid for project with id " + project.getId());
         }
         repository.setRepositoryType(repositoryType);
@@ -404,6 +415,7 @@ public class RepoService {
 
         boolean cloneSuccess = (repoManager.cloneRepository() && repositoryType != RepositoryType.NONE);
         if (!cloneSuccess) {
+            sseService.push(EventData.builder(SseEventType.PROJECT_REFRESH_FAILED).projectId(project.getId()).build());
             setStatusAndSave(project, Status.ERROR);
             repoManager.cleanUp();
             return;
