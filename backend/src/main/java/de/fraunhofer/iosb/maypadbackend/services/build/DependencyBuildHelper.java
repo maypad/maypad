@@ -4,12 +4,12 @@ import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.Status;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Branch;
 import de.fraunhofer.iosb.maypadbackend.model.repository.DependencyDescriptor;
-import de.fraunhofer.iosb.maypadbackend.repositories.BranchRepository;
 import de.fraunhofer.iosb.maypadbackend.services.ProjectService;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -17,6 +17,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Stack;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Provides method to execute builds starting with least dependent dependency.
@@ -27,22 +29,21 @@ import java.util.Stack;
 @Component
 public class DependencyBuildHelper {
 
-    private static Logger logger = LoggerFactory.getLogger(DependencyBuildHelper.class);
-    private Branch branch;
-    private Project project;
+    private ProjectService projectService;
+    private BuildService buildService;
     private boolean warned; // Warn flag, so that cycle warning prints only once
     private List<BuildNode> nodes; // For cycle detection
     private BuildNode root;
-    private final int refreshFrequency = 10; // Seconds
+
+    private static Logger logger = LoggerFactory.getLogger(DependencyBuildHelper.class);
+
 
     @Autowired
-    private BranchRepository branchRepository;
-
-    @Autowired
-    private ProjectService projectService;
-
-    @Autowired
-    private BuildService buildService;
+    @Lazy
+    public DependencyBuildHelper(ProjectService projectService, BuildService buildService) {
+        this.projectService = projectService;
+        this.buildService = buildService;
+    }
 
     /**
      * Runs a build with dependencies. It starts the lowest "layer" of builds
@@ -51,7 +52,7 @@ public class DependencyBuildHelper {
      *
      * @return true if all builds were successful, false otherwise.
      */
-    public boolean runBuildWithDependencies(int id, String ref) {
+    public CompletableFuture<Boolean> runBuildWithDependencies(int id, String ref) {
         init(id, ref);
         Stack<BuildNode> buildStack = getBuildStack(root);
         int highestLayer = buildStack.peek().getLayer();
@@ -63,32 +64,25 @@ public class DependencyBuildHelper {
                 currentLayer.add(buildStack.pop());
             }
             for (BuildNode node : currentLayer) {
-                buildService.buildBranch(node.getProjectId(), node.getBranchRef(), false, "build");
+                buildService.buildBranch(node.getProjectId(), node.getBranchRef(), false, null);
             }
-            // Wait until all builds have finished successfully
-            long time = System.currentTimeMillis();
-            while (true) {
-                // Dont check every cycle, but only every n seconds (60 default).
-                if (System.currentTimeMillis() - time > refreshFrequency * 1000) {
-                    time = System.currentTimeMillis();
-                    boolean done = true;
-                    for (BuildNode node : currentLayer) {
-                        Status buildStatus = buildService.getBuildStatus(node.getProjectId(), node.getBranchRef());
-                        if (buildStatus == Status.RUNNING) {
-                            done = false;
-                            break;
-                        } else if (buildStatus == Status.ERROR) {
-                            logger.error("Error building project " + node.getProjectId() + ":" + node.getBranchRef());
-                            return false;
-                        }
-                    }
-                    if (done) {
-                        break;
+            List<CompletableFuture<Status>> buildFutures = new LinkedList<>();
+            currentLayer.forEach(
+                    n -> buildFutures.add(buildService.buildBranch(n.getProjectId(), n.getBranchRef(), false, null))
+            );
+
+            try {
+                for (CompletableFuture<Status> f : buildFutures) {
+                    if (f.get() != Status.SUCCESS) {
+                        return CompletableFuture.completedFuture(false);
                     }
                 }
+            } catch (InterruptedException | ExecutionException e) {
+                logger.warn("Build of project %d interrupted.", id);
+                return CompletableFuture.completedFuture(false);
             }
         }
-        return true;
+        return CompletableFuture.completedFuture(true);
     }
 
     private void setNodeChildren(BuildNode node) {
@@ -121,7 +115,7 @@ public class DependencyBuildHelper {
     }
 
     private void init(int id, String ref) {
-        nodes = new ArrayList<BuildNode>();
+        nodes = new ArrayList<>();
         this.root = new BuildNode(id, ref);
         nodes.add(root);
         warned = false;
@@ -151,9 +145,7 @@ public class DependencyBuildHelper {
             BuildNode current = queue.poll();
             current.setLayer(i);
             ret.push(current);
-            for (BuildNode c : current.getChildren()) {
-                queue.add(c);
-            }
+            queue.addAll(current.getChildren());
             i++;
         }
         return ret;
@@ -176,7 +168,7 @@ public class DependencyBuildHelper {
         public BuildNode(int projectId, String branchRef) {
             this.projectId = projectId;
             this.branchRef = branchRef;
-            this.children = new ArrayList<BuildNode>();
+            this.children = new ArrayList<>();
             this.layer = -1;
         }
 

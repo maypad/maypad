@@ -8,7 +8,6 @@ import de.fraunhofer.iosb.maypadbackend.model.Status;
 import de.fraunhofer.iosb.maypadbackend.model.build.Build;
 import de.fraunhofer.iosb.maypadbackend.model.build.BuildType;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Branch;
-import de.fraunhofer.iosb.maypadbackend.model.repository.DependencyDescriptor;
 import de.fraunhofer.iosb.maypadbackend.services.ProjectService;
 import de.fraunhofer.iosb.maypadbackend.services.sse.EventData;
 import de.fraunhofer.iosb.maypadbackend.services.sse.SseEventType;
@@ -22,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -31,7 +31,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Manage the builds for a project.
@@ -44,8 +46,8 @@ public class BuildService {
     private SseService sseService;
     private Collection<? extends BuildTypeExecutor> executors;
     private Map<Class<? extends BuildType>, BuildTypeExecutor> buildTypeMappings;
-    private static final Logger logger = LoggerFactory.getLogger(BuildService.class);
-    private Map<Tuple<Integer, String>, Integer> runningBuilds;
+    private Logger logger = LoggerFactory.getLogger(BuildService.class);
+    private Map<Tuple<Integer, String>, BuildLock> runningBuilds;
     private DependencyBuildHelper dependencyBuildHelper;
 
     private static final long buildTimeoutSeconds = 21600; //6h
@@ -65,7 +67,6 @@ public class BuildService {
         this.sseService = sseService;
         this.executors = executors;
         this.dependencyBuildHelper = dependencyBuildHelper;
-        this.sseService = sseService;
         runningBuilds = new ConcurrentHashMap<>();
     }
 
@@ -76,9 +77,10 @@ public class BuildService {
      * @param ref       the name of the Branch
      * @param request   the request that contains the build parameters
      * @param buildName the name of the build type (currently not used)
+     * @return future
      */
-    public void buildBranch(int id, String ref, BuildRequest request, String buildName) {
-        buildBranch(id, ref, request.isWithDependencies(), buildName);
+    public CompletableFuture<Status> buildBranch(int id, String ref, BuildRequest request, String buildName) {
+        return buildBranch(id, ref, request.isWithDependencies(), buildName);
     }
 
     /**
@@ -88,33 +90,60 @@ public class BuildService {
      * @param ref              the name of the Branch
      * @param withDependencies if the dependencies should be build
      * @param buildName        the name of the build type (currently not used)
+     * @return future
      */
-    public void buildBranch(int id, String ref, boolean withDependencies, String buildName) {
+    @Async
+    public CompletableFuture<Status> buildBranch(int id, String ref, boolean withDependencies, String buildName) {
         Project project = projectService.getProject(id);
         Branch branch = project.getRepository().getBranches().get(ref);
         if (!runningBuilds.containsKey(new Tuple<>(id, ref))) {
             BuildType buildType = branch.getBuildType();
+
             if (!buildTypeMappings.containsKey(buildType.getClass())) {
                 logger.error("No BuildTypeExecutor registered for " + buildType.getClass());
                 throw new RuntimeException("Failed to find BuildTypeExecutor for " + buildType.getClass());
             }
-            if (withDependencies) {
-                dependencyBuildHelper.runBuildWithDependencies(id, ref);
-            }
+
             if (branch.getLastCommit() == null) {
                 throw new NotFoundException("NO_COMMIT", String.format("Nothing to build on %s.", branch.getName()));
             }
+
             Build build = new Build(new Date(), branch.getLastCommit(), Status.UNKNOWN);
             branch.getBuilds().add(build);
             projectService.saveProject(project);
             build = getLatestBuild(branch);
-            runningBuilds.put(new Tuple<>(id, ref), build.getId());
+            BuildLock lock = new BuildLock(build.getId());
+            lock.tryAcquire();
+            runningBuilds.put(new Tuple<>(id, ref), lock);
+
+            if (withDependencies) {
+                try {
+                    if (!dependencyBuildHelper.runBuildWithDependencies(id, ref).get()) {
+                        signalStatus(id, ref, Status.FAILED);
+                        logger.debug("Build of dependencies failed for project %d.", id);
+                        return CompletableFuture.completedFuture(Status.FAILED);
+                    }
+                } catch (ExecutionException | InterruptedException e) {
+                    signalStatus(id, ref, Status.FAILED);
+                    logger.warn("Build of project %d interrupted.", id);
+                    return CompletableFuture.completedFuture(Status.FAILED);
+                }
+            }
+
             buildTypeMappings.get(buildType.getClass()).build(buildType, id, ref);
+            try {
+                lock.acquire();
+            } catch (InterruptedException e) {
+                logger.warn("Build of project %d interrupted.", id);
+                signalStatus(id, ref, Status.FAILED);
+                return CompletableFuture.completedFuture(Status.FAILED);
+            }
+            branch = projectService.getBranch(id, ref);
+            return CompletableFuture.completedFuture(getBuild(branch, build.getId()).getStatus());
         } else {
             throw new BuildRunningException("BUILD_RUNNING", String.format("There's already a build running for %s.",
                     branch.getName()));
         }
-
     }
 
     /**
@@ -159,7 +188,8 @@ public class BuildService {
             throw new NotFoundException("NO BUILD", String.format("No Build is running for %s", branch.getName()));
         }
         logger.info(id + ":" + ref + " changed status to " + status + ".");
-        Build build = getBuild(branch, runningBuilds.get(branchMapEntry));
+        BuildLock lock = runningBuilds.get(branchMapEntry);
+        Build build = getBuild(branch, lock.getBuildId());
         build.setStatus(status);
         if (status == Status.RUNNING) {
             sseService.push(EventData.builder(SseEventType.BUILD_UPDATE).projectId(id).name(ref).status(status).build());
@@ -168,6 +198,7 @@ public class BuildService {
             sseService.push(EventData.builder(SseEventType.BUILD_UPDATE).projectId(id).name(ref).status(status).build());
             runningBuilds.remove(branchMapEntry);
         }
+
         project = projectService.saveProject(project);
         projectService.statusPropagation(project.getId());
     }
@@ -178,10 +209,10 @@ public class BuildService {
     @Scheduled(fixedDelay = checkTimeoutInterval, initialDelay = checkTimeoutInterval)
     public void timeoutRunningBuilds() {
         Date current = new Date();
-        for (Map.Entry<Tuple<Integer, String>, Integer> entry : runningBuilds.entrySet()) {
+        for (Map.Entry<Tuple<Integer, String>, BuildLock> entry : runningBuilds.entrySet()) {
             Project project = projectService.getProject(entry.getKey().getKey());
             Branch branch = project.getRepository().getBranches().get(entry.getKey().getValue());
-            Build build = getBuild(branch, entry.getValue());
+            Build build = getBuild(branch, entry.getValue().getBuildId());
             if ((current.getTime() - build.getTimestamp().getTime()) / 1000 >= buildTimeoutSeconds) {
                 signalStatus(project.getId(), branch.getName(), Status.TIMEOUT);
             }
@@ -231,7 +262,8 @@ public class BuildService {
 
     /**
      * Returns the build status of Branch indicated by (id, ref).
-     * @param id Id of the project that contains the branch.
+     *
+     * @param id  Id of the project that contains the branch.
      * @param ref Reference (name) of the branch.
      * @return BuildStatus of that branch.
      */
