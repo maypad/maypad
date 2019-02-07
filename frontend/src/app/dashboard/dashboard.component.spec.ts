@@ -14,6 +14,7 @@ import { Projectgroup } from '../model/projectGroup';
 import * as get_projectgroups_response from 'sample-requests/get.projectgroups.response.json';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { of } from 'rxjs';
+import { EnumToArrayPipe } from '../enum-to-array.pipe';
 
 describe('DashboardComponent', () => {
   let component: DashboardComponent;
@@ -25,7 +26,7 @@ describe('DashboardComponent', () => {
     TestBed.configureTestingModule({
       declarations: [DashboardComponent, ProjectgroupDetailComponent,
         AddProjectgroupDialogComponent, ProjectListItemComponent,
-        AddProjectDialogComponent, EditProjectgroupDialogComponent],
+        AddProjectDialogComponent, EditProjectgroupDialogComponent, EnumToArrayPipe],
       imports: [FormsModule, RouterTestingModule],
       providers: [
         { provide: ProjectgroupService, useClass: ProjectgroupServiceStub },

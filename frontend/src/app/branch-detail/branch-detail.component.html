@@ -20,15 +20,18 @@
                 </li>
             </ul>
         </li>
-        <li *ngIf="branch.lastCommit && branch.lastCommit.identifier">
+        <li *ngIf="branch.lastCommit">
             <b i18n="Last commit">Last Commit:</b>
             <ul class="mt-1">
-                <li><b i18n="Commit hash">Hash: </b>
+                <li *ngIf="branch.lastCommit.identifier"><b i18n="Commit identifier">Identifier: </b>
                     {{ branch.lastCommit.identifier.substr(0, 7) }}
                 </li>
-                <li><b i18n="Commit author">Author: </b>{{ branch.lastCommit.author }}</li>
-                <li><b i18n="Commit Message">Message: </b>{{ branch.lastCommit.message }}</li>
-                <li><b i18n="Timestamp">Timestamp: </b>{{ branch.lastCommit.timestamp }}</li>
+                <li><b i18n="Commit author" *ngIf="branch.lastCommit.author">Author: </b>{{ branch.lastCommit.author }}</li>
+                <li><b i18n="Commit Message" *ngIf="branch.lastCommit.message">Message: </b>{{
+                    branch.lastCommit.message }}</li>
+                <li><b i18n="Timestamp" *ngIf="branch.lastCommit.timestamp">Timestamp: </b>{{
+                    branch.lastCommit.timestamp |
+                    date : 'H:mm:ss, d/M/yy (z)'}} ({{ fmtTimestamp }})</li>
             </ul>
         </li>
         <li *ngIf="branch.mails.length > 0">

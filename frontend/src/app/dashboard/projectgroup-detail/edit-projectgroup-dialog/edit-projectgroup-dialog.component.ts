@@ -38,7 +38,11 @@ export class EditProjectgroupDialogComponent implements OnInit {
 
   deleteProjectgroup() {
     this.groupService.deleteProjectgroup(this.projGroup.id).subscribe(
-      () => { this.dashService.deleteProjGroup(this.projGroup); }
+      (res) => {
+        if (res === null) {
+          this.dashService.deleteProjGroup(this.projGroup);
+        }
+      }
     );
   }
 

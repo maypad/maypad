@@ -29,10 +29,10 @@ export class ProjectgroupServiceStub {
     }
 
     deleteProject(id: number): Observable<{}> {
-        return of({});
+        return of(null);
     }
 
     deleteProjectgroup(id: number): Observable<{}> {
-        return of({});
+        return of(null);
     }
 }

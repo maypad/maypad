@@ -1,8 +1,9 @@
 {
-    "repositoryUrl":"https://git.maypad.de/one-test-project.git",
-    "groupId":2,
+    "repositoryUrl": "https://git.maypad.de/one-test-project.git",
+    "groupId": 2,
     "serviceAccount": {
-        "username":"maypad-git",
-        "password":"ultrageheim"
-    }
+        "username": "maypad-git",
+        "password": "ultrageheim"
+    },
+    "versionControlSystem": "git"
 }

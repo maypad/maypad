@@ -39,6 +39,10 @@ export class ProjectDetailComponent implements OnInit {
         this.branches = data.branches;
       }
     );
+    // Initialize tooltips
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip();
+    });
   }
 
   refreshProject() {

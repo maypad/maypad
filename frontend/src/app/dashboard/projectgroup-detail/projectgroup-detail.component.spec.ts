@@ -12,6 +12,7 @@ import { Projectgroup } from 'src/app/model/projectGroup';
 import * as get_projectgroups_response from 'sample-requests/get.projectgroups.response.json';
 import * as get_projectgroups_id_projects_response from 'sample-requests/get.projectgroups.id.projects.response.json';
 import { Project } from 'src/app/model/project';
+import { EnumToArrayPipe } from 'src/app/enum-to-array.pipe';
 
 describe('ProjectgroupDetailComponent', () => {
   let component: ProjectgroupDetailComponent;
@@ -22,7 +23,7 @@ describe('ProjectgroupDetailComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ProjectgroupDetailComponent, ProjectListItemComponent,
-        AddProjectDialogComponent, EditProjectgroupDialogComponent],
+        AddProjectDialogComponent, EditProjectgroupDialogComponent, EnumToArrayPipe],
       imports: [RouterTestingModule, FormsModule],
       providers: [{ provide: ProjectgroupService, useClass: ProjectgroupServiceStub }]
     })

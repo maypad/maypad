@@ -4,6 +4,7 @@ import { AddProjectDialogComponent } from './add-project-dialog.component';
 import { FormsModule } from '@angular/forms';
 import { ProjectgroupServiceStub } from 'src/testing/projectgroup.service.stub';
 import { ProjectgroupService } from 'src/app/projectgroup.service';
+import { EnumToArrayPipe } from 'src/app/enum-to-array.pipe';
 
 describe('AddProjectDialogComponent', () => {
   let component: AddProjectDialogComponent;
@@ -11,7 +12,7 @@ describe('AddProjectDialogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [AddProjectDialogComponent],
+      declarations: [AddProjectDialogComponent, EnumToArrayPipe],
       imports: [FormsModule],
       providers: [{ provide: ProjectgroupService, useClass: ProjectgroupServiceStub }]
     })
@@ -41,9 +42,9 @@ describe('AddProjectDialogComponent', () => {
   });
 
   it('should select index', () => {
-    component.selectedIndex = 0;
-    component.setSelected(2);
-    expect(component.selectedIndex).toBe(2);
+    component.authSelectedIndex = 0;
+    component.setAuthSelected(2);
+    expect(component.authSelectedIndex).toBe(2);
   });
 
 });
