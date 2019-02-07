@@ -5,26 +5,15 @@ package de.fraunhofer.iosb.maypadbackend.services.sse;
  */
 public enum SseEventType {
 
-    /**
-     * A build is currently running.
-     */
-    BUILD_RUNNING("build_running"),
-    /**
-     * The build has finished.
-     */
-    BUILD_DONE("build_done"),
-    /**
-     * The project has refresh successfully.
-     */
+    PROJECT_INIT("project_init"),
+
     PROJECT_REFRESHED("project_refreshed"),
-    /**
-     * The project was deleted.
-     */
-    PROJECT_DELETED("project_deleted"),
-    /**
-     * The projectgroup was deleted.
-     */
-    PROJECTGROUP_DELETED("projectgroup_deleted");
+
+    AUTHMETHOD_UPDATED("auth_updated"),
+
+    BUILD_UPDATE("build_updated"),
+
+    DEPLOYMENT_UPDATE("deployment_updated");
 
     private String eventId;
 

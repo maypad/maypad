@@ -108,7 +108,6 @@ public class ProjectgroupService {
             repoService.deleteProject(project.getId());
         }
         projectgroupRepository.deleteById(id);
-        sseService.push(EventData.builder(SseEventType.PROJECTGROUP_DELETED).projectgroupId(id).build());
     }
 
     /**

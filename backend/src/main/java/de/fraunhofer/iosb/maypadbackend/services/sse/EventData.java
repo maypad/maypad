@@ -2,6 +2,7 @@ package de.fraunhofer.iosb.maypadbackend.services.sse;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import de.fraunhofer.iosb.maypadbackend.model.Status;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,7 +21,8 @@ public class EventData {
 
     private Integer projectgroupId;
     private Integer projectId;
-    private String branch;
+    private String name;
+    private Status status;
 
     /**
      * Constructor for EventData.
@@ -28,13 +30,15 @@ public class EventData {
      * @param eventId        the id of the event
      * @param projectgroupId the if of the projectgoup
      * @param projectId      the id of the project
-     * @param branch         the branch
+     * @param name           the branch
+     * @param status         the status
      */
-    private EventData(String eventId, Integer projectgroupId, Integer projectId, String branch) {
+    private EventData(String eventId, Integer projectgroupId, Integer projectId, String name, Status status) {
         this.eventId = eventId;
         this.projectgroupId = projectgroupId;
         this.projectId = projectId;
-        this.branch = branch;
+        this.name = name;
+        this.status = status;
     }
 
     /**
@@ -84,12 +88,20 @@ public class EventData {
         Builder projectId(Integer id);
 
         /**
-         * Sets the branch.
+         * Sets the name.
          *
-         * @param ref the value of the branch field
+         * @param ref the value of the name field
          * @return this builder
          */
-        Builder branch(String ref);
+        Builder name(String ref);
+
+        /**
+         * Sets the status.
+         *
+         * @param status the value of the status field.
+         * @return this builder
+         */
+        Builder status(Status status);
 
         /**
          * Builds the eventdata.
@@ -108,7 +120,9 @@ public class EventData {
 
         private Integer projectId;
 
-        private String branch;
+        private String name;
+
+        private Status status;
 
         @Override
         public Builder eventId(String id) {
@@ -129,14 +143,19 @@ public class EventData {
         }
 
         @Override
-        public Builder branch(String ref) {
-            this.branch = ref;
+        public Builder name(String ref) {
+            this.name = ref;
+            return this;
+        }
+
+        public Builder status(Status status) {
+            this.status = status;
             return this;
         }
 
         @Override
         public EventData build() {
-            return new EventData(this.eventId, this.projectgroupId, this.projectId, this.branch);
+            return new EventData(this.eventId, this.projectgroupId, this.projectId, this.name, this.status);
         }
     }
 }
