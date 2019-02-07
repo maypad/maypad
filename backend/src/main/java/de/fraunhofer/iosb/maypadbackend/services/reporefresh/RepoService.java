@@ -416,7 +416,6 @@ public class RepoService {
         project.setRepositoryStatus(Status.SUCCESS);
 
         projectService.saveProject(project);
-        sseService.push(EventData.builder(SseEventType.PROJECT_REFRESHED).projectId(project.getId()).build());
         logger.info("Project with id " + project.getId() + " has refreshed.");
     }
 
