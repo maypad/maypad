@@ -4,6 +4,11 @@ import { ProjectgroupService } from 'src/app/projectgroup.service';
 import { ServiceAccount } from 'src/app/model/serviceAccount';
 import { NotificationService } from 'src/app/notification.service';
 
+enum RepoTypes {
+  Git = 'Git',
+  SVN = 'SVN'
+}
+
 @Component({
   selector: 'app-add-project-dialog',
   templateUrl: './add-project-dialog.component.html',
@@ -16,10 +21,9 @@ export class AddProjectDialogComponent implements OnInit {
   username = '';
   password = '';
 
-  /* Values:
-    "git", "svn"
-  */
-  repoSelectedIndex = 'git';
+  // Can't declare actual enum in class
+  RepoTypes = RepoTypes;
+  repoType = RepoTypes.Git;
 
   /* Values:
   1 = No authentification method
@@ -47,8 +51,8 @@ export class AddProjectDialogComponent implements OnInit {
     this.authSelectedIndex = num;
   }
 
-  setRepoSelected(val) {
-    this.repoSelectedIndex = val;
+  setRepoSelected(val: string) {
+    this.repoType = RepoTypes[val];
   }
 
   addProject() {
@@ -71,7 +75,7 @@ export class AddProjectDialogComponent implements OnInit {
         this.clearInput();
         return;
     }
-    this.groupService.createProject(this.projGroup.id, this.repoUrl, serviceAccount, this.repoSelectedIndex).subscribe(
+    this.groupService.createProject(this.projGroup.id, this.repoUrl, serviceAccount, this.repoType).subscribe(
       proj => { this.projGroup.projects.push(proj); }
     );
     this.clearInput();

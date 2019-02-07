@@ -63,6 +63,7 @@ export class ProjectgroupService {
     project.repositoryUrl = repoUrl;
     project.serviceAccount = serviceAccount;
     project.versionControlSystem = repoType;
+    console.log(repoType);
 
     return this.api.http.post<Project>(url, project, this.api.httpOptions)
       .pipe(

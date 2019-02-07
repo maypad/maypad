@@ -15,8 +15,7 @@
         <label class="input-group-text" for="repoSelection" i18n="repo type">Repository Type</label>
       </div>
       <select class="custom-select" id="repoSelection" (change)="setRepoSelected($event.target.value)">
-        <option selected value="git">Git</option>
-        <option value="svn">SVN</option>
+        <option *ngFor="let type of RepoTypes | enumToArray">{{ type }}</option>
       </select>
     </div>
     <div class="col col-sm-6 px-0 input-group mb-3">

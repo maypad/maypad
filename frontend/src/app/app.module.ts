@@ -25,6 +25,7 @@ import { EditProjectDialogComponent } from './project-detail/edit-project-dialog
 import { BhistoryListItemComponent } from './build-history/bhistory-list-item/bhistory-list-item.component';
 import { DhistoryListItemComponent } from './deployment-history/dhistory-list-item/dhistory-list-item.component';
 import { HeaderComponent } from './branch-detail/header/header.component';
+import { EnumToArrayPipe } from './enum-to-array.pipe';
 // Needed to access jquery & bootstrap specific functions
 import * as $ from 'jquery';
 import * as bootstrap from 'bootstrap';
@@ -49,7 +50,8 @@ import * as moment from 'moment';
         EditProjectDialogComponent,
         BhistoryListItemComponent,
         DhistoryListItemComponent,
-        HeaderComponent
+        HeaderComponent,
+        EnumToArrayPipe
     ],
     imports: [
         BrowserModule,
