@@ -2,7 +2,7 @@ package de.fraunhofer.iosb.maypadbackend.services.sse;
 
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.DirectProcessor;
+import reactor.core.publisher.EmitterProcessor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxProcessor;
 import reactor.core.publisher.FluxSink;
@@ -21,7 +21,7 @@ public class SseService {
      * Constructor sse service.
      */
     public SseService() {
-        this.processor = DirectProcessor.<EventData>create().serialize();
+        this.processor = EmitterProcessor.<EventData>create().serialize();
         this.sink = processor.sink();
     }
 
