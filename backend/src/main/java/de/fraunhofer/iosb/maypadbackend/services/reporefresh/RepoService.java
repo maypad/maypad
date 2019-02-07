@@ -77,7 +77,7 @@ public class RepoService {
      * @param projectService Projectservice
      * @param serverConfig   Configuration for server
      * @param webhookService Webhookservice
-     * @param sseService     Service for server sent events
+     * @param sseService     Service for serversentevents
      */
     @Autowired
     public RepoService(ProjectService projectService, ServerConfig serverConfig,
@@ -234,7 +234,7 @@ public class RepoService {
 
         String hash = FileUtil.calcSha256(projectConfigData.getValue());
         if (hash == null) {
-            sseService.push(EventData.builder(SseEventType.FILESYSTEM_ERROR).projectId(project.getId()).build());
+            sseService.push(EventData.builder(SseEventType.PROJECT_REFRESH_FAILED).projectId(project.getId()).build());
             logger.error("Can't read maypad config with projectid " + project.getId());
             setStatusAndSave(project, Status.FAILED);
             repoManager.cleanUp();
@@ -385,7 +385,7 @@ public class RepoService {
         File parentDir = new File(serverConfig.getRepositoryStoragePath());
 
         if (!FileUtil.hasWriteAccess(parentDir)) {
-            sseService.push(EventData.builder(SseEventType.FILESYSTEM_ERROR).projectId(project.getId()).build());
+            sseService.push(EventData.builder(SseEventType.PROJECT_REFRESH_FAILED).projectId(project.getId()).build());
             logger.error("Can't read / write to " + parentDir.getAbsolutePath());
             initNullRepository(repository);
             setStatusAndSave(project, Status.ERROR);
@@ -393,10 +393,10 @@ public class RepoService {
         }
         File file = new File(parentDir.getAbsolutePath() + File.separator + project.getId());
         if (file.isDirectory() && file.exists()) {
-            sseService.push(EventData.builder(SseEventType.FILESYSTEM_ERROR).projectId(project.getId()).build());
+            sseService.push(EventData.builder(SseEventType.PROJECT_REFRESH_FAILED).projectId(project.getId()).build());
             logger.warn("Folder already exists at " + file.getAbsolutePath());
         } else if (!file.mkdirs()) {
-            sseService.push(EventData.builder(SseEventType.FILESYSTEM_ERROR).projectId(project.getId()).build());
+            sseService.push(EventData.builder(SseEventType.PROJECT_REFRESH_FAILED).projectId(project.getId()).build());
             logger.error("Can't create directories for " + file.getAbsolutePath());
             initNullRepository(repository);
             setStatusAndSave(project, Status.ERROR);

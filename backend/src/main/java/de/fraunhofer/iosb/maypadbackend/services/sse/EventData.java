@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * The data object needed for the server sent event.
+ * The data object needed for the serversentevents.
  */
 @Getter
 @Setter

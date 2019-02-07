@@ -1,7 +1,7 @@
 package de.fraunhofer.iosb.maypadbackend.services.sse;
 
 /**
- * All types for a server sent event.
+ * All types for a serversentevents.
  */
 public enum SseEventType {
 
@@ -44,11 +44,7 @@ public enum SseEventType {
     /**
      * The same project is currently updateing.
      */
-    PROJECT_CURRENTLY_UPDATE("project_currently_update"),
-    /**
-     * IO error reading / writing ato the filesystem.
-     */
-    FILESYSTEM_ERROR("fileystem_error");
+    PROJECT_CURRENTLY_UPDATE("project_currently_update");
 
 
     private String eventId;
