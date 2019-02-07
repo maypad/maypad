@@ -454,11 +454,7 @@ public class RepoService {
             setStatusAndSave(project, Status.ERROR);
             return;
         }
-        RepositoryType repositoryType = getCorrectRepositoryType(project.getRepositoryUrl());
-        if (repositoryType == RepositoryType.NONE) {
-            logger.warn("URL is missing or invalid for project with id " + project.getId());
-        }
-        repository.setRepositoryType(repositoryType);
+        RepositoryType repositoryType = project.getRepository().getRepositoryType();
 
         //clone
         RepoManager repoManager = repositoryType.toRepoManager(project);
@@ -623,26 +619,6 @@ public class RepoService {
 
     }
 
-
-    private RepositoryType getCorrectRepositoryType(String url) {
-        //TODO: UPDATE (Git / SVN select with url check)
-        if (url == null) {
-            return RepositoryType.NONE;
-        }
-        for (RepositoryType repositoryType : RepositoryType.values()) {
-            if (repositoryType.isUrlBelongToRepotype(url)) {
-                return repositoryType;
-            }
-        }
-        return RepositoryType.NONE;
-    }
-
-    /**
-     * Generate all webhooks needed for a branch.
-     *
-     * @param projectid id of the project
-     * @param branch    Branch to generate webhooks
-     */
     private void generateAllNeededWebhooks(int projectid, Branch branch) {
         if (branch == null) {
             return;
