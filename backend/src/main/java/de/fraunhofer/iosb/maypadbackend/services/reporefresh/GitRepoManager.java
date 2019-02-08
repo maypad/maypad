@@ -322,7 +322,7 @@ public class GitRepoManager extends RepoManager {
         } catch (GitAPIException | JGitInternalException e) {
             cleanUp();
 
-            getLogger().warn("Can't access to repo " + getProject().getRepositoryUrl() + " or an internal error occured.");
+            getLogger().warn("Can't access to repo " + getProject().getRepositoryUrl() + " or an internal error occurred.");
             try {
                 FileUtils.deleteDirectory(getProjectRootDir());
             } catch (IOException e1) {
@@ -378,7 +378,7 @@ public class GitRepoManager extends RepoManager {
      * Add the correct Auth to the git command.
      *
      * @param command git command
-     * @return gitcommand with added Auth
+     * @return (git) command with added Auth
      */
     private TransportCommand getAuth(TransportCommand command) {
         ServiceAccount serviceAccount = getProject().getServiceAccount();

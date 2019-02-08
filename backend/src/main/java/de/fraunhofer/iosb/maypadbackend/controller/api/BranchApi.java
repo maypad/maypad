@@ -97,7 +97,7 @@ public interface BranchApi {
      * @param ref   the name of the branch
      * @param token the token used to handle the request
      */
-    @PostMapping("/{ref}/builds/sucess")
+    @PostMapping("/{ref}/builds/success")
     void notifyBuildSuccess(@PathVariable int id, @PathVariable String ref, @RequestParam(value = "token") String token);
 
     /**

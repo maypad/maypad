@@ -1,7 +1,7 @@
 package de.fraunhofer.iosb.maypadbackend.services.sse;
 
 /**
- * All types for a serversentevents.
+ * All types for a server-sent events.
  */
 public enum SseEventType {
 

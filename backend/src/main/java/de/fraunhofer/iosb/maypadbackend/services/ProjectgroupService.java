@@ -36,7 +36,7 @@ public class ProjectgroupService {
      * Constructor for ProjectgroupService.
      *
      * @param projectgroupRepository Repository for database access
-     * @param sseService             Service for serversentevents
+     * @param sseService             Service for server-sent events
      */
     @Autowired
     public ProjectgroupService(ProjectgroupRepository projectgroupRepository, RepoService repoService, SseService sseService) {

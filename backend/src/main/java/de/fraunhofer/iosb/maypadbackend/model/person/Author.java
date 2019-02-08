@@ -27,7 +27,7 @@ public class Author extends Person {
      * Constructor for Author.
      *
      * @param name the authors name
-     * @param mail the authors emailaddress
+     * @param mail the authors email-address
      */
     public Author(String name, Mail mail) {
         super(name);

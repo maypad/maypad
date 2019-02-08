@@ -31,8 +31,8 @@ public class BuildMapperTest {
     private static final String commitMessage = "Commit Message";
     private static final String commitIdentifier = "Commit Identifier";
     private static final Date commitTimestamp = new Date();
-    private static final Author commitAuthor = new Author("Max Musermann",
-            new Mail("musterman@maypad.de"));
+    private static final Author commitAuthor = new Author("Max Mustermann",
+            new Mail("mustermann@maypad.de"));
     private static final Commit buildCommit = new Commit(commitMessage, commitIdentifier,
             commitTimestamp, commitAuthor);
 

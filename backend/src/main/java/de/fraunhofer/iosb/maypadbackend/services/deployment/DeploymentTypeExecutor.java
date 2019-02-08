@@ -3,7 +3,7 @@ package de.fraunhofer.iosb.maypadbackend.services.deployment;
 import de.fraunhofer.iosb.maypadbackend.model.deployment.DeploymentType;
 
 /**
- * Executor for a deploymenttype.
+ * Executor for a {@link DeploymentType}.
  */
 public interface DeploymentTypeExecutor {
 

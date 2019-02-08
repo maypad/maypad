@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * The data object needed for the serversentevents.
+ * The data object needed for the server-sent events.
  */
 @Getter
 @Setter
@@ -23,7 +23,7 @@ public class EventData {
     private String branch;
 
     /**
-     * Constrcutor for EventData.
+     * Constructor for EventData.
      *
      * @param eventId        the id of the event
      * @param projectgroupId the if of the projectgoup

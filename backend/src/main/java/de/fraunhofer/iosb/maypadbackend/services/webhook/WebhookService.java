@@ -31,7 +31,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Service for generate and handling webhooks.
+ * Service for generating and handling webhooks.
  */
 @Service
 public class WebhookService {
@@ -155,7 +155,7 @@ public class WebhookService {
     }
 
     /**
-     * Calls the webhook with the given method and returns the ReponseEntity as String.
+     * Calls the webhook with the given method and returns the ResponseEntity as String.
      *
      * @param webhook the webhook that should be called
      * @param method  the HTTP method (GET, POST, etc)

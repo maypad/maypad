@@ -18,7 +18,7 @@ public class AsyncConfig {
     /**
      * Get a executor.
      *
-     * @return Executer with limited poolsize.
+     * @return Executor with limited poolsize.
      */
     @Bean(name = "repoRefreshPool")
     public Executor threadPoolTaskExecutor() {

@@ -16,7 +16,7 @@ public class ExpiringElement {
      * Constructor for ExpiringElement.
      *
      * @param ttl      TTL
-     * @param timeUnit timeunit for ttl
+     * @param timeUnit unit for ttl
      */
     public ExpiringElement(long ttl, TimeUnit timeUnit) {
         expirationTimestamp = System.currentTimeMillis() + timeUnit.toMillis(ttl);

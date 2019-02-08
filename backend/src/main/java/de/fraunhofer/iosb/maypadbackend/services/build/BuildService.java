@@ -54,7 +54,7 @@ public class BuildService {
      * Constructor for BuildService.
      *
      * @param projectService the ProjectService used to access projects
-     * @param sseService     Service for serversentevents
+     * @param sseService     Service for server-sent events
      * @param executors      a collection of all BuildTypeExecutor beans
      */
     @Autowired

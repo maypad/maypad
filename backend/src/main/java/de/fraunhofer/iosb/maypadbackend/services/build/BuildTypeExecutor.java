@@ -3,7 +3,7 @@ package de.fraunhofer.iosb.maypadbackend.services.build;
 import de.fraunhofer.iosb.maypadbackend.model.build.BuildType;
 
 /**
- * Executor for a buildtype.
+ * Executor for a {@link BuildType}.
  */
 public interface BuildTypeExecutor {
     /**

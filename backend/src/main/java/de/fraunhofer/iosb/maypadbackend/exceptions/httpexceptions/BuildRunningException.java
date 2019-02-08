@@ -8,9 +8,9 @@ import org.springframework.http.HttpStatus;
 public class BuildRunningException extends RestException {
 
     /**
-     * Constructor with a message for the exception and the (internal) errormessage.
+     * Constructor with a message for the exception and the (internal) error-message.
      *
-     * @param error   errormessage for this exception
+     * @param error   error-message for this exception
      * @param message message of this exception
      */
     public BuildRunningException(String error, String message) {

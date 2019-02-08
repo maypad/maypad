@@ -78,7 +78,7 @@ public class RepoService {
      * @param projectService Projectservice
      * @param serverConfig   Configuration for server
      * @param webhookService Webhookservice
-     * @param sseService     Service for serversentevents
+     * @param sseService     Service for server-sent events
      */
     @Autowired
     public RepoService(ProjectService projectService, ServerConfig serverConfig,
@@ -238,7 +238,7 @@ public class RepoService {
         if (serverConfig.isMaximumRefreshRequestsEnabled()) {
             if (refreshCounter.size() >= serverConfig.getMaximumRefreshRequests()) {
                 logger.warn("Cap limit of " + serverConfig.getMaximumRefreshRequests() + " for max refresh requests "
-                        + "was reched. Skip refresh of project with id " + id);
+                        + "was reached. Skip refresh of project with id " + id);
                 return true;
 
             }
@@ -491,7 +491,7 @@ public class RepoService {
      *
      * @param project Project to change
      * @param status  New status for the project
-     * @return The updatet project
+     * @return The updated project
      */
     private Project setStatusAndSave(Project project, Status status) {
         if (project == null) {
@@ -587,7 +587,7 @@ public class RepoService {
                     logger.warn(String.format("Missing parameter for DeploymentType %s.", deploymentProperty.getType()));
                     break;
                 default:
-                    logger.warn("Unknown deploymenttype " + branchProperty.getDeployment().getType() + " in branch " + branch.getName());
+                    logger.warn("Unknown deploymentType " + branchProperty.getDeployment().getType() + " in branch " + branch.getName());
                     break;
             }
         }

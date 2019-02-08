@@ -92,7 +92,7 @@ public interface BranchMapper {
     /**
      * Maps a DeploymentType to String.
      *
-     * @param deploymentType the DeploymenType that should be mapped
+     * @param deploymentType the DeploymentType that should be mapped
      * @return the mapped String
      */
     default String map(DeploymentType deploymentType) {

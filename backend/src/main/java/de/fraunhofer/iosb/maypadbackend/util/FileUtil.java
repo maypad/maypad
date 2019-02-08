@@ -53,7 +53,7 @@ public class FileUtil {
     }
 
     /**
-     * Calc a SHA-256 hashvalue (checksum) from a file.
+     * Calc a SHA-256 hash (checksum) from a file.
      *
      * @param input File
      * @return Checksum of the file

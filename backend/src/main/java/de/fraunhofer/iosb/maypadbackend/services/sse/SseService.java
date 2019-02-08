@@ -8,7 +8,7 @@ import reactor.core.publisher.FluxProcessor;
 import reactor.core.publisher.FluxSink;
 
 /**
- * Service managing the serversentevents.
+ * Service managing the server-sent events.
  */
 @Service
 public class SseService {
@@ -24,7 +24,7 @@ public class SseService {
     }
 
     /**
-     * Receive the serversentevents in the future.
+     * Receive the server-sent events in the future.
      *
      * @return Event-Data as Flux
      */

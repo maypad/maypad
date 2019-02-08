@@ -47,7 +47,7 @@ public class KeyFileManager {
             return keyFile;
         }
 
-        //Create new keyfile
+        //Create new file for the key
         if (!(project.getServiceAccount() instanceof KeyServiceAccount)) {
             logger.warn("Project with id " + project.getId() + " hasn't an serviceaccount with a key.");
             return null;

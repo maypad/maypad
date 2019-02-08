@@ -16,7 +16,7 @@ public class SseController {
     private SseService sseService;
 
     /**
-     * Constructor for serversentevents.
+     * Constructor for server-sent events.
      *
      * @param sseService the SseService
      */
