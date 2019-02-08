@@ -11,7 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
- * An Email-Adress.
+ * An Email-address.
  *
  * @author Lukas Brosch
  * @version 1.0
@@ -31,7 +31,8 @@ public class Mail {
 
     /**
      * Constructor for Mail.
-     * @param mailAddress the Mailaddress
+     *
+     * @param mailAddress the Email-address.
      */
     public Mail(String mailAddress) {
         this.mailAddress = mailAddress;

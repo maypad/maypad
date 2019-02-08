@@ -8,16 +8,28 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import reactor.core.publisher.Flux;
 
-
+/**
+ * Controller for SSE Events.
+ */
 @Controller
 public class SseController {
     private SseService sseService;
 
+    /**
+     * Constructor for server-sent events.
+     *
+     * @param sseService the SseService
+     */
     @Autowired
     public SseController(SseService sseService) {
         this.sseService = sseService;
     }
 
+    /**
+     * Start the notify for new events.
+     *
+     * @return Event-Data as Flux
+     */
     @GetMapping("/sse")
     public Flux<ServerSentEvent<EventData>> sse() {
         return sseService.get();

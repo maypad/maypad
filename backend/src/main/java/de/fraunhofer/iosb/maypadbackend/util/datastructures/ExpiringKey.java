@@ -20,7 +20,7 @@ public class ExpiringKey<E> extends ExpiringElement {
      *
      * @param element  key to expire
      * @param ttl      TTL
-     * @param timeUnit timeunit for ttl
+     * @param timeUnit unit for ttl
      */
     public ExpiringKey(E element, long ttl, TimeUnit timeUnit) {
         super(ttl, timeUnit);

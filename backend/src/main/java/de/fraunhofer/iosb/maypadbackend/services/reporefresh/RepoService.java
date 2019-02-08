@@ -5,10 +5,10 @@ import de.fraunhofer.iosb.maypadbackend.config.project.data.BranchProperty;
 import de.fraunhofer.iosb.maypadbackend.config.project.data.BuildProperty;
 import de.fraunhofer.iosb.maypadbackend.config.project.data.DeploymentProperty;
 import de.fraunhofer.iosb.maypadbackend.config.server.ServerConfig;
+import de.fraunhofer.iosb.maypadbackend.exceptions.httpexceptions.NotFoundException;
 import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.Status;
 import de.fraunhofer.iosb.maypadbackend.model.build.WebhookBuild;
-import de.fraunhofer.iosb.maypadbackend.model.deployment.ScriptDeployment;
 import de.fraunhofer.iosb.maypadbackend.model.deployment.WebhookDeployment;
 import de.fraunhofer.iosb.maypadbackend.model.person.Mail;
 import de.fraunhofer.iosb.maypadbackend.model.person.Person;
@@ -46,10 +46,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 
@@ -68,8 +68,8 @@ public class RepoService {
     private ServerConfig serverConfig;
     private WebhookService webhookService;
     private SseService sseService;
-    private Set<Integer> lockedProjects; //boolean: allows init while locked
-    private Logger logger = LoggerFactory.getLogger(RepoService.class);
+    private Map<Integer, Semaphore> lockedProjects;
+    private static final Logger logger = LoggerFactory.getLogger(RepoService.class);
     private List<ExpiringElement> refreshCounter;
 
     /**
@@ -78,13 +78,14 @@ public class RepoService {
      * @param projectService Projectservice
      * @param serverConfig   Configuration for server
      * @param webhookService Webhookservice
+     * @param sseService     Service for server-sent events
      */
     @Autowired
     public RepoService(ProjectService projectService, ServerConfig serverConfig,
                        WebhookService webhookService, SseService sseService) {
         this.projectService = projectService;
         this.serverConfig = serverConfig;
-        this.lockedProjects = ConcurrentHashMap.newKeySet();
+        this.lockedProjects = new ConcurrentHashMap<>();
         this.webhookService = webhookService;
         this.sseService = sseService;
         if (serverConfig.isMaximumRefreshRequestsEnabled()) {
@@ -92,19 +93,6 @@ public class RepoService {
             ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
             executor.scheduleAtFixedRate(new ExpiredElementRemover(refreshCounter), 0, 15, TimeUnit.SECONDS);
         }
-
-    }
-
-    private synchronized boolean repoLock(Project project) {
-        if (lockedProjects.contains(project.getId())) {
-            return true;
-        }
-        lockedProjects.add(project.getId());
-        return false;
-    }
-
-    private synchronized void removeLock(Project project) {
-        lockedProjects.remove(project.getId());
     }
 
     /**
@@ -116,20 +104,20 @@ public class RepoService {
     public void refreshProject(int id) {
         Project project = projectService.getProject(id);
 
-        if (repoLock(project)) {
+        if (!repoLock(id)) {
             logger.info("Project with id " + project.getId() + " is currently updated");
             return;
         }
         //check if max refresh amount is reached
         if (isRefreshCapReached(id)) {
-            removeLock(project);
+            removeLock(id);
             return;
         }
         try {
             doRefreshProject(project);
         } finally {
             KeyFileManager.deleteSshFile(new File(serverConfig.getRepositoryStoragePath()), id);
-            removeLock(project);
+            removeLock(id);
         }
     }
 
@@ -141,29 +129,116 @@ public class RepoService {
     @Async("repoRefreshPool")
     public void initProject(int id) {
         Project project = projectService.getProject(id);
-        if (repoLock(project)) {
+        if (!repoLock(id)) {
             logger.info("Project with id " + project.getId() + " is currently initializing");
             return;
         }
         //check if max refresh amount is reached
         if (isRefreshCapReached(id)) {
             setStatusAndSave(project, Status.ERROR);
-            removeLock(project);
+            removeLock(id);
             return;
         }
         try {
             doInitProject(project);
         } finally {
             KeyFileManager.deleteSshFile(new File(serverConfig.getRepositoryStoragePath()), id);
-            removeLock(project);
+            removeLock(id);
         }
     }
 
+    /**
+     * Delete whole project.
+     *
+     * @param id id of the project
+     */
+    @Async
+    public void deleteProject(int id) {
+        boolean weHaveTheLock = false;
+        while (!weHaveTheLock) {
+            if (repoLock(id)) {
+                weHaveTheLock = true;
+                continue;
+            }
+            //repo is locked, so an semaphore exists normally
+            Semaphore semaphore = lockedProjects.get(id);
+            if (semaphore != null) {
+                logger.info("Project with id " + id + " is currently locked. So wait, until other tasks have been finished.");
+                try {
+                    semaphore.acquire();
+                } catch (InterruptedException e) {
+                    logger.error("Error deleting project with id " + id);
+                    return;
+                }
+            }
+        }
+        logger.info("Started delete of project with id " + id);
+
+        Project project;
+        try {
+            project = projectService.getProject(id);
+        } catch (NotFoundException e) {
+            //project does not exist.
+            return;
+        }
+        if (project == null) {
+            //some error with the project occurred
+            return;
+        }
+
+        if (project.getRepository().getBranches() != null) {
+            for (Branch branch : project.getRepository().getBranches().values()) {
+                removeAllWebhooks(branch);
+            }
+        }
+
+        projectService.deleteProject(project.getId());
+        removeLock(id);
+        FileUtil.deleteAllFiles(projectService.getRepoDir(project.getId()));
+
+    }
+
+    /**
+     * Lock a repository, so the same repo cannot updated twice at the same time.
+     *
+     * @param projectid Projectid which should be locked
+     * @return true, if lock was successfully, else false (so another project is locked currently)
+     */
+    private synchronized boolean repoLock(int projectid) {
+        if (lockedProjects.containsKey(projectid)) {
+            return false;
+        }
+        Semaphore semaphore = new Semaphore(1);
+        try {
+            semaphore.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        lockedProjects.put(projectid, semaphore);
+        return true;
+    }
+
+    /**
+     * Remove a lock of a project.
+     *
+     * @param projectid Projectid which should be unlocked
+     */
+    private synchronized void removeLock(int projectid) {
+        lockedProjects.get(projectid).release();
+        lockedProjects.remove(projectid);
+    }
+
+    /**
+     * Check if a update and refresh cap for all projects is reached in a time.
+     *
+     * @param id id of the project
+     * @return true, if the cap is already reached, else false
+     */
     private boolean isRefreshCapReached(int id) {
         if (serverConfig.isMaximumRefreshRequestsEnabled()) {
             if (refreshCounter.size() >= serverConfig.getMaximumRefreshRequests()) {
                 logger.warn("Cap limit of " + serverConfig.getMaximumRefreshRequests() + " for max refresh requests "
-                        + "was reched. Skip refresh of project with id " + id);
+                        + "was reached. Skip refresh of project with id " + id);
                 return true;
 
             }
@@ -172,6 +247,11 @@ public class RepoService {
         return false;
     }
 
+    /**
+     * Refresh a project.
+     *
+     * @param project Project to refresh
+     */
     private void doRefreshProject(Project project) {
         if (project.getRepository() == null || project.getRepository().getRepositoryType() == RepositoryType.NONE
                 || project.getRepositoryStatus() == Status.ERROR) {
@@ -183,17 +263,18 @@ public class RepoService {
 
         RepoManager repoManager = project.getRepository().getRepositoryType().toRepoManager(project);
         repoManager.initRepoManager(new File(serverConfig.getRepositoryStoragePath()), projectService.getRepoDir(project.getId()));
-        repoManager.switchBranch(repoManager.getMainBranchName());
 
         //clone project, if data were deleted
-        if (!projectService.getRepoDir(project.getId()).exists()) {
-            if (!repoManager.cloneRepository()) {
+        File repoDir = projectService.getRepoDir(project.getId());
+        if (!repoDir.exists()) {
+            if (!repoDir.mkdirs() || !repoManager.cloneRepository()) {
                 setStatusAndSave(project, Status.ERROR);
                 repoManager.cleanUp();
                 return;
             }
         }
 
+        repoManager.switchBranch(repoManager.getMainBranchName());
 
         //compare Maypad config hash
         Tuple<ProjectConfig, File> projectConfigData = repoManager.getProjectConfig();
@@ -232,7 +313,7 @@ public class RepoService {
 
         List<String> deleteBranches = new LinkedList<>();
         List<String> branchNamesRepo = repoManager.getBranchNames();
-        List<Branch> generateWebhooks = new LinkedList<>();
+        List<String> generateWebhooks = new LinkedList<>();
 
         for (String branchname : branchNamesRepo) {
             if (!branchConfigData.containsKey(branchname)) {
@@ -254,7 +335,7 @@ public class RepoService {
                     branch.setDependencies(new ArrayList<>());
                     branch.setBuildType(null);
                     branch.setDescription("");
-                    generateWebhooks.add(branch);
+                    generateWebhooks.add(branchname);
                     project.getRepository().getBranches().put(branchname, branch);
                 } else {
                     //update existing branch. Now it is a maypad_all branch
@@ -268,7 +349,7 @@ public class RepoService {
                     logger.info("Create new branch " + branchname + " for project with id " + project.getId());
                     Branch tempBranch = buildBranchModelFromConfig(branchConfigData.get(branchname));
                     tempBranch.setBuildStatus(Status.UNKNOWN);
-                    generateWebhooks.add(tempBranch);
+                    generateWebhooks.add(branchname);
                     project.getRepository().getBranches().put(branchname, tempBranch);
                 } else {
                     //branch already exists. So compare Branch and update
@@ -280,12 +361,10 @@ public class RepoService {
 
         }
         project = projectService.saveProject(project);
-        for (Branch webhookBranch : generateWebhooks) {
+        for (String webhookBranchname : generateWebhooks) {
             //generate webhooks
-            generateAllNeededWebhooks(project.getId(), webhookBranch);
+            generateAllNeededWebhooks(project.getId(), project.getRepository().getBranches().get(webhookBranchname));
         }
-
-        // project = projectService.getProject(project.getId());
 
         //remove not existing branches
         for (String branchname : project.getRepository().getBranches().keySet()) {
@@ -337,6 +416,11 @@ public class RepoService {
         logger.info("Project with id " + project.getId() + " has refreshed.");
     }
 
+    /**
+     * Init a new project.
+     *
+     * @param project Project to init
+     */
     private void doInitProject(Project project) {
         logger.info("Start init project with id " + project.getId());
         Repository repository = project.getRepository();
@@ -391,25 +475,10 @@ public class RepoService {
     }
 
     /**
-     * Delete whole project.
+     * Set the repository to a null repository.
      *
-     * @param id id of the project
-     * @return true, if all data were deleted, else false
+     * @param repository Repository to change
      */
-    public boolean deleteProject(int id) {
-        //TODO
-        Project project = projectService.getProject(id);
-        if (project.getRepository().getBranches() != null) {
-            for (Branch branch : project.getRepository().getBranches().values()) {
-                removeAllWebhooks(branch);
-            }
-        }
-
-        projectService.deleteProject(project.getId());
-        return FileUtil.deleteAllFiles(projectService.getRepoDir(project.getId()));
-
-    }
-
     private void initNullRepository(Repository repository) {
         if (repository == null || repository.getRepositoryType() == RepositoryType.NONE) {
             return;
@@ -417,6 +486,13 @@ public class RepoService {
         repository.setRepositoryType(RepositoryType.NONE);
     }
 
+    /**
+     * Change the repository-status of a project.
+     *
+     * @param project Project to change
+     * @param status  New status for the project
+     * @return The updated project
+     */
     private Project setStatusAndSave(Project project, Status status) {
         if (project == null) {
             return null;
@@ -425,6 +501,11 @@ public class RepoService {
         return projectService.saveProject(project);
     }
 
+    /**
+     * Reset a branch, so remove all data which were in the project config.
+     *
+     * @param branch Branch to remove the project data
+     */
     private void removeProjectConfigDataInBranch(Branch branch) {
         branch.setDescription("");
         branch.setMembers(null);
@@ -434,6 +515,12 @@ public class RepoService {
         branch.setDependencies(new ArrayList<>());
     }
 
+    /**
+     * Build a branch with given settings.
+     *
+     * @param branchProperty Branch settings
+     * @return The built branch
+     */
     private Branch buildBranchModelFromConfig(BranchProperty branchProperty) {
         Branch branch = new Branch();
         branch.setName(branchProperty.getName());
@@ -500,7 +587,7 @@ public class RepoService {
                     logger.warn(String.format("Missing parameter for DeploymentType %s.", deploymentProperty.getType()));
                     break;
                 default:
-                    logger.warn("Unknown deploymenttype " + branchProperty.getDeployment().getType() + " in branch " + branch.getName());
+                    logger.warn("Unknown deploymentType " + branchProperty.getDeployment().getType() + " in branch " + branch.getName());
                     break;
             }
         }
@@ -531,7 +618,9 @@ public class RepoService {
 
     }
 
+
     private RepositoryType getCorrectRepositoryType(String url) {
+        //TODO: UPDATE (Git / SVN select with url check)
         if (url == null) {
             return RepositoryType.NONE;
         }
@@ -543,16 +632,26 @@ public class RepoService {
         return RepositoryType.NONE;
     }
 
-    private Branch generateAllNeededWebhooks(int projectid, Branch branch) {
+    /**
+     * Generate all webhooks needed for a branch.
+     *
+     * @param projectid id of the project
+     * @param branch    Branch to generate webhooks
+     */
+    private void generateAllNeededWebhooks(int projectid, Branch branch) {
         if (branch == null) {
-            return null;
+            return;
         }
         logger.info("Generate webhooks for branch " + branch.getName() + " in project with id " + projectid);
         branch.setBuildSuccessWebhook(webhookService.generateSuccessWebhook(new Tuple<>(projectid, branch.getName())));
         branch.setBuildFailureWebhook(webhookService.generateFailWebhook(new Tuple<>(projectid, branch.getName())));
-        return branch;
     }
 
+    /**
+     * Remove all webhooks from a branch.
+     *
+     * @param branch Branch to remove webhooks
+     */
     private void removeAllWebhooks(Branch branch) {
         if (branch == null) {
             return;

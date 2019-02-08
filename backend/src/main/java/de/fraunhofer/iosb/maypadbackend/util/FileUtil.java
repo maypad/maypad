@@ -24,7 +24,7 @@ import static com.google.common.io.Files.asCharSource;
  */
 public class FileUtil {
 
-    private static Logger logger = LoggerFactory.getLogger(FileUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(FileUtil.class);
 
     /**
      * Check whether write and read access exists.
@@ -53,7 +53,7 @@ public class FileUtil {
     }
 
     /**
-     * Calc a SHA-256 hashvalue (checksum) from a file.
+     * Calc a SHA-256 hash (checksum) from a file.
      *
      * @param input File
      * @return Checksum of the file

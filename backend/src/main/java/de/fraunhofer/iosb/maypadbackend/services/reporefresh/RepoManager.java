@@ -27,7 +27,7 @@ import java.util.List;
 public abstract class RepoManager {
 
     private Project project;
-    private Logger logger = LoggerFactory.getLogger(RepoManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(RepoManager.class);
     @Getter(AccessLevel.PROTECTED)
     private File projectRootDir;
     @Getter(AccessLevel.PROTECTED)

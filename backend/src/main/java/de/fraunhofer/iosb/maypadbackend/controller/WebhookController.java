@@ -4,13 +4,14 @@ import de.fraunhofer.iosb.maypadbackend.services.webhook.WebhookService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+/**
+ * Controller for webhooks.
+ */
 @Controller
 @RequestMapping("/hooks")
 public class WebhookController {
@@ -21,6 +22,7 @@ public class WebhookController {
 
     /**
      * Constructor for WebhookController.
+     *
      * @param webhookService the WebhookService used to handle webhooks
      */
     @Autowired
@@ -28,6 +30,11 @@ public class WebhookController {
         this.webhookService = webhookService;
     }
 
+    /**
+     * Handle a called webhook.
+     *
+     * @param token Webhook token
+     */
     @GetMapping("/{token}")
     public void handleWebhook(@PathVariable String token) {
         webhookService.handle(token);

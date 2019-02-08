@@ -30,9 +30,9 @@ public interface BranchMapper {
             @Mapping(source = "buildFailureWebhook.url", target = "buildFailureUrl"),
             @Mapping(source = "branch", target = "mails", qualifiedByName = "toMails")
     })
-    public BranchResponse toResponse(Branch branch);
+    BranchResponse toResponse(Branch branch);
 
-    public List<BranchResponse> toResponseList(List<Branch> branches);
+    List<BranchResponse> toResponseList(List<Branch> branches);
 
     /**
      * Maps a branch to an array of dependencies (branch-ids).
@@ -92,7 +92,7 @@ public interface BranchMapper {
     /**
      * Maps a DeploymentType to String.
      *
-     * @param deploymentType the DeploymenType that should be mapped
+     * @param deploymentType the DeploymentType that should be mapped
      * @return the mapped String
      */
     default String map(DeploymentType deploymentType) {

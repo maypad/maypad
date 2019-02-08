@@ -13,7 +13,7 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = {CommitMapper.class})
 public interface BuildMapper {
 
-    public BuildResponse toResponse(Build build);
+    BuildResponse toResponse(Build build);
 
-    public List<BuildResponse> toResponseList(List<Build> builds);
+    List<BuildResponse> toResponseList(List<Build> builds);
 }

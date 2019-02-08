@@ -26,7 +26,7 @@ public class KeyFileManager {
 
     private File projectRootDir;
     private Project project;
-    private static Logger logger = LoggerFactory.getLogger(KeyFileManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(KeyFileManager.class);
 
     /**
      * Create a SSH pem File.
@@ -47,7 +47,7 @@ public class KeyFileManager {
             return keyFile;
         }
 
-        //Create new keyfile
+        //Create new file for the key
         if (!(project.getServiceAccount() instanceof KeyServiceAccount)) {
             logger.warn("Project with id " + project.getId() + " hasn't an serviceaccount with a key.");
             return null;

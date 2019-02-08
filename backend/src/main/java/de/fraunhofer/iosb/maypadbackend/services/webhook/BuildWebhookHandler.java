@@ -19,8 +19,9 @@ public class BuildWebhookHandler implements WebhookHandler {
 
     /**
      * Constructor for BuildWebhookHandler.
-     * @param branch the branch that should be updated as a pair of project id and branch name
-     * @param status the new status of the latest build
+     *
+     * @param branch       the branch that should be updated as a pair of project id and branch name
+     * @param status       the new status of the latest build
      * @param buildService the BuildService used to update the build status
      */
     BuildWebhookHandler(Tuple<Integer, String> branch, Status status, BuildService buildService) {

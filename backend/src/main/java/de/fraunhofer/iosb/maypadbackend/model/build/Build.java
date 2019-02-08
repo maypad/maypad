@@ -47,9 +47,10 @@ public class Build {
 
     /**
      * Constructor for Build.
+     *
      * @param timestamp the exact time of the build
-     * @param commit the last commit on the built branch
-     * @param status the status of the build
+     * @param commit    the last commit on the built branch
+     * @param status    the status of the build
      */
     public Build(Date timestamp, Commit commit, Status status) {
         this.timestamp = timestamp;

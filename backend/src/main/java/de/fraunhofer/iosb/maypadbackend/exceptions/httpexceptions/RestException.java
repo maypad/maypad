@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 /**
- * General exception for rest with an (internal) errormessage.
+ * General exception for rest with an (internal) error-message.
  *
  * @author Lukas Brosch
  * @version 1.0
@@ -15,9 +15,9 @@ public abstract class RestException extends RuntimeException {
     private String error;
 
     /**
-     * Constructor with an errormessage.
+     * Constructor with an error-message.
      *
-     * @param error errormessage for this exception
+     * @param error error-message for this exception
      */
     public RestException(String error) {
         super();
@@ -25,9 +25,9 @@ public abstract class RestException extends RuntimeException {
     }
 
     /**
-     * Constructor with an errormessage and message.
+     * Constructor with an error-message and message.
      *
-     * @param error   errormessage for this exception
+     * @param error   error-message for this exception
      * @param message message of this exception
      */
     public RestException(String error, String message) {
@@ -38,7 +38,7 @@ public abstract class RestException extends RuntimeException {
     /**
      * Get the specific error code.
      *
-     * @return a http errorcode, e.g. 404
+     * @return a http error-code, e.g. 404
      */
     public abstract HttpStatus getStatus();
 

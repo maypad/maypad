@@ -12,6 +12,7 @@ import de.fraunhofer.iosb.maypadbackend.services.sse.SseEventType;
 import de.fraunhofer.iosb.maypadbackend.services.sse.SseService;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,6 +36,7 @@ public class ProjectgroupService {
      * Constructor for ProjectgroupService.
      *
      * @param projectgroupRepository Repository for database access
+     * @param sseService             Service for server-sent events
      */
     @Autowired
     public ProjectgroupService(ProjectgroupRepository projectgroupRepository, RepoService repoService, SseService sseService) {
@@ -99,6 +101,7 @@ public class ProjectgroupService {
      *
      * @param id Id of projectgroup
      */
+    @Async
     public void deleteProjectgroup(int id) {
         Projectgroup group = getProjectgroup(id);
         for (Project project : group.getProjects()) {
@@ -132,6 +135,7 @@ public class ProjectgroupService {
 
     /**
      * Updates the status of the projectgroup with the given id.
+     *
      * @param id the id of the projectgroup that should be updated
      */
     public void updateStatus(int id) {
@@ -142,6 +146,7 @@ public class ProjectgroupService {
 
     /**
      * Returns the projectgroup containing the given project.
+     *
      * @param project the project that should be contained in the projectgroup
      * @return the projectgroup containing the given project
      */

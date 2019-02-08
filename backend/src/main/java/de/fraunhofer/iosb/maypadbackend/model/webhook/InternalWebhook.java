@@ -30,10 +30,11 @@ public class InternalWebhook extends Webhook {
 
     /**
      * Constructor for InternalWebhook.
+     *
      * @param baseUrl the domain of the webhook
-     * @param url the relative URL of the webhook.
-     * @param token the token that identifies the webhook in maypad
-     * @param type the type of the webhook
+     * @param url     the relative URL of the webhook.
+     * @param token   the token that identifies the webhook in maypad
+     * @param type    the type of the webhook
      */
     public InternalWebhook(String baseUrl, String url, String token, WebhookType type) {
         super(url);

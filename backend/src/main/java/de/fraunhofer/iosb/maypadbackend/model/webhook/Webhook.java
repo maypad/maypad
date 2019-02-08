@@ -34,6 +34,7 @@ public abstract class Webhook {
 
     /**
      * Constructor for Webhook.
+     *
      * @param url the URL of the webhook.
      */
     public Webhook(String url) {

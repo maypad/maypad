@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.Date;
 
 /**
- *  Data transfer object for transferring information about a Commit entity.
+ * Data transfer object for transferring information about a Commit entity.
  *
  * @author Max Willich
  */

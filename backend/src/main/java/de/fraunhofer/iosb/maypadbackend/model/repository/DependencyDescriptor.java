@@ -11,6 +11,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+/**
+ * Maypad-Dependencies between project and branches.
+ */
 @Data
 @Entity
 @NoArgsConstructor

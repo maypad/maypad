@@ -12,11 +12,14 @@ import org.springframework.core.io.FileSystemResource;
 
 import java.io.File;
 
+/**
+ * Serverconfiguration as YAML File.
+ */
 @Configuration
 @Data
 public class YamlServerConfig implements ServerConfig {
 
-    private static Logger logger = LoggerFactory.getLogger(YamlServerConfig.class);
+    private static final Logger logger = LoggerFactory.getLogger(YamlServerConfig.class);
 
 
     @Value("${webServerPort:${MAYPAD_WEBSERVER_PORT:-1}}")

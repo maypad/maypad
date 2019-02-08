@@ -28,7 +28,7 @@ import java.util.Locale;
 @EnableAsync
 public class WebConfig implements WebMvcConfigurer {
 
-    private Logger logger = LoggerFactory.getLogger(WebConfig.class);
+    private static final Logger logger = LoggerFactory.getLogger(WebConfig.class);
 
     @Value("${MAYPAD_HOME:/usr/share/maypad/}")
     private String maypadHomePath;
@@ -85,6 +85,7 @@ public class WebConfig implements WebMvcConfigurer {
         }
 
     }
+
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {

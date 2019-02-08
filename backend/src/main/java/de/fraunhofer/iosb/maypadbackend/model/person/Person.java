@@ -35,6 +35,7 @@ public class Person {
 
     /**
      * Constructor for Person.
+     *
      * @param name the name of the person
      */
     public Person(String name) {

@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.List;
 
+/**
+ * Controller for branch API calls.
+ */
 @RestController
 public class BranchController implements BranchApi {
 
@@ -30,11 +33,12 @@ public class BranchController implements BranchApi {
 
     /**
      * Constructor for BranchController.
-     * @param projectService the ProjectServices used to access projects
-     * @param branchMapper the mapper used to map branches to branch-responses
-     * @param buildMapper the mapper used to map builds to build-responses
-     * @param deploymentMapper the mapper used to map deployments to deployment-responses
-     * @param buildService the service used to build branches
+     *
+     * @param projectService    the ProjectServices used to access projects
+     * @param branchMapper      the mapper used to map branches to branch-responses
+     * @param buildMapper       the mapper used to map builds to build-responses
+     * @param deploymentMapper  the mapper used to map deployments to deployment-responses
+     * @param buildService      the service used to build branches
      * @param deploymentService the DeploymentService used to deploy
      */
     @Autowired

@@ -73,13 +73,10 @@ public class ProjectService {
      * @return Created project
      */
     public Project create(int projectgroupId, String repositoryUrl) {
-        Project project = new Project(repositoryUrl);
-        project.setRefreshWebhook(webhookService.generateRefreshWebhook(project.getId()));
-        //get the saved project, with correct id
-        project = saveProject(project);
-        addProjectToProjectgroup(projectgroupId, project);
-        schedulerService.scheduleRepoRefresh(project.getId());
-        return project;
+        CreateProjectRequest request = new CreateProjectRequest();
+        request.setGroupId(projectgroupId);
+        request.setRepositoryUrl(repositoryUrl);
+        return create(new CreateProjectRequest());
     }
 
     /**

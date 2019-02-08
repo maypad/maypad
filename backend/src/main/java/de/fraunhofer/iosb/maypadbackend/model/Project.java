@@ -121,6 +121,7 @@ public class Project {
 
     /**
      * Updates the status of this project.
+     *
      * @return the new status
      */
     public Status updateStatus() {

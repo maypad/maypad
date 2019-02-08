@@ -13,6 +13,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Projectconfig as YAML File.
+ */
 public class YamlProjectConfig implements ProjectConfig {
 
     private ProjectConfigData yamlObject;
@@ -63,7 +66,7 @@ public class YamlProjectConfig implements ProjectConfig {
      */
     @Override
     public boolean getAddAllBranches() {
-        return yamlObject.getAllBranches();
+        return yamlObject.isAllBranches();
     }
 
     /**

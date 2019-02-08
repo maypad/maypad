@@ -16,7 +16,8 @@ public class RefreshWebhookHandler implements WebhookHandler {
 
     /**
      * Constructor for RefreshWebhookHandler.
-     * @param projectId the project that should be refreshed
+     *
+     * @param projectId   the project that should be refreshed
      * @param repoService the RepoService used to refresh a project
      */
     public RefreshWebhookHandler(int projectId, RepoService repoService) {

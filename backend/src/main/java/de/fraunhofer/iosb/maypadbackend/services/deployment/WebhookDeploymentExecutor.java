@@ -13,6 +13,9 @@ import org.springframework.stereotype.Component;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Executor for a deployment with a webhook.
+ */
 @Component
 public class WebhookDeploymentExecutor implements DeploymentTypeExecutor {
 
@@ -21,7 +24,9 @@ public class WebhookDeploymentExecutor implements DeploymentTypeExecutor {
 
     /**
      * Constructor for WebhookService.
-     * @param webhookService the WebhookService used to call webhooks
+     *
+     * @param webhookService    the WebhookService used to call webhooks
+     * @param deploymentService the deploymentservice
      */
     @Autowired
     @Lazy
@@ -30,6 +35,13 @@ public class WebhookDeploymentExecutor implements DeploymentTypeExecutor {
         this.deploymentService = deploymentService;
     }
 
+    /**
+     * Deploy a branch.
+     *
+     * @param deploymentType the type that specifies how the build should be deployed
+     * @param id             the id of the project
+     * @param ref            the name of the branch
+     */
     @Override
     public void deploy(DeploymentType deploymentType, int id, String ref) {
         if (deploymentType instanceof WebhookDeployment) {

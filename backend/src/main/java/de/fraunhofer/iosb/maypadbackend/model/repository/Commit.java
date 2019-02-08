@@ -43,10 +43,11 @@ public class Commit {
 
     /**
      * Constructor for Commit.
-     * @param message the Commit-Message
+     *
+     * @param message    the Commit-Message
      * @param identifier the Commit-Identifier (hash for git)
-     * @param timestamp the exact time of the commit
-     * @param author the commit author
+     * @param timestamp  the exact time of the commit
+     * @param author     the commit author
      */
     public Commit(String message, String identifier, Date timestamp, Author author) {
         this.message = message;

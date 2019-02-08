@@ -45,7 +45,6 @@ public class Repository {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Tag> tags;
 
-    //@ElementCollection(fetch = FetchType.EAGER)
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @MapKeyColumn(name = "name", length = 200)
     private Map<String, Branch> branches;
@@ -60,7 +59,7 @@ public class Repository {
     /**
      * Constructor for Repository.
      *
-     * @param repositoryType Type of new Repository
+     * @param repositoryType Type of new repository
      */
     public Repository(RepositoryType repositoryType) {
         this.repositoryType = repositoryType;
