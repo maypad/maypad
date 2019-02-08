@@ -15,6 +15,7 @@ import de.fraunhofer.iosb.maypadbackend.util.FileUtil;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LsRemoteCommand;
+import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.TransportCommand;
 import org.eclipse.jgit.api.TransportConfigCallback;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -58,6 +59,7 @@ public class GitRepoManager extends RepoManager {
                 localGit = Git.open(getProjectRootDir());
             } catch (IOException e) {
                 getLogger().error("Can't read local repo from " + getProjectRootDir().getAbsolutePath());
+                cloneRepository();
             }
         }
         return localGit;
@@ -125,8 +127,18 @@ public class GitRepoManager extends RepoManager {
      */
     @Override
     public boolean switchBranch(String name) {
+        if (getGit() == null || getGit().getRepository() == null) {
+            getLogger().error("Can't detect current (local) branch");
+            return false;
+        }
         String currentBranch = getCurrentBranch();
         if (currentBranch != null && currentBranch.equals(name)) {
+            //remove locale changes
+            try {
+                getGit().reset().setMode(ResetCommand.ResetType.HARD).call();
+            } catch (GitAPIException e) {
+                getLogger().error("Can't reset branch " + name + ". Perhaps data were deleted or permissions were changed.");
+            }
             gitPull();
             return true;
         }
@@ -217,7 +229,11 @@ public class GitRepoManager extends RepoManager {
      */
     @Override
     public void cleanUp() {
-        getGit().close();
+        Git git = getGit();
+        if (git != null) {
+            git.close();
+        }
+
         localGit = null;
     }
 
@@ -304,10 +320,7 @@ public class GitRepoManager extends RepoManager {
             localGit = (Git) getAuth(Git.cloneRepository().setURI(getProject().getRepositoryUrl())
                     .setDirectory(getProjectRootDir())).call();
         } catch (GitAPIException | JGitInternalException e) {
-            Git git = getGit();
-            if (git != null) {
-                git.close();
-            }
+            cleanUp();
 
             getLogger().warn("Can't access to repo " + getProject().getRepositoryUrl() + " or an internal error occured.");
             try {

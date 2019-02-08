@@ -12,6 +12,7 @@ import de.fraunhofer.iosb.maypadbackend.services.sse.SseEventType;
 import de.fraunhofer.iosb.maypadbackend.services.sse.SseService;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -100,6 +101,7 @@ public class ProjectgroupService {
      *
      * @param id Id of projectgroup
      */
+    @Async
     public void deleteProjectgroup(int id) {
         Projectgroup group = getProjectgroup(id);
         for (Project project : group.getProjects()) {
