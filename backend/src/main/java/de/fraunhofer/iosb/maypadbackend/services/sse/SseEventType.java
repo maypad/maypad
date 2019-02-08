@@ -24,28 +24,7 @@ public enum SseEventType {
     /**
      * The projectgroup was deleted.
      */
-    PROJECTGROUP_DELETED("projectgroup_deleted"),
-    /**
-     * Projectconfig is invalid.
-     */
-    PROJECT_CONFIG_INVALID("project_config_invalid"),
-    /**
-     * The cap of maximum refresh-requests is reached.
-     */
-    PROJECT_CAP_REACHED("project_cap_reached"),
-    /**
-     * The repository url is invalid.
-     */
-    PROJECT_URL_INVALID("project_url_invalid"),
-    /**
-     * The refresh / init ended in an error.
-     */
-    PROJECT_REFRESH_FAILED("project_refresh_failed"),
-    /**
-     * The same project is currently updateing.
-     */
-    PROJECT_CURRENTLY_UPDATE("project_currently_update");
-
+    PROJECTGROUP_DELETED("projectgroup_deleted");
 
     private String eventId;
 
