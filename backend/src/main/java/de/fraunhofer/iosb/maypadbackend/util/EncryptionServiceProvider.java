@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class EncryptionFactory {
+public class EncryptionServiceProvider {
 
     @Autowired
     private static EncryptionService encryptionService;

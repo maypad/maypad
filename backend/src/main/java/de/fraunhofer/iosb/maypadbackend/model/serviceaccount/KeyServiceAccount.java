@@ -2,11 +2,10 @@ package de.fraunhofer.iosb.maypadbackend.model.serviceaccount;
 
 import de.fraunhofer.iosb.maypadbackend.services.security.EncryptedText;
 import de.fraunhofer.iosb.maypadbackend.services.security.EncryptionService;
-import de.fraunhofer.iosb.maypadbackend.util.EncryptionFactory;
+import de.fraunhofer.iosb.maypadbackend.util.EncryptionServiceProvider;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -39,7 +38,7 @@ public class KeyServiceAccount extends ServiceAccount {
      */
     public KeyServiceAccount(String sshKey) {
         EncryptedText text = encryptionService.encrypt(sshKey);
-        this.encryptionService = EncryptionFactory.getEncryptionService();
+        this.encryptionService = EncryptionServiceProvider.getEncryptionService();
         this.sshKey = text.getText();
         this.salt = text.getSalt();
     }
