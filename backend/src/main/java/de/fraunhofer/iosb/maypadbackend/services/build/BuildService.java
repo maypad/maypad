@@ -161,10 +161,10 @@ public class BuildService {
         Build build = getBuild(branch, runningBuilds.get(branchMapEntry));
         build.setStatus(status);
         if (status == Status.RUNNING) {
-            sseService.push(EventData.builder(SseEventType.BUILD_RUNNING).projectId(id).branch(ref).build());
+            sseService.push(EventData.builder(SseEventType.BUILD_UPDATE).projectId(id).name(ref).status(status).build());
         }
         if (status == Status.FAILED || status == Status.SUCCESS || status == Status.TIMEOUT) {
-            sseService.push(EventData.builder(SseEventType.BUILD_DONE).projectId(id).branch(ref).build());
+            sseService.push(EventData.builder(SseEventType.BUILD_UPDATE).projectId(id).name(ref).status(status).build());
             runningBuilds.remove(branchMapEntry);
         }
         project = projectService.saveProject(project);

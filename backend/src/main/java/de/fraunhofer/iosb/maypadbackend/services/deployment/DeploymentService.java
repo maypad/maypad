@@ -11,6 +11,9 @@ import de.fraunhofer.iosb.maypadbackend.model.deployment.DeploymentType;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Branch;
 import de.fraunhofer.iosb.maypadbackend.services.ProjectService;
 import de.fraunhofer.iosb.maypadbackend.services.build.BuildService;
+import de.fraunhofer.iosb.maypadbackend.services.sse.EventData;
+import de.fraunhofer.iosb.maypadbackend.services.sse.SseEventType;
+import de.fraunhofer.iosb.maypadbackend.services.sse.SseService;
 import de.fraunhofer.iosb.maypadbackend.util.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +42,7 @@ public class DeploymentService {
 
     private ProjectService projectService;
     private BuildService buildService;
+    private SseService sseService;
     private Collection<? extends DeploymentTypeExecutor> executors;
     private Map<Class<? extends DeploymentType>, DeploymentTypeExecutor> deploymentTypeMappings;
     private Map<Tuple<Integer, String>, Integer> runningDeployments;
@@ -115,10 +119,11 @@ public class DeploymentService {
      */
     @Autowired
     public DeploymentService(ProjectService projectService, Collection<? extends DeploymentTypeExecutor> executors,
-                             BuildService buildService) {
+                             BuildService buildService, SseService sseService) {
         this.projectService = projectService;
         this.executors = executors;
         this.buildService = buildService;
+        this.sseService = sseService;
         runningDeployments = new ConcurrentHashMap<>();
     }
 
@@ -152,6 +157,7 @@ public class DeploymentService {
         }
         Deployment deployment = getDeployment(branch, runningDeployments.get(branchMapEntry));
         deployment.setStatus(status);
+        sseService.push(EventData.builder(SseEventType.DEPLOYMENT_UPDATE).projectId(id).name(ref).status(status).build());
         runningDeployments.remove(branchMapEntry);
         Project project = projectService.getProject(id);
         projectService.saveProject(project);

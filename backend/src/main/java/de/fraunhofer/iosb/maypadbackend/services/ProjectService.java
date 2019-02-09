@@ -173,6 +173,7 @@ public class ProjectService {
     public Project changeProject(int id, ChangeProjectRequest request) {
         Project project = getProject(id);
         ServiceAccount serviceAccount = getServiceAccount(request.getServiceAccount());
+        sseService.push(EventData.builder(SseEventType.AUTHMETHOD_UPDATED).projectId(id).build());
         project.setServiceAccount(serviceAccount);
         return saveProject(project);
     }
@@ -188,7 +189,6 @@ public class ProjectService {
         getProject(id);
         schedulerService.unscheduleRepoRefresh(id);
         projectRepository.deleteById(id);
-        sseService.push(EventData.builder(SseEventType.PROJECT_DELETED).projectId(id).build());
     }
 
     /**

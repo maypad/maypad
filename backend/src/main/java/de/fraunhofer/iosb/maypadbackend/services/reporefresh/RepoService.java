@@ -118,6 +118,8 @@ public class RepoService {
         } finally {
             KeyFileManager.deleteSshFile(new File(serverConfig.getRepositoryStoragePath()), id);
             removeLock(id);
+            project = projectService.getProject(id);
+            sseService.push(EventData.builder(SseEventType.PROJECT_REFRESHED).projectId(id).name(project.getName()).build());
         }
     }
 
@@ -143,6 +145,8 @@ public class RepoService {
             doInitProject(project);
         } finally {
             KeyFileManager.deleteSshFile(new File(serverConfig.getRepositoryStoragePath()), id);
+            project = projectService.getProject(id);
+            sseService.push(EventData.builder(SseEventType.PROJECT_INIT).projectId(id).name(project.getName()).build());
             removeLock(id);
         }
     }
@@ -412,7 +416,6 @@ public class RepoService {
         project.setRepositoryStatus(Status.SUCCESS);
 
         projectService.saveProject(project);
-        sseService.push(EventData.builder(SseEventType.PROJECT_REFRESHED).projectId(project.getId()).build());
         logger.info("Project with id " + project.getId() + " has refreshed.");
     }
 
