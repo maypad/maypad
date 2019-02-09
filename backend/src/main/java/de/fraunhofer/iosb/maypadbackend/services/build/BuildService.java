@@ -56,13 +56,14 @@ public class BuildService {
     /**
      * Constructor for BuildService.
      *
-     * @param projectService the ProjectService used to access projects
-     * @param sseService     Service for server-sent events
-     * @param executors      a collection of all BuildTypeExecutor beans
+     * @param projectService        the ProjectService used to access projects
+     * @param sseService            Service for server-sent events
+     * @param executors             a collection of all BuildTypeExecutor beans
+     * @param dependencyBuildHelper the DependencyBuildHelper
      */
     @Autowired
     public BuildService(ProjectService projectService, Collection<? extends BuildTypeExecutor> executors,
-            DependencyBuildHelper dependencyBuildHelper, SseService sseService) {
+                        DependencyBuildHelper dependencyBuildHelper, SseService sseService) {
         this.projectService = projectService;
         this.sseService = sseService;
         this.executors = executors;
@@ -79,6 +80,7 @@ public class BuildService {
      * @param buildName the name of the build type (currently not used)
      * @return future
      */
+    @Async
     public CompletableFuture<Status> buildBranch(int id, String ref, BuildRequest request, String buildName) {
         return buildBranch(id, ref, request.isWithDependencies(), buildName);
     }
