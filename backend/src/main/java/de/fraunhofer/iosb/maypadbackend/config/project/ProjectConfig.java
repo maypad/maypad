@@ -40,4 +40,6 @@ public interface ProjectConfig {
      */
     List<BranchProperty> getBranchProperties();
 
+    String getRepoWebsiteUrl();
+
 }

@@ -79,4 +79,9 @@ public class YamlProjectConfig implements ProjectConfig {
     public List<BranchProperty> getBranchProperties() {
         return yamlObject.getBranches();
     }
+
+    @Override
+    public String getRepoWebsiteUrl() {
+        return yamlObject.getRepoWebsiteUrl();
+    }
 }
