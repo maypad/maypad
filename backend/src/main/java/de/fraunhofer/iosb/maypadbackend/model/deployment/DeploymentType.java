@@ -20,13 +20,13 @@ import javax.persistence.InheritanceType;
  */
 @Data
 @Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.JOINED)
 @NoArgsConstructor
 public abstract class DeploymentType {
 
     @Id
     @EqualsAndHashCode.Exclude
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)
     private int id;
     @Column
