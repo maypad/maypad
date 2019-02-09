@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Manage the builds for a project.
@@ -112,22 +111,16 @@ public class BuildService {
 
             Build build = new Build(new Date(), branch.getLastCommit(), Status.UNKNOWN);
             branch.getBuilds().add(build);
-            projectService.saveProject(project);
+            branch = projectService.saveProject(project).getRepository().getBranches().get(ref);
             build = getLatestBuild(branch);
             BuildLock lock = new BuildLock(build.getId());
             lock.tryAcquire();
             runningBuilds.put(new Tuple<>(id, ref), lock);
 
             if (withDependencies) {
-                try {
-                    if (!dependencyBuildHelper.runBuildWithDependencies(id, ref).get()) {
-                        signalStatus(id, ref, Status.FAILED);
-                        logger.debug("Build of dependencies failed for project %d.", id);
-                        return CompletableFuture.completedFuture(Status.FAILED);
-                    }
-                } catch (ExecutionException | InterruptedException e) {
+                if (!dependencyBuildHelper.runBuildWithDependencies(id, ref)) {
                     signalStatus(id, ref, Status.FAILED);
-                    logger.warn("Build of project %d interrupted.", id);
+                    logger.debug("Build of dependencies failed for project %d.", id);
                     return CompletableFuture.completedFuture(Status.FAILED);
                 }
             }
@@ -189,7 +182,6 @@ public class BuildService {
         if (!runningBuilds.containsKey(branchMapEntry)) {
             throw new NotFoundException("NO BUILD", String.format("No Build is running for %s", branch.getName()));
         }
-        logger.info(id + ":" + ref + " changed status to " + status + ".");
         BuildLock lock = runningBuilds.get(branchMapEntry);
         Build build = getBuild(branch, lock.getBuildId());
         build.setStatus(status);
@@ -200,8 +192,9 @@ public class BuildService {
             sseService.push(EventData.builder(SseEventType.BUILD_UPDATE).projectId(id).name(ref).status(status).build());
             runningBuilds.remove(branchMapEntry);
         }
-
-        project = projectService.saveProject(project);
+        logger.debug(String.format("Build %d changed its status to %s on (project %d, branch %s)", build.getId(),
+                status, id, ref));
+        projectService.saveProject(project);
         projectService.statusPropagation(project.getId());
     }
 
@@ -260,19 +253,5 @@ public class BuildService {
                 throw new RuntimeException("No class found for" + bdf.getBeanClassName());
             }
         }
-    }
-
-    /**
-     * Returns the build status of Branch indicated by (id, ref).
-     *
-     * @param id  Id of the project that contains the branch.
-     * @param ref Reference (name) of the branch.
-     * @return BuildStatus of that branch.
-     */
-    public Status getBuildStatus(int id, String ref) {
-        Project project = projectService.getProject(id);
-        Branch branch = project.getRepository().getBranches().get(ref);
-        logger.info("Build status of " + id + ":" + ref + ": " + branch.getBuildStatus());
-        return branch.getBuildStatus();
     }
 }

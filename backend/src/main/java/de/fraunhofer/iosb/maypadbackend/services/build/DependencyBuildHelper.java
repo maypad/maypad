@@ -24,7 +24,6 @@ import java.util.concurrent.ExecutionException;
  * Provides method to execute builds starting with least dependent dependency.
  *
  * @Author Max Willich
- *
  */
 @Component
 public class DependencyBuildHelper {
@@ -52,7 +51,7 @@ public class DependencyBuildHelper {
      *
      * @return true if all builds were successful, false otherwise.
      */
-    public CompletableFuture<Boolean> runBuildWithDependencies(int id, String ref) {
+    public boolean runBuildWithDependencies(int id, String ref) {
         init(id, ref);
         Stack<BuildNode> buildStack = getBuildStack(root);
         int highestLayer = buildStack.peek().getLayer();
@@ -63,9 +62,6 @@ public class DependencyBuildHelper {
             while (buildStack.peek().getLayer() == i) {
                 currentLayer.add(buildStack.pop());
             }
-            for (BuildNode node : currentLayer) {
-                buildService.buildBranch(node.getProjectId(), node.getBranchRef(), false, null);
-            }
             List<CompletableFuture<Status>> buildFutures = new LinkedList<>();
             currentLayer.forEach(
                     n -> buildFutures.add(buildService.buildBranch(n.getProjectId(), n.getBranchRef(), false, null))
@@ -74,31 +70,32 @@ public class DependencyBuildHelper {
             try {
                 for (CompletableFuture<Status> f : buildFutures) {
                     if (f.get() != Status.SUCCESS) {
-                        return CompletableFuture.completedFuture(false);
+                        return false;
                     }
                 }
             } catch (InterruptedException | ExecutionException e) {
                 logger.warn("Build of project %d interrupted.", id);
-                return CompletableFuture.completedFuture(false);
+                return false;
             }
         }
-        return CompletableFuture.completedFuture(true);
+        return true;
     }
 
     private void setNodeChildren(BuildNode node) {
-        logger.info("Dependencies of " + node.getProjectId() + ":" + node.getBranchRef() + ": ");
+        logger.debug("Dependencies of " + node.getProjectId() + ":" + node.getBranchRef() + ": ");
         Project project = projectService.getProject(node.getProjectId());
         Branch branch = project.getRepository().getBranches().get(node.getBranchRef());
         for (DependencyDescriptor desc : branch.getDependencies()) {
-            logger.info("- " + desc.getProjectId() + ":" + desc.getBranchName());
+            logger.debug("- " + desc.getProjectId() + ":" + desc.getBranchName());
             Project pro = projectService.getProject(desc.getProjectId());
             Branch dep = pro.getRepository().getBranches().get(desc.getBranchName());
             boolean cycle = false;
             for (BuildNode n : nodes) {
                 if (n.getProjectId() == pro.getId() && n.getBranchRef().equals(dep.getName())) {
                     if (!warned) {
-                        logger.warn("You have cycles in your Maypad dependencies!");
-                        logger.error("Not adding already existing dependency...");
+                        logger.warn("Cycles in dependencies detected for project %d on branch %s.",
+                                project.getId(), branch.getName());
+                        logger.debug("Not adding already existing dependency...");
                         warned = true;
                     }
                     cycle = true;
@@ -122,9 +119,9 @@ public class DependencyBuildHelper {
     }
 
     /*
-    * Constructs a build-subtree, starting from root.
-    * Runs forever if dependency graph is cyclic. Cycle checking
-    * is done in setNodeChildren and (hopefully) works correctly.
+     * Constructs a build-subtree, starting from root.
+     * Runs forever if dependency graph is cyclic. Cycle checking
+     * is done in setNodeChildren and (hopefully) works correctly.
      */
     private void constructBuildTree(BuildNode root) {
         setNodeChildren(root);
@@ -165,22 +162,22 @@ public class DependencyBuildHelper {
         private BuildNode parent;
         private List<BuildNode> children;
 
-        public BuildNode(int projectId, String branchRef) {
+        private BuildNode(int projectId, String branchRef) {
             this.projectId = projectId;
             this.branchRef = branchRef;
             this.children = new ArrayList<>();
             this.layer = -1;
         }
 
-        public void addChild(BuildNode child) {
+        private void addChild(BuildNode child) {
             children.add(child);
         }
 
-        public void setParent(BuildNode parent) {
+        private void setParent(BuildNode parent) {
             this.parent = parent;
         }
 
-        public void setLayer(int layer) {
+        private void setLayer(int layer) {
             this.layer = layer;
         }
 
