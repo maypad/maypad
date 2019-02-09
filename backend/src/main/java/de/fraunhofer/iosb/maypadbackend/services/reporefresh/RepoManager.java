@@ -178,8 +178,8 @@ public abstract class RepoManager {
         try {
             String[] spl = project.getRepositoryUrl().split(":");
             return Integer.parseInt(spl[spl.length - 1]);
-        } catch (Exception ex) {
-            logger.error("Could not get port from URL.");
+        } catch (NumberFormatException ex) {
+            logger.warn("Could not get port from URL. Using default port (22).");
             return -1;
         }
     }
