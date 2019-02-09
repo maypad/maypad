@@ -1,6 +1,7 @@
 FROM java:8-alpine
 
 RUN mkdir -p /usr/share/maypad/frontend && \
+    mkdir -p /usr/share/maypad/security && \
     mkdir -p /home/maypad/repositories
 
 COPY frontend/dist/maypad-frontend/* /usr/share/maypad/frontend/

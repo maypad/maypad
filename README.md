@@ -28,3 +28,4 @@ MAYPAD was developed as a "Praxis of Software-Development" project of students a
 * MAYPAD can either be configured using it's configuration file or via environment variables.
 * The environment variable `MAYPAD_HOME` indicates where MAYPAD will look for the configuration file and the frontend files and defaults to `/usr/share/maypad/`.
 * For an example config file see `config.yaml.sample`
+* Note that MAYPAD will generate an encryption key for database entries under `MAYPAD_HOME/security/key.dat` that you should save between container restarts. The default docker-compose will take care of that.

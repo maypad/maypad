@@ -18,7 +18,11 @@ services:
     restart: always
     volumes:
     - ./config.yaml:/usr/share/maypad/config.yaml
+    - maypad-sec:/usr/share/maypad/security
     environment:
     - SPRING_PROFILES_ACTIVE=prod
     ports:
     - 8080:8080
+
+volumes:
+  maypad-sec:
