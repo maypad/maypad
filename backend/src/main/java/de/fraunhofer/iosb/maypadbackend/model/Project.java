@@ -58,6 +58,8 @@ public class Project {
     private Repository repository;
     @Column
     private String repositoryUrl;
+    @Column
+    private String repoWebsiteUrl;
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private ServiceAccount serviceAccount;
     @Enumerated(EnumType.STRING)

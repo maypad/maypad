@@ -97,4 +97,9 @@ public class YamlProjectConfig implements ProjectConfig {
     public String getSvnTagsDirectory() {
         return yamlObject.getSvnTagsDirectory();
     }
+
+    @Override
+    public String getRepoWebsiteUrl() {
+        return yamlObject.getRepoWebsiteUrl();
+    }
 }

@@ -17,5 +17,6 @@ public class ProjectConfigData {
     private String svnTrunkDirectory;
     private String svnBranchDirectory;
     private String svnTagsDirectory;
+    private String repoWebsiteUrl;
 
 }

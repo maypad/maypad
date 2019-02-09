@@ -46,6 +46,8 @@ public interface ProjectConfig {
 
     String getSvnTagsDirectory();
 
+    String getRepoWebsiteUrl();
+
 
 
 }
