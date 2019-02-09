@@ -41,6 +41,7 @@ public interface ProjectConfig {
     List<BranchProperty> getBranchProperties();
 
     String getRepoWebsiteUrl();
+    
     String getSvnTrunkDirectory();
 
     String getSvnBranchDirectory();

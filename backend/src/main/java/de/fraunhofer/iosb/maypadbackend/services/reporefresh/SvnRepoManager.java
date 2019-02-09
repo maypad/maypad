@@ -37,9 +37,10 @@ public class SvnRepoManager extends RepoManager {
 
     private SVNClientManager svnClientManager = SVNClientManager.newInstance();
     private ISVNAuthenticationManager authManager;
-    private Logger logger = LoggerFactory.getLogger(SvnRepoManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(SvnRepoManager.class);
     private ProjectConfig projConfig;
 
+    private final int defaultSshPort = 22;
 
     private String projectRoot;
 
@@ -64,7 +65,7 @@ public class SvnRepoManager extends RepoManager {
             if (project.getServiceAccount() instanceof KeyServiceAccount) {
                 KeyFileManager kfm = new KeyFileManager(this.getProjectRootDir(), this.getProject());
                 File sshFile = kfm.getSshFile();
-                int sshPort = (this.getSshPort() == -1) ? 22 : getSshPort();
+                int sshPort = (this.getSshPort() == -1) ? defaultSshPort : getSshPort();
                 authManager = new BasicAuthenticationManager("", sshFile, "", sshPort);
             } else if (project.getServiceAccount() instanceof UserServiceAccount) {
                 UserServiceAccount sa = (UserServiceAccount) project.getServiceAccount();
@@ -81,7 +82,7 @@ public class SvnRepoManager extends RepoManager {
      */
     @Override
     public List<String> getBranchNames() {
-        File branchesFolder = new File(this.getProjectRootDir().getAbsolutePath() + "/" + projConfig.getSvnBranchDirectory());
+        File branchesFolder = new File(this.getProjectRootDir().getAbsolutePath() + File.separator + projConfig.getSvnBranchDirectory());
         String[] branchList = branchesFolder.list();
         if (branchList == null) {
             logger.info("Project contains no branches");
@@ -90,11 +91,11 @@ public class SvnRepoManager extends RepoManager {
         List<String> branches = new ArrayList<>();
         for (String b : branchList) {
             logger.info("Found branch: " + b);
-            if (new File(branchesFolder.getAbsolutePath() + "/" + b).isDirectory()) {
+            if (new File(branchesFolder.getAbsolutePath() + File.separator + b).isDirectory()) {
                 branches.add(new File(b).getName());
             }
         }
-        if (new File(this.getProjectRootDir() + "/" + projConfig.getSvnTrunkDirectory()).exists()) {
+        if (new File(this.getProjectRootDir() + File.separator + projConfig.getSvnTrunkDirectory()).exists()) {
             branches.add("trunk");
         }
         logger.info("Found " + branches.size() + " branches.");
@@ -121,11 +122,11 @@ public class SvnRepoManager extends RepoManager {
     public boolean switchBranch(String name) {
         if (name.equals("trunk")) {
             String trunkPath = projConfig.getSvnTrunkDirectory();
-            projectRoot = this.getProjectRootDir().getAbsolutePath() + "/" + trunkPath;
+            projectRoot = this.getProjectRootDir().getAbsolutePath() + File.separator + trunkPath;
             return true;
         } else {
             String branchPath = projConfig.getSvnBranchDirectory();
-            File branchFolder = new File(this.getProjectRootDir().getAbsolutePath() + "/" + branchPath + "/" + name);
+            File branchFolder = new File(this.getProjectRootDir().getAbsolutePath() + File.separator + branchPath + File.separator + name);
             if (!branchFolder.isDirectory() || !branchFolder.exists()) {
                 logger.error("Branch of name " + name + " doesn't exist");
                 logger.error("Not found in directory " + branchFolder.getAbsolutePath());
@@ -165,7 +166,7 @@ public class SvnRepoManager extends RepoManager {
     @Override
     public List<Tag> getTags() {
         String tagPath = projConfig.getSvnTagsDirectory();
-        File tagFolder = new File(getProjectRootDir().getAbsolutePath() + "/" + tagPath);
+        File tagFolder = new File(getProjectRootDir().getAbsolutePath() + File.separator + tagPath);
         String[] tagList = tagFolder.list();
         if (tagList == null) {
             logger.info("Project contains no tags.");
@@ -173,7 +174,7 @@ public class SvnRepoManager extends RepoManager {
         }
         List<Tag> tags = new ArrayList<>();
         for (String t : tagList) {
-            if (new File(tagFolder.getAbsolutePath() + "/" + t).isDirectory()) {
+            if (new File(tagFolder.getAbsolutePath() + File.separator + t).isDirectory()) {
                 Tag tt = new Tag();
                 tt.setName(new File(t).getName());
                 tags.add(tt);
