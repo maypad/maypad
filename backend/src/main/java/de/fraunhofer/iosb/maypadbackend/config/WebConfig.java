@@ -1,8 +1,12 @@
 package de.fraunhofer.iosb.maypadbackend.config;
 
+import de.fraunhofer.iosb.maypadbackend.config.server.ServerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -28,12 +32,24 @@ import java.util.Locale;
 @ComponentScan
 @Configuration
 @EnableAsync
-public class WebConfig implements WebMvcConfigurer {
+public class WebConfig implements WebMvcConfigurer, WebServerFactoryCustomizer<ConfigurableServletWebServerFactory> {
 
     private static final Logger logger = LoggerFactory.getLogger(WebConfig.class);
 
     @Value("${MAYPAD_HOME:/usr/share/maypad/}")
     private String maypadHomePath;
+
+    private ServerConfig serverConfig;
+
+    /**
+     * Set the server config.
+     *
+     * @param serverConfig the server config.
+     */
+    @Autowired
+    public void setServerConfig(ServerConfig serverConfig) {
+        this.serverConfig = serverConfig;
+    }
 
     /**
      * Returns LocaleResolver that resolves current locale from session.
@@ -107,5 +123,10 @@ public class WebConfig implements WebMvcConfigurer {
         taskExecutor.setThreadNamePrefix("async-executor-");
         taskExecutor.initialize();
         configurer.setTaskExecutor(taskExecutor);
+    }
+
+    @Override
+    public void customize(ConfigurableServletWebServerFactory factory) {
+        factory.setPort(serverConfig.getWebServerPort());
     }
 }
