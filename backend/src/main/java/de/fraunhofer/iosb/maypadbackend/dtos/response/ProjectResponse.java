@@ -16,6 +16,7 @@ public class ProjectResponse {
     private Status buildStatus;
     private String refreshUrl;
     private String repositoryUrl;
+    private String repoWebsiteUrl;
     private ServiceAccountResponse serviceAccount;
     private TagResponse[] tags;
 }

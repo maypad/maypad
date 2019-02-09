@@ -306,6 +306,7 @@ public class RepoService {
         //update project
         project.setName(projectConfigData.getKey().getProjectName());
         project.setDescription(projectConfigData.getKey().getProjectDescription());
+        project.setRepoWebsiteUrl(projectConfigData.getKey().getRepoWebsiteUrl());
         project.getRepository().setMaypadConfigHash(hash);
 
         //update branches
