@@ -23,7 +23,7 @@ import javax.persistence.Transient;
 @EqualsAndHashCode(callSuper = true)
 public class KeyServiceAccount extends ServiceAccount {
 
-    @Column(name = "ssh_key", length = 1024)
+    @Column(name = "ssh_key", columnDefinition = "TEXT")
     private String sshKey;
     @Column
     String salt;
