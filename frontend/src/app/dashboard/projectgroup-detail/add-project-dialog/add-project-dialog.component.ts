@@ -46,6 +46,8 @@ export class AddProjectDialogComponent implements OnInit {
     this.sshKey = '';
     this.username = '';
     this.password = '';
+    this.authMethod = AuthMethods.None;
+    this.repoType = RepoTypes.Git;
     this.ref.detectChanges();
   }
 
