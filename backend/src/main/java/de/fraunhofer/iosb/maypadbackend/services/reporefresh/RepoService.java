@@ -267,6 +267,7 @@ public class RepoService {
 
         RepoManager repoManager = project.getRepository().getRepositoryType().toRepoManager(project);
         repoManager.initRepoManager(new File(serverConfig.getRepositoryStoragePath()), projectService.getRepoDir(project.getId()));
+        repoManager.prepareRefresh();
 
         //clone project, if data were deleted
         File repoDir = projectService.getRepoDir(project.getId());
@@ -664,5 +665,4 @@ public class RepoService {
         webhookService.removeWebhook(branch.getBuildSuccessWebhook());
         webhookService.removeWebhook(branch.getBuildFailureWebhook());
     }
-
 }

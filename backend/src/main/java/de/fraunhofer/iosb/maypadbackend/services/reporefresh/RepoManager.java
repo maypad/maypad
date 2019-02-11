@@ -86,6 +86,11 @@ public abstract class RepoManager {
     public abstract boolean switchBranch(String name);
 
     /**
+     * Prepare the repomanager for the refresh.
+     */
+    public abstract void prepareRefresh();
+
+    /**
      * Get all tags of a branch.
      *
      * @return List with tags
@@ -169,5 +174,13 @@ public abstract class RepoManager {
         return projectRootDir;
     }
 
-
+    protected int getSshPort() {
+        try {
+            String[] spl = project.getRepositoryUrl().split(":");
+            return Integer.parseInt(spl[spl.length - 1]);
+        } catch (NumberFormatException ex) {
+            logger.warn("Could not get port from URL. Using default port (22).");
+            return -1;
+        }
+    }
 }
