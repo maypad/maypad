@@ -26,6 +26,11 @@ public class EncryptionService {
     private String key;
 
     private static final Logger logger = LoggerFactory.getLogger(EncryptionService.class);
+    private static EncryptionService encryptionService;
+
+    public EncryptionService() {
+        encryptionService = this;
+    }
 
     /**
      * Returns a encrypted text containing the used salt.
@@ -43,7 +48,7 @@ public class EncryptionService {
      * Decrypts the given text with the salt.
      * @param encryptedText the encrypted string
      * @param salt the salt used for encrypting the text
-     * @return
+     * @return the decrypted text
      */
     public String decrypt(String encryptedText, String salt) {
         TextEncryptor textEncryptor = Encryptors.text(key, salt);
@@ -82,4 +87,32 @@ public class EncryptionService {
             throw new RuntimeException("MAYPAD_HOME is not set properly.");
         }
     }
+
+    /**
+     * Returns a encrypted text containing the used salt.
+     * @param text the string that should be encrypted
+     * @return encryptedtext that contains the used salt
+     */
+    public static EncryptedText encryptText(String text) {
+        if (encryptionService != null) {
+            return encryptionService.encrypt(text);
+        }
+        logger.error("Text wasn't encrypted, because encryptionService is not initialized.");
+        return new EncryptedText(text, "");
+    }
+
+    /**
+     * Decrypts the given text with the salt.
+     * @param encryptedText the encrypted string
+     * @param salt the salt used for encrypting the text
+     * @return the decrypted text
+     */
+    public static String decryptText(String encryptedText, String salt) {
+        if (encryptionService != null) {
+            return encryptionService.decrypt(encryptedText, salt);
+        }
+        logger.error("Text wasn't decrypted, because encryptionService is not initialized.");
+        return encryptedText;
+    }
+
 }
