@@ -47,7 +47,7 @@ public class ProjectService {
     private ProjectRepository projectRepository;
     private ServerConfig serverConfig;
 
-    private Logger logger = LoggerFactory.getLogger(ProjectService.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProjectService.class);
 
     /**
      * Constructor for ProjectService.
@@ -101,6 +101,9 @@ public class ProjectService {
         }
         if (type == null) {
             logger.error("Couldn't find repository type " + repoTypeString);
+            type = RepositoryType.NONE;
+        } else if (request.getRepositoryUrl() == null) {
+            logger.error("Repository-URL is null");
             type = RepositoryType.NONE;
         }
         ServiceAccount serviceAccount = getServiceAccount(request.getServiceAccount());
