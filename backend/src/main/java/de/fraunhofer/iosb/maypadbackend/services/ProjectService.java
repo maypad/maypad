@@ -94,7 +94,7 @@ public class ProjectService {
         String repoTypeString = request.getVersionControlSystem();
         RepositoryType type = null;
         for (RepositoryType t : RepositoryType.values()) {
-            if (t.toString().equals(repoTypeString)) {
+            if (t.toString().toLowerCase().equals(repoTypeString.toLowerCase())) {
                 type = t;
                 break;
             }
