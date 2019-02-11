@@ -65,4 +65,17 @@ public class EncryptionServiceTest {
         assertThat(decryptedText).isEqualTo(password);
 
     }
+
+    @Test
+    public void testSingleton() {
+        final String password = "12345password54321";
+        EncryptedText encryptedText = EncryptionService.encryptText(password);
+        assertThat(encryptedText).isNotNull();
+        assertThat(encryptedText.getSalt()).isNotEqualTo("");
+        assertThat(encryptedText.getText()).isNotEqualTo("");
+
+        String decryptedText = EncryptionService.decryptText(encryptedText.getText(), encryptedText.getSalt());
+
+        assertThat(decryptedText).isEqualTo(password);
+    }
 }
