@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AddProjectDialogComponent } from './add-project-dialog.component';
+import { AddProjectDialogComponent, AuthMethods } from './add-project-dialog.component';
 import { FormsModule } from '@angular/forms';
 import { ProjectgroupServiceStub } from 'src/testing/projectgroup.service.stub';
 import { ProjectgroupService } from 'src/app/projectgroup.service';
@@ -42,9 +42,9 @@ describe('AddProjectDialogComponent', () => {
   });
 
   it('should select index', () => {
-    component.authSelectedIndex = 0;
-    component.setAuthSelected(2);
-    expect(component.authSelectedIndex).toBe(2);
+    component.authMethod = AuthMethods.None;
+    component.setAuthSelected('SSH-Key');
+    expect(component.authMethod).toBe(AuthMethods.SSH);
   });
 
 });

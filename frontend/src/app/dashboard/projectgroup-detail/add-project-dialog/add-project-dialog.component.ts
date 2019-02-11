@@ -9,6 +9,12 @@ enum RepoTypes {
   SVN = 'SVN'
 }
 
+export enum AuthMethods {
+  None = 'None',
+  SSH = 'SSH-Key',
+  ServiceAccount = 'Service Account'
+}
+
 @Component({
   selector: 'app-add-project-dialog',
   templateUrl: './add-project-dialog.component.html',
@@ -23,14 +29,10 @@ export class AddProjectDialogComponent implements OnInit {
 
   // Can't declare actual enum in class
   RepoTypes = RepoTypes;
-  repoType = RepoTypes.Git;
+  AuthMethods = AuthMethods;
 
-  /* Values:
-  1 = No authentification method
-  2 = Authentification via SSH-Key
-  3 = Authentification via Serviceaccount
-  */
-  authSelectedIndex = 1;
+  authMethod = AuthMethods.None;
+  repoType = RepoTypes.Git;
 
   constructor(
     private groupService: ProjectgroupService,
@@ -44,11 +46,13 @@ export class AddProjectDialogComponent implements OnInit {
     this.sshKey = '';
     this.username = '';
     this.password = '';
+    this.authMethod = AuthMethods.None;
+    this.repoType = RepoTypes.Git;
     this.ref.detectChanges();
   }
 
-  setAuthSelected(num) {
-    this.authSelectedIndex = num;
+  setAuthSelected(val) {
+    this.authMethod = val;
   }
 
   setRepoSelected(val: string) {
@@ -57,14 +61,14 @@ export class AddProjectDialogComponent implements OnInit {
 
   addProject() {
     let serviceAccount: ServiceAccount;
-    switch (this.authSelectedIndex) {
-      case 1:
+    switch (this.authMethod) {
+      case AuthMethods.None:
         serviceAccount = null;
         break;
-      case 2:
+      case AuthMethods.SSH:
         serviceAccount = { sshKey: this.sshKey };
         break;
-      case 3:
+      case AuthMethods.ServiceAccount:
         serviceAccount = {
           username: this.username,
           password: this.password

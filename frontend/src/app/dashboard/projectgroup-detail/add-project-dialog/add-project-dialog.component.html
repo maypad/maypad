@@ -23,18 +23,16 @@
         <label class="input-group-text" for="authSelection" i18n="auth method">Authentification Method</label>
       </div>
       <select class="custom-select" id="authSelection" (change)="setAuthSelected($event.target.value)">
-        <option selected value="1" i18n="None">None</option>
-        <option value="2" i18n="SSH-Key">SSH-Key</option>
-        <option value="3" i18n="Service Account">Service Account</option>
+        <option *ngFor="let type of AuthMethods | enumToArray">{{ AuthMethods[type] }}</option>
       </select>
     </div>
   </div>
-  <div class="input-group mb-3" [ngClass]="{ 'd-none': authSelectedIndex != 2 }">
+  <div class="input-group mb-3" [ngClass]="{ 'd-none': authMethod !== AuthMethods.SSH }">
     <div class="input-group-prepend"><span class="input-group-text" id="sshField" i18n="SSH-Key|Repo Auth: SSH-Key">SSH
         Key</span></div>
     <input type="text" class="form-control" [(ngModel)]="sshKey" aria-describedby="sshField" required />
   </div>
-  <div [ngClass]="{ 'd-none': authSelectedIndex != 3 }">
+  <div [ngClass]="{ 'd-none': authMethod !== AuthMethods.ServiceAccount }">
     <div class="input-group mb-3">
       <div class="input-group-prepend"><span class="input-group-text" id="usernameField" i18n="Username|Repo Auth: service account username">Username</span></div>
       <input type="text" class="form-control" [(ngModel)]="username" aria-describedby="usernameField" required />
