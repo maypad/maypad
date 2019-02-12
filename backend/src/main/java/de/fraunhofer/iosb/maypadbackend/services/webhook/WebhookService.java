@@ -12,6 +12,8 @@ import de.fraunhofer.iosb.maypadbackend.repositories.ProjectRepository;
 import de.fraunhofer.iosb.maypadbackend.services.build.BuildService;
 import de.fraunhofer.iosb.maypadbackend.services.reporefresh.RepoService;
 import de.fraunhofer.iosb.maypadbackend.util.Tuple;
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,12 +37,13 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Service
 public class WebhookService {
-
+    @Setter
     private Map<String, WebhookHandler> mappedHooks;
     private ServerConfig serverConfig;
     private BuildService buildService;
     private RepoService repoService;
     private ProjectRepository projectRepository;
+    private RestTemplate restTemplate;
     private char[] buf;
 
     private static final String tokenChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -57,15 +60,17 @@ public class WebhookService {
      * @param buildService      the BuildService used to build projects
      * @param repoService       the RepoService used to update repositories
      * @param projectRepository the ProjectRepository used to access projects
+     * @param restTemplate      the restTemplate
      */
     @Lazy
     @Autowired
     public WebhookService(ServerConfig serverConfig, BuildService buildService, RepoService repoService,
-                          ProjectRepository projectRepository) {
+                          ProjectRepository projectRepository, RestTemplate restTemplate) {
         this.serverConfig = serverConfig;
         this.buildService = buildService;
         this.repoService = repoService;
         this.projectRepository = projectRepository;
+        this.restTemplate = restTemplate;
 
         buf = new char[serverConfig.getWebhookTokenLength()];
 
@@ -148,22 +153,9 @@ public class WebhookService {
     @Async
     public <T> CompletableFuture<ResponseEntity<T>> call(Webhook webhook, HttpMethod method, HttpEntity<?> requestEntity,
                                                          Class<T> responseType, Object... uriVariables) {
-        RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<T> response = restTemplate.exchange(webhook.getUrl(), method, requestEntity, responseType,
                 uriVariables);
         return CompletableFuture.completedFuture(response);
-    }
-
-    /**
-     * Calls the webhook with the given method and returns the ResponseEntity as String.
-     *
-     * @param webhook the webhook that should be called
-     * @param method  the HTTP method (GET, POST, etc)
-     * @return Future of ResponseEntity
-     */
-    @Async
-    public CompletableFuture<ResponseEntity<String>> call(Webhook webhook, HttpMethod method) {
-        return call(webhook, method, null, String.class);
     }
 
     /**
@@ -180,10 +172,20 @@ public class WebhookService {
     }
 
     /**
+     * Check if the given token is currently valid.
+     *
+     * @param token the token
+     * @return if token is valid
+     */
+    public boolean isMapped(String token) {
+        return mappedHooks.containsKey(token);
+    }
+
+    /**
      * Init (after start) the mapping for webhooks.
      */
     @PostConstruct
-    private void initMapping() {
+    protected void initMapping() {
         List<Project> projects = projectRepository.findAll();
         for (Project project : projects) {
             InternalWebhook refreshWebhook = project.getRefreshWebhook();
