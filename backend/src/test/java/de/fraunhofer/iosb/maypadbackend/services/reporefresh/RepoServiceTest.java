@@ -86,7 +86,8 @@ public class RepoServiceTest {
         FileUtils.copyDirectory(ressourceRepo, testrepo);
         File gitFoler = new File(testrepo.getAbsolutePath() + File.separator + "git");
         gitFoler.renameTo(new File(testrepo.getAbsolutePath() + File.separator + ".git"));
-        Project project = ProjectBuilder.create().id(1).repositoryUrl(testrepo.getAbsolutePath().replace("\\", "/")).repository(new Repository(RepositoryType.GIT)).build();
+        Project project = ProjectBuilder.create().id(1).repositoryUrl(testrepo.getAbsolutePath()
+                .replace("\\", "/")).repository(new Repository(RepositoryType.GIT)).build();
         when(projectServiceMock.getProject(1)).thenReturn(project);
         when(projectServiceMock.saveProject(any())).thenReturn(project);
         doReturn(folder.getRoot().getAbsolutePath()).when(serverConfig).getRepositoryStoragePath();
