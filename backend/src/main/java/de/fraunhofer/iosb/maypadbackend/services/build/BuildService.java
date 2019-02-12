@@ -117,12 +117,9 @@ public class BuildService {
             lock.tryAcquire();
             runningBuilds.put(new Tuple<>(id, ref), lock);
             if (withDependencies) {
-                runningBuilds.remove(new Tuple<>(id, ref), lock);
                 if (!dependencyBuildHelper.runBuildWithDependencies(id, ref)) {
                     logger.debug("Build of dependencies failed for project %d.", id);
                     return CompletableFuture.completedFuture(Status.FAILED);
-                } else {
-                    return CompletableFuture.completedFuture(Status.SUCCESS);
                 }
             }
 

@@ -56,7 +56,7 @@ public class DependencyBuildHelper {
         Stack<BuildNode> buildStack = getBuildStack(root);
         int highestLayer = buildStack.peek().getLayer();
         List<BuildNode> currentLayer = new ArrayList<BuildNode>();
-        for (int i = highestLayer; i >= 0; i--) {
+        for (int i = highestLayer; i > 0; i--) {
             // Get all branches on that layer, run builds
             currentLayer.clear();
             while (!buildStack.empty() && buildStack.peek().getLayer() == i) {
