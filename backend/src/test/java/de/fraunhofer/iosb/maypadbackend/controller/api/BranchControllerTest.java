@@ -5,6 +5,9 @@ import de.fraunhofer.iosb.maypadbackend.dtos.mapper.request.BuildRequestBuilder;
 import de.fraunhofer.iosb.maypadbackend.dtos.mapper.request.DeploymentRequestBuilder;
 import de.fraunhofer.iosb.maypadbackend.dtos.request.BuildRequest;
 import de.fraunhofer.iosb.maypadbackend.dtos.request.DeploymentRequest;
+import de.fraunhofer.iosb.maypadbackend.exceptions.httpexceptions.BuildRunningException;
+import de.fraunhofer.iosb.maypadbackend.exceptions.httpexceptions.DeploymentRunningException;
+import de.fraunhofer.iosb.maypadbackend.exceptions.httpexceptions.InvalidTokenException;
 import de.fraunhofer.iosb.maypadbackend.exceptions.httpexceptions.NotFoundException;
 import de.fraunhofer.iosb.maypadbackend.model.Status;
 import de.fraunhofer.iosb.maypadbackend.model.build.Build;
@@ -17,6 +20,7 @@ import de.fraunhofer.iosb.maypadbackend.services.ProjectService;
 import de.fraunhofer.iosb.maypadbackend.services.build.BuildService;
 import de.fraunhofer.iosb.maypadbackend.services.deployment.DeploymentService;
 import de.fraunhofer.iosb.maypadbackend.services.reporefresh.RepoService;
+import de.fraunhofer.iosb.maypadbackend.services.webhook.WebhookService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -33,6 +38,10 @@ import java.util.Arrays;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -58,11 +67,13 @@ public class BranchControllerTest {
     private DeploymentService deploymentServiceMock;
 
     @MockBean
-    private RepoService repoServiceMock;
+    private WebhookService webhookServiceMock;
+
+    @SpyBean
+    private RestExceptionHandler restExceptionHandlerSpy;
 
     @Autowired
     private MockMvc mockMvc;
-
 
     @Before
     public void setup() {
@@ -195,12 +206,35 @@ public class BranchControllerTest {
     }
 
     @Test
+    public void triggerBuildRunning() throws Exception {
+        BuildRequest request = BuildRequestBuilder.create()
+                .withDependencies(true)
+                .build();
+
+        doThrow(BuildRunningException.class).when(buildServiceMock).buildBranch(anyInt(), anyString(), any(), any());
+
+        when(projectServiceMock.getBranch(2, "master")).thenReturn(BranchBuilder.create().build());
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        mockMvc.perform(post("/api/projects/{id}/branches/{ref}/builds", 2, "master")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(request))
+        )
+                .andExpect(status().isOk());
+
+        verify(buildServiceMock, times(1)).buildBranch(2, "master", request, null);
+        verify(restExceptionHandlerSpy, times(1)).handleBuildRunningException(any());
+        verifyNoMoreInteractions(buildServiceMock);
+        verifyNoMoreInteractions(restExceptionHandlerSpy);
+        verifyNoMoreInteractions(projectServiceMock);
+    }
+
+    @Test
     public void triggerDeployment() throws Exception {
         DeploymentRequest request = DeploymentRequestBuilder.create()
                 .withDependencies(true)
                 .build();
-
-        when(projectServiceMock.getBranch(2, "master")).thenReturn(BranchBuilder.create().build());
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -216,39 +250,70 @@ public class BranchControllerTest {
     }
 
     @Test
-    public void notifyRepoUpdate() throws Exception {
-        when(projectServiceMock.getBranch(2, "master")).thenReturn(BranchBuilder.create().build());
+    public void triggerDeploymentRunning() throws Exception {
+        DeploymentRequest request = DeploymentRequestBuilder.create()
+                .withDependencies(true)
+                .build();
 
+        doThrow(DeploymentRunningException.class).when(buildServiceMock).buildBranch(anyInt(), anyString(), any(), any());
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        mockMvc.perform(post("/api/projects/{id}/branches/{ref}/builds", 2, "master")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(request))
+        )
+                .andExpect(status().isOk());
+
+        verify(deploymentServiceMock, times(1)).deployBuild(2, "master", request, null);
+        verify(restExceptionHandlerSpy, times(1)).handleDeploymentRunningException(any());
+        verifyNoMoreInteractions(deploymentServiceMock);
+        verifyNoMoreInteractions(restExceptionHandlerSpy);
+        verifyNoMoreInteractions(projectServiceMock);
+    }
+
+    @Test
+    public void notifyRepoUpdate() throws Exception {
         mockMvc.perform(post("/api/projects/{id}/branches/{ref}/push?token=123", 2, "master"))
                 .andExpect(status().isOk());
 
-        verify(repoServiceMock, times(1)).refreshProject(2);
+        verify(webhookServiceMock).handle("123");
         verifyNoMoreInteractions(projectServiceMock);
-        verifyNoMoreInteractions(repoServiceMock);
+        verifyNoMoreInteractions(webhookServiceMock);
+    }
+
+    @Test
+    public void notiyRepoUpdateInvalidToken() throws Exception {
+        doThrow(InvalidTokenException.class).when(webhookServiceMock).handle(anyString());
+
+        mockMvc.perform(post("/api/projects/{id}/branches/{ref}/push?token=invalid", 2, "master"))
+                .andExpect(status().isForbidden());
+
+        verify(webhookServiceMock).handle("invalid");
+        verify(restExceptionHandlerSpy).handleInvalidTokenException(any());
+        verifyNoMoreInteractions(webhookServiceMock);
+        verifyNoMoreInteractions(restExceptionHandlerSpy);
+        verifyNoMoreInteractions(projectServiceMock);
     }
 
     @Test
     public void notifyBuildSuccess() throws Exception {
-        when(projectServiceMock.getBranch(2, "master")).thenReturn(BranchBuilder.create().build());
-
         mockMvc.perform(post("/api/projects/{id}/branches/{ref}/builds/success?token=123", 2, "master"))
                 .andExpect(status().isOk());
 
-        verify(buildServiceMock, times(1)).signalStatus(2, "master", Status.SUCCESS);
+        verify(webhookServiceMock).handle("123");
         verifyNoMoreInteractions(projectServiceMock);
-        verifyNoMoreInteractions(repoServiceMock);
+        verifyNoMoreInteractions(webhookServiceMock);
     }
 
     @Test
     public void notifyBuildFailure() throws Exception {
-        when(projectServiceMock.getBranch(2, "master")).thenReturn(BranchBuilder.create().build());
-
         mockMvc.perform(post("/api/projects/{id}/branches/{ref}/builds/fail?token=123", 2, "master"))
                 .andExpect(status().isOk());
 
-        verify(buildServiceMock, times(1)).signalStatus(2, "master", Status.FAILED);
+        verify(webhookServiceMock).handle("123");
         verifyNoMoreInteractions(projectServiceMock);
-        verifyNoMoreInteractions(repoServiceMock);
+        verifyNoMoreInteractions(webhookServiceMock);
     }
 
 }
