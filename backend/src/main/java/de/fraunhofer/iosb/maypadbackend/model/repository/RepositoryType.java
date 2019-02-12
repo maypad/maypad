@@ -23,11 +23,6 @@ public enum RepositoryType {
         public RepoManager toRepoManager(Project project) {
             return new GitRepoManager(project);
         }
-
-        @Override
-        public boolean isUrlBelongToRepotype(String url) {
-            return url.endsWith(".git");
-        }
     },
 
     /**
@@ -37,12 +32,6 @@ public enum RepositoryType {
         @Override
         public RepoManager toRepoManager(Project project) {
             return new SvnRepoManager(project);
-        }
-
-        @Override
-        public boolean isUrlBelongToRepotype(String url) {
-            // TODO: More protocols, no clashes with git.
-            return url.startsWith("svn://") || url.startsWith("svn+ssh://") || url.startsWith("http");
         }
     },
 
@@ -54,11 +43,6 @@ public enum RepositoryType {
         public RepoManager toRepoManager(Project project) {
             return new NullRepoManager(project);
         }
-
-        @Override
-        public boolean isUrlBelongToRepotype(String url) {
-            return false;
-        }
     };
 
     /**
@@ -68,14 +52,6 @@ public enum RepositoryType {
      * @return Accompanying repomanager
      */
     public abstract RepoManager toRepoManager(Project project);
-
-    /**
-     * Check whether a url (for a repo) corresponding to this repotype.
-     *
-     * @param url Url to the repository
-     * @return True, if url belong to the corresponding repotype, else false
-     */
-    public abstract boolean isUrlBelongToRepotype(String url);
 
 
 }

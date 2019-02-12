@@ -8,6 +8,7 @@ import de.fraunhofer.iosb.maypadbackend.exceptions.httpexceptions.NotFoundExcept
 import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.Projectgroup;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Branch;
+import de.fraunhofer.iosb.maypadbackend.model.repository.RepositoryType;
 import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.KeyServiceAccount;
 import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.ServiceAccount;
 import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.UserServiceAccount;
@@ -18,6 +19,8 @@ import de.fraunhofer.iosb.maypadbackend.services.sse.SseEventType;
 import de.fraunhofer.iosb.maypadbackend.services.sse.SseService;
 import de.fraunhofer.iosb.maypadbackend.services.webhook.WebhookService;
 import lombok.NoArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -43,6 +46,8 @@ public class ProjectService {
     private SchedulerService schedulerService;
     private ProjectRepository projectRepository;
     private ServerConfig serverConfig;
+
+    private static final Logger logger = LoggerFactory.getLogger(ProjectService.class);
 
     /**
      * Constructor for ProjectService.
@@ -86,11 +91,27 @@ public class ProjectService {
      * @return Created project
      */
     public Project create(CreateProjectRequest request) {
+        String repoTypeString = request.getVersionControlSystem();
+        RepositoryType type = null;
+        for (RepositoryType t : RepositoryType.values()) {
+            if (t.toString().toLowerCase().equals(repoTypeString.toLowerCase())) {
+                type = t;
+                break;
+            }
+        }
+        if (type == null) {
+            logger.error("Couldn't find repository type " + repoTypeString);
+            type = RepositoryType.NONE;
+        } else if (request.getRepositoryUrl() == null) {
+            logger.error("Repository-URL is null");
+            type = RepositoryType.NONE;
+        }
         ServiceAccount serviceAccount = getServiceAccount(request.getServiceAccount());
         Project project = new Project(request.getRepositoryUrl(), serviceAccount);
         //we have to get the projectid, so save it first
         project = saveProject(project);
         project.setRefreshWebhook(webhookService.generateRefreshWebhook(project.getId()));
+        project.getRepository().setRepositoryType(type);
         project = saveProject(project);
         addProjectToProjectgroup(request.getGroupId(), project);
         schedulerService.scheduleRepoRefresh(project.getId());

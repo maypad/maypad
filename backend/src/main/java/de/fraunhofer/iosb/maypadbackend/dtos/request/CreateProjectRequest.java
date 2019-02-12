@@ -12,4 +12,5 @@ public class CreateProjectRequest {
     private int groupId;
     private String repositoryUrl;
     private ServiceAccountRequest serviceAccount;
+    private String versionControlSystem;
 }
