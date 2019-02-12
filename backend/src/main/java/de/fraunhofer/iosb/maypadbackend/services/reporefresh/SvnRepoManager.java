@@ -269,7 +269,7 @@ public class SvnRepoManager extends RepoManager {
             logger.info("Log entry found");
             commit.setAuthor(new Author(svnLogEntry.getAuthor(), new Mail("")));
             commit.setTimestamp(svnLogEntry.getDate());
-            commit.setIdentifier(""); // No SVN commit identifier
+            commit.setIdentifier("Revision " + svnLogEntry.getRevision());
             commit.setMessage(svnLogEntry.getMessage());
         }
 
