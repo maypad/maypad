@@ -12,14 +12,19 @@ import { ProjectgroupService } from '../projectgroup.service';
 import { ProjectgroupServiceStub } from 'src/testing/projectgroup.service.stub';
 import { Projectgroup } from '../model/projectGroup';
 import * as get_projectgroups_response from 'sample-requests/get.projectgroups.response.json';
+import * as projectResponse from 'sample-requests/get.projects.id.response.json';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { of } from 'rxjs';
 import { EnumToArrayPipe } from '../enum-to-array.pipe';
+import { NotificationService } from '../notification.service';
+import { NotificationServiceStub } from 'src/testing/notification-service-stub';
+import { Project } from '../model/project';
 
 describe('DashboardComponent', () => {
   let component: DashboardComponent;
   let fixture: ComponentFixture<DashboardComponent>;
   const response: Projectgroup[] = get_projectgroups_response['default'];
+  const project: Project = projectResponse['default'];
   const snapshot = new ActivatedRouteSnapshot();
 
   beforeEach(async(() => {
@@ -35,7 +40,11 @@ describe('DashboardComponent', () => {
           provide: ActivatedRoute, useClass: class {
             snapshot = snapshot; data = of({ groups: get_projectgroups_response['default'] });
           }
-        }]
+        },
+        {
+          provide: NotificationService, useClass: NotificationServiceStub
+        }
+      ]
     })
       .compileComponents();
   }));
@@ -62,5 +71,29 @@ describe('DashboardComponent', () => {
   it('should create button', () => {
     const nativeElement: HTMLElement = fixture.nativeElement;
     expect(nativeElement.querySelector('button').textContent).toBe('Toggle All');
+  });
+
+  it('should setProjectInfo', () => {
+    const notService: NotificationService = TestBed.get(NotificationService);
+    spyOn(notService, 'send');
+    component.projectGroups[0].projects = [projectResponse['default']];
+    const evt = new MessageEvent('build_updated', {
+      data: `{ "projectId": ${project['id']},
+            "name": "${projectResponse['name']}" }`
+    });
+    component.setProjectInfo(evt);
+    expect(notService.send).toHaveBeenCalled();
+  });
+
+  it('should toggle true groups', () => {
+    component.showAll = true;
+    component.toggleGroups();
+    expect(component.showAll).toBeFalsy();
+  });
+
+  it('should toggle false groups', () => {
+    component.showAll = false;
+    component.toggleGroups();
+    expect(component.showAll).toBeTruthy();
   });
 });
