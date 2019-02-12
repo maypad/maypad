@@ -25,7 +25,7 @@
     <div *ngIf="project.tags && project.tags.length > 0" i18n="tags">
       <b>Tags:</b>
       <ul class="tagList">
-        <li *ngFor="let tag of project.tags" data-toggle="tooltip" title="Identifier: {{ tag.commit.identifier ? tag.commit.identifier : null }}">
+        <li *ngFor="let tag of project.tags" data-toggle="tooltip" title="Identifier: {{ tag.commit ? tag.commit.identifier : null }}">
           {{ tag.name }}
         </li>
       </ul>
