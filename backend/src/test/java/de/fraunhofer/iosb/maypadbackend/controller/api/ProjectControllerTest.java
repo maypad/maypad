@@ -42,6 +42,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -182,5 +183,23 @@ public class ProjectControllerTest {
 
         verify(projectServiceMock, times(1)).changeProject(1, request);
         verifyNoMoreInteractions(projectServiceMock);
+    }
+
+    @Test
+    public void refreshProjectValid() throws Exception {
+        mockMvc.perform(post("/api/projects/{id}/refresh", 1))
+                .andExpect(status().isOk());
+
+        verify(repoServiceMock, times(1)).refreshProject(1);
+        verifyNoMoreInteractions(repoServiceMock);
+    }
+
+    @Test
+    public void deleteProjectValid() throws Exception {
+        mockMvc.perform(delete("/api/projects/{id}", 1))
+                .andExpect(status().isOk());
+
+        verify(repoServiceMock, times(1)).deleteProject(1);
+        verifyNoMoreInteractions(repoServiceMock);
     }
 }
