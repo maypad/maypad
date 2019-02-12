@@ -16,7 +16,7 @@ export class DashboardComponent implements OnInit {
   @ViewChild('addGroupDialog') modal: AddProjectgroupDialogComponent;
   projectGroups: Projectgroup[];
   showAll = true;
-  evtSource = new EventSource('/sse');
+  evtSource: EventSource;
   routeSubscription: Subscription;
 
   constructor(private crumbs: BreadcrumbService,
@@ -43,6 +43,7 @@ export class DashboardComponent implements OnInit {
       this.modal.clearInput();
     });
 
+    this.evtSource = new EventSource('/sse');
     const initHandler = (e: MessageEvent) => { this.setProjectInfo(e); };
     this.evtSource.addEventListener('project_init', initHandler);
     // Remove event listeners when navigating away
@@ -50,6 +51,7 @@ export class DashboardComponent implements OnInit {
       if (event instanceof NavigationStart) {
         this.evtSource.removeEventListener('project_init', initHandler);
         this.routeSubscription.unsubscribe();
+        this.evtSource.close();
       }
     });
   }

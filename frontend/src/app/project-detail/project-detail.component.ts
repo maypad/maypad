@@ -18,7 +18,7 @@ export class ProjectDetailComponent implements OnInit {
   @ViewChild('editDialog') editDialog: EditProjectDialogComponent;
   project: Project;
   branches: Branch[];
-  evtSource = new EventSource('/sse');
+  evtSource: EventSource;
   routeSubscription: Subscription;
   constructor(
     private route: ActivatedRoute,
@@ -49,6 +49,7 @@ export class ProjectDetailComponent implements OnInit {
       $('[data-toggle="tooltip"]').tooltip();
     });
 
+    this.evtSource = new EventSource('/sse');
     // Need to be able to remove the event listeners again
     const refreshHandler = (e: MessageEvent) => { this.reloadProject(e); };
     const buildUpdateHandler = (e: MessageEvent) => { this.updateBuildStatus(e); };
@@ -62,6 +63,7 @@ export class ProjectDetailComponent implements OnInit {
         this.evtSource.removeEventListener('auth_updated', refreshHandler);
         this.evtSource.removeEventListener('build_updated', buildUpdateHandler);
         this.routeSubscription.unsubscribe();
+        this.evtSource.close();
       }
     });
   }

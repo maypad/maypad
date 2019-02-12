@@ -15,7 +15,7 @@ export class BranchDetailComponent implements OnInit {
   branch: Branch;
   project: Project;
   fmtTimestamp: string;
-  evtSource = new EventSource('/sse');
+  evtSource: EventSource;
   routeSubscription: Subscription;
   constructor(private route: ActivatedRoute,
     private crumbs: BreadcrumbService,
@@ -34,6 +34,7 @@ export class BranchDetailComponent implements OnInit {
     const mom = moment(this.branch.lastCommit.timestamp, moment.ISO_8601);
     this.fmtTimestamp = mom.fromNow();
 
+    this.evtSource = new EventSource('/sse');
     const buildUpdateHandler = (e: MessageEvent) => { this.updateStatus(e, 'build'); };
     const deploymentUpdateHandler = (e: MessageEvent) => { this.updateStatus(e, 'deployment'); };
     this.evtSource.addEventListener('build_updated', buildUpdateHandler);
@@ -44,6 +45,7 @@ export class BranchDetailComponent implements OnInit {
         this.evtSource.removeEventListener('build_updated', buildUpdateHandler);
         this.evtSource.removeEventListener('deployment_updated', deploymentUpdateHandler);
         this.routeSubscription.unsubscribe();
+        this.evtSource.close();
       }
     });
   }
