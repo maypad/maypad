@@ -30,7 +30,8 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
-import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -118,7 +119,9 @@ public class WebhookServiceTest {
     @Test
     public void handleValid() {
         RefreshWebhookHandler handlerMock = mock(RefreshWebhookHandler.class);
-        webhookService.setMappedHooks(Map.of("token", handlerMock));
+        webhookService.setMappedHooks(Stream.of(new Object[][] {
+                {"token", handlerMock}
+        }).collect(Collectors.toMap(d -> (String) d[0], d -> (WebhookHandler) d[1])));
         webhookService.handle("token");
         verify(handlerMock).handle();
         verifyNoMoreInteractions(handlerMock);
@@ -151,7 +154,9 @@ public class WebhookServiceTest {
                         new InternalWebhook("baseurl", "url", "token2", WebhookType.UPDATEBUILD))
                 .build();
         Repository repository = new Repository();
-        repository.setBranches(Map.of("master", branch));
+        repository.setBranches(Stream.of(new Object[][] {
+                {"master", branch}
+        }).collect(Collectors.toMap(d -> (String) d[0], d -> (Branch) d[1])));
         Project project = ProjectBuilder.create()
                 .refreshWebhook(new InternalWebhook("baseurl", "url", "token3", WebhookType.UPDATEBUILD))
                 .repository(repository)
