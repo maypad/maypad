@@ -13,16 +13,10 @@ import de.fraunhofer.iosb.maypadbackend.model.ProjectBuilder;
 import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.UserServiceAccount;
 import de.fraunhofer.iosb.maypadbackend.services.ProjectService;
 import de.fraunhofer.iosb.maypadbackend.services.reporefresh.RepoService;
-import de.fraunhofer.iosb.maypadbackend.services.security.EncryptedText;
-import de.fraunhofer.iosb.maypadbackend.services.security.EncryptionService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,12 +30,10 @@ import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -49,9 +41,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(PowerMockRunner.class)
-@PowerMockRunnerDelegate(SpringRunner.class)
-@PrepareForTest(EncryptionService.class)
+@RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
 public class ProjectControllerTest {
@@ -149,10 +139,6 @@ public class ProjectControllerTest {
 
     @Test
     public void changeProjectValid() throws Exception {
-        mockStatic(EncryptionService.class);
-        PowerMockito.when(EncryptionService.encryptText(anyString())).thenReturn(new EncryptedText("12345", ""));
-        PowerMockito.when(EncryptionService.decryptText(anyString(), anyString())).thenReturn("12345");
-
         ChangeProjectRequest request = ChangeProjectRequestBuilder.create()
                 .serviceAccount(ServiceAccountRequestBuilder.create()
                     .username(Optional.of("user"))
