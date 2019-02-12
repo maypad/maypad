@@ -81,7 +81,7 @@ export class ProjectDetailComponent implements OnInit {
   updateBuildStatus(e: MessageEvent) {
     const data = JSON.parse(e.data);
     if (data['projectId'] === this.project.id) {
-      this.project.branches.forEach((branch) => {
+      this.branches.forEach((branch) => {
         if (branch.name === data['name']) {
           branch.status = (<any>BuildStatus)[data['status']];
         }
