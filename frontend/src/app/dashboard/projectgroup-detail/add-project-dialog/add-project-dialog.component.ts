@@ -4,7 +4,7 @@ import { ProjectgroupService } from 'src/app/projectgroup.service';
 import { ServiceAccount } from 'src/app/model/serviceAccount';
 import { NotificationService } from 'src/app/notification.service';
 
-enum RepoTypes {
+export enum RepoTypes {
   Git = 'Git',
   SVN = 'SVN'
 }

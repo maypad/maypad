@@ -3,7 +3,9 @@ import { BreadcrumbService } from '../breadcrumb.service';
 import { Projectgroup } from '../model/projectGroup';
 import { AddProjectgroupDialogComponent } from './add-projectgroup-dialog/add-projectgroup-dialog.component';
 import { DashboardService } from './dashboard.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
+import { NotificationService } from '../notification.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
@@ -14,10 +16,14 @@ export class DashboardComponent implements OnInit {
   @ViewChild('addGroupDialog') modal: AddProjectgroupDialogComponent;
   projectGroups: Projectgroup[];
   showAll = true;
+  evtSource = new EventSource('/sse');
+  routeSubscription: Subscription;
 
   constructor(private crumbs: BreadcrumbService,
     private route: ActivatedRoute,
-    private dashService: DashboardService) { }
+    private dashService: DashboardService,
+    private notificationService: NotificationService,
+    private router: Router) { }
 
   ngOnInit() {
     this.crumbs.setBreadcrumbs([]);
@@ -35,6 +41,28 @@ export class DashboardComponent implements OnInit {
     });
     $('#addGroupModal').on('hidden.bs.modal', () => {
       this.modal.clearInput();
+    });
+
+    const initHandler = (e: MessageEvent) => { this.setProjectInfo(e); };
+    this.evtSource.addEventListener('project_init', initHandler);
+    // Remove event listeners when navigating away
+    this.routeSubscription = this.router.events.subscribe((event) => {
+      if (event instanceof NavigationStart) {
+        this.evtSource.removeEventListener('project_init', initHandler);
+        this.routeSubscription.unsubscribe();
+      }
+    });
+  }
+
+  setProjectInfo(e: MessageEvent) {
+    const data = JSON.parse(e.data);
+    this.projectGroups.forEach((group) => {
+      group.projects.forEach((proj) => {
+        if (proj.id === data['projectId']) {
+          proj.name = data['name'];
+          this.notificationService.send(`Project(${proj.id}): ${proj.name} has been initialized.`, 'success');
+        }
+      });
     });
   }
 

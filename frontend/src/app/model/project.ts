@@ -15,4 +15,5 @@ export class Project {
     refreshUrl: string;
     tags: Tag[];
     versionControlSystem: string;
+    repoWebsiteUrl: string;
 }

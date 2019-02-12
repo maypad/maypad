@@ -62,4 +62,24 @@ describe('ProjectDetailComponent', () => {
     component.refreshProject();
     expect(notification.send).toHaveBeenCalledWith('The project is now being refreshed.', 'info');
   });
+
+  it('should reload project', () => {
+    const projService: ProjectService = TestBed.get(ProjectService);
+    spyOn(projService, 'loadProject').and.returnValue(of({}));
+    const notService: NotificationService = TestBed.get(NotificationService);
+    spyOn(notService, 'send');
+    const evt = new MessageEvent('build_updated', {
+      data: `{ "projectId": ${project['id']}}`
+    });
+    component.reloadProject(evt);
+    expect(notService.send).toHaveBeenCalledWith('The project has been refreshed.', 'success');
+  });
+
+  it('should update buildstatus', () => {
+    component.project.branches = branches;
+    const evt = new MessageEvent('build_updated', {
+      data: `{ "projectId": ${project['id']}, "name": "master", "status": "SUCCESS"}`
+    });
+    component.updateBuildStatus(evt);
+  });
 });

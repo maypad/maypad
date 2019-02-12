@@ -9,6 +9,8 @@ import * as branchesResponse from 'sample-requests/get.projects.id.branches.ref.
 import * as projectResponse from 'sample-requests/get.projects.id.response.json';
 import { of } from 'rxjs';
 import { RouterTestingModule } from '@angular/router/testing';
+import { NotificationService } from '../notification.service';
+import { NotificationServiceStub } from 'src/testing/notification-service-stub';
 
 describe('BranchDetailComponent', () => {
   let component: BranchDetailComponent;
@@ -33,6 +35,9 @@ describe('BranchDetailComponent', () => {
         },
         {
           provide: MarkedOptions, useValue: {}
+        },
+        {
+          provide: NotificationService, useClass: NotificationServiceStub
         }
       ],
       imports: [MarkdownModule, HttpClientModule, RouterTestingModule]
@@ -48,5 +53,38 @@ describe('BranchDetailComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should update success build status', () => {
+    const notService: NotificationService = TestBed.get(NotificationService);
+    spyOn(notService, 'send');
+    const evt = new MessageEvent('build_updated', {
+      data: `{ "projectId": ${project['id']},
+            "name": "${branch['name']}", "status": "SUCCESS" }`
+    });
+    component.updateStatus(evt, 'build');
+    expect(notService.send).toHaveBeenCalledWith('A build for this branch has been successful.', 'success');
+  });
+
+  it('should update failed build status', () => {
+    const notService: NotificationService = TestBed.get(NotificationService);
+    spyOn(notService, 'send');
+    const evt = new MessageEvent('build_updated', {
+      data: `{ "projectId": ${project['id']},
+            "name": "${branch['name']}", "status": "FAILED" }`
+    });
+    component.updateStatus(evt, 'build');
+    expect(notService.send).toHaveBeenCalledWith('A build for this branch has failed.', 'danger');
+  });
+
+  it('should update failed build status', () => {
+    const notService: NotificationService = TestBed.get(NotificationService);
+    spyOn(notService, 'send');
+    const evt = new MessageEvent('build_updated', {
+      data: `{ "projectId": ${project['id']},
+            "name": "${branch['name']}", "status": "UNKNOWN" }`
+    });
+    component.updateStatus(evt, 'build');
+    expect(notService.send).toHaveBeenCalledTimes(0);
   });
 });

@@ -1,11 +1,13 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router, NavigationStart } from '@angular/router';
 import { BreadcrumbService } from '../breadcrumb.service';
 import { Project } from '../model/project';
 import { Branch } from '../model/branch';
 import { EditProjectDialogComponent } from './edit-project-dialog/edit-project-dialog.component';
 import { ProjectService } from '../project.service';
 import { NotificationService } from '../notification.service';
+import { BuildStatus } from '../model/buildStatus';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-project-detail',
@@ -16,11 +18,14 @@ export class ProjectDetailComponent implements OnInit {
   @ViewChild('editDialog') editDialog: EditProjectDialogComponent;
   project: Project;
   branches: Branch[];
+  evtSource = new EventSource('/sse');
+  routeSubscription: Subscription;
   constructor(
     private route: ActivatedRoute,
     private crumbs: BreadcrumbService,
     private projectService: ProjectService,
-    private notificationService: NotificationService) { }
+    private notificationService: NotificationService,
+    private router: Router) { }
 
   ngOnInit() {
     $('#editProjectModal').on('hidden.bs.modal', () => {
@@ -43,6 +48,43 @@ export class ProjectDetailComponent implements OnInit {
     $(function () {
       $('[data-toggle="tooltip"]').tooltip();
     });
+
+    // Need to be able to remove the event listeners again
+    const refreshHandler = (e: MessageEvent) => { this.reloadProject(e); };
+    const buildUpdateHandler = (e: MessageEvent) => { this.updateBuildStatus(e); };
+    this.evtSource.addEventListener('project_refreshed', refreshHandler);
+    this.evtSource.addEventListener('auth_updated', refreshHandler);
+    this.evtSource.addEventListener('build_updated', buildUpdateHandler);
+    // Remove event listeners when navigating away
+    this.routeSubscription = this.router.events.subscribe((event) => {
+      if (event instanceof NavigationStart) {
+        this.evtSource.removeEventListener('project_refreshed', refreshHandler);
+        this.evtSource.removeEventListener('auth_updated', refreshHandler);
+        this.evtSource.removeEventListener('build_updated', buildUpdateHandler);
+        this.routeSubscription.unsubscribe();
+      }
+    });
+  }
+
+  reloadProject(e: MessageEvent) {
+    const data = JSON.parse(e.data);
+    if (data['projectId'] === this.project.id) {
+      this.projectService.loadProject(this.project.id).subscribe((proj) => {
+        this.project = proj;
+        this.notificationService.send('The project has been refreshed.', 'success');
+      });
+    }
+  }
+
+  updateBuildStatus(e: MessageEvent) {
+    const data = JSON.parse(e.data);
+    if (data['projectId'] === this.project.id) {
+      this.project.branches.forEach((branch) => {
+        if (branch.name === data['name']) {
+          branch.status = (<any>BuildStatus)[data['status']];
+        }
+      });
+    }
   }
 
   refreshProject() {

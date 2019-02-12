@@ -13,6 +13,9 @@
     <h6 class="text-dark mr-2" i18n="Show more project info">Show more information about the project</h6>
   </a>
   <div class="container collapse" id="collapse">
+    <div *ngIf="project.repoWebsiteUrl">
+      <a href="{{ project.repoWebsiteUrl }}">Open Repository</a>
+    </div>
     <div *ngIf="project.refreshUrl">
       <b>Refresh Url:</b> {{ project.refreshUrl }}
     </div>

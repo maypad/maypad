@@ -4,7 +4,6 @@ import { Project } from 'src/app/model/project';
 import { ServiceAccount } from 'src/app/model/serviceAccount';
 import * as get_projectgroups_response from '../../sample-requests/get.projectgroups.response.json';
 import * as get_projectgroups_id_projects_response from '../../sample-requests/get.projectgroups.id.projects.response.json';
-import * as post_projectgroups_response from '../../sample-requests/post.projectgroups.response.json';
 
 export class ProjectgroupServiceStub {
     loadProjectgroups(): Observable<Projectgroup[]> {
@@ -34,5 +33,10 @@ export class ProjectgroupServiceStub {
 
     deleteProjectgroup(id: number): Observable<{}> {
         return of(null);
+    }
+
+    createProject(id: number, repoUrl: string, serviceAccount: ServiceAccount, repoType: string): Observable<Project> {
+        const proj = new Project();
+        return of(proj);
     }
 }
