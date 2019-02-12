@@ -1,5 +1,6 @@
 package de.fraunhofer.iosb.maypadbackend.services.security;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -33,23 +34,19 @@ public class EncryptionServiceTest {
     @BeforeClass
     public static void setupMaypadHome() throws Exception {
         if (MAYPAD_HOME.exists()) {
-            for (File f : MAYPAD_HOME.listFiles()) {
-                f.delete();
-            }
-        } else {
-            MAYPAD_HOME.mkdir();
+            FileUtils.deleteDirectory(MAYPAD_HOME);
         }
+        MAYPAD_HOME.mkdir();
     }
 
     /**
      * Deletes the created MAYPAD_HOME folder.
      */
     @AfterClass
-    public static void cleanupMaypadHome() {
-        for (File f : MAYPAD_HOME.listFiles()) {
-            f.delete();
+    public static void cleanupMaypadHome() throws Exception {
+        if (MAYPAD_HOME.exists()) {
+            FileUtils.deleteDirectory(MAYPAD_HOME);
         }
-        MAYPAD_HOME.delete();
     }
 
     @Test
