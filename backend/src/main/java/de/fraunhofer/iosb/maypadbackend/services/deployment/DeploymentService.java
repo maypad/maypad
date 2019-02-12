@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -37,7 +36,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * Manage the deployment for a project.
  */
 @Service
-@EnableScheduling
 public class DeploymentService {
 
     private ProjectService projectService;

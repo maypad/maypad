@@ -34,7 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -46,8 +45,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -61,7 +62,6 @@ import java.util.concurrent.TimeUnit;
  */
 @Service
 @NoArgsConstructor
-@EnableAsync
 public class RepoService {
 
     private ProjectService projectService;
@@ -101,17 +101,17 @@ public class RepoService {
      * @param id Project-id to update
      */
     @Async("repoRefreshPool")
-    public void refreshProject(int id) {
+    public Future<Void> refreshProject(int id) {
         Project project = projectService.getProject(id);
 
         if (!repoLock(id)) {
             logger.info("Project with id " + project.getId() + " is currently updated");
-            return;
+            return CompletableFuture.completedFuture(null);
         }
         //check if max refresh amount is reached
         if (isRefreshCapReached(id)) {
             removeLock(id);
-            return;
+            return CompletableFuture.completedFuture(null);
         }
         try {
             doRefreshProject(project);
@@ -121,6 +121,7 @@ public class RepoService {
             project = projectService.getProject(id);
             sseService.push(EventData.builder(SseEventType.PROJECT_REFRESHED).projectId(id).name(project.getName()).build());
         }
+        return CompletableFuture.completedFuture(null);
     }
 
     /**
@@ -129,17 +130,17 @@ public class RepoService {
      * @param id Project-id for the local repository
      */
     @Async("repoRefreshPool")
-    public void initProject(int id) {
+    public Future<Void> initProject(int id) {
         Project project = projectService.getProject(id);
         if (!repoLock(id)) {
             logger.info("Project with id " + project.getId() + " is currently initializing");
-            return;
+            return CompletableFuture.completedFuture(null);
         }
         //check if max refresh amount is reached
         if (isRefreshCapReached(id)) {
             setStatusAndSave(project, Status.ERROR);
             removeLock(id);
-            return;
+            return CompletableFuture.completedFuture(null);
         }
         try {
             doInitProject(project);
@@ -149,6 +150,7 @@ public class RepoService {
             sseService.push(EventData.builder(SseEventType.PROJECT_INIT).projectId(id).name(project.getName()).build());
             removeLock(id);
         }
+        return CompletableFuture.completedFuture(null);
     }
 
     /**
@@ -440,7 +442,7 @@ public class RepoService {
         File parentDir = new File(serverConfig.getRepositoryStoragePath());
 
         if (!FileUtil.hasWriteAccess(parentDir)) {
-            logger.error("Can't read / write to " + parentDir.getAbsolutePath());
+            logger.error("Can't read / write to (maybe missing) " + parentDir.getAbsolutePath());
             initNullRepository(repository);
             setStatusAndSave(project, Status.ERROR);
             return;
