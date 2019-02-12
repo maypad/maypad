@@ -59,14 +59,13 @@ public class DependencyBuildHelper {
         for (int i = highestLayer; i >= 0; i--) {
             // Get all branches on that layer, run builds
             currentLayer.clear();
-            while (buildStack.peek().getLayer() == i) {
+            while (!buildStack.empty() && buildStack.peek().getLayer() == i) {
                 currentLayer.add(buildStack.pop());
             }
             List<CompletableFuture<Status>> buildFutures = new LinkedList<>();
             currentLayer.forEach(
                     n -> buildFutures.add(buildService.buildBranch(n.getProjectId(), n.getBranchRef(), false, null))
             );
-
             try {
                 for (CompletableFuture<Status> f : buildFutures) {
                     if (f.get() != Status.SUCCESS) {
@@ -107,6 +106,7 @@ public class DependencyBuildHelper {
                 BuildNode child = new BuildNode(desc.getProjectId(), desc.getBranchName());
                 child.setParent(node);
                 node.addChild(child);
+                nodes.add(child);
             }
         }
     }

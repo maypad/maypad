@@ -116,12 +116,13 @@ public class BuildService {
             BuildLock lock = new BuildLock(build.getId());
             lock.tryAcquire();
             runningBuilds.put(new Tuple<>(id, ref), lock);
-
             if (withDependencies) {
+                runningBuilds.remove(new Tuple<>(id, ref), lock);
                 if (!dependencyBuildHelper.runBuildWithDependencies(id, ref)) {
-                    signalStatus(id, ref, Status.FAILED);
                     logger.debug("Build of dependencies failed for project %d.", id);
                     return CompletableFuture.completedFuture(Status.FAILED);
+                } else {
+                    return CompletableFuture.completedFuture(Status.SUCCESS);
                 }
             }
 
@@ -190,6 +191,7 @@ public class BuildService {
         }
         if (status == Status.FAILED || status == Status.SUCCESS || status == Status.TIMEOUT) {
             sseService.push(EventData.builder(SseEventType.BUILD_UPDATE).projectId(id).name(ref).status(status).build());
+            lock.release();
             runningBuilds.remove(branchMapEntry);
         }
         logger.debug(String.format("Build %d changed its status to %s on (project %d, branch %s)", build.getId(),
