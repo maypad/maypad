@@ -19,7 +19,6 @@ import de.fraunhofer.iosb.maypadbackend.model.repository.BranchBuilder;
 import de.fraunhofer.iosb.maypadbackend.services.ProjectService;
 import de.fraunhofer.iosb.maypadbackend.services.build.BuildService;
 import de.fraunhofer.iosb.maypadbackend.services.deployment.DeploymentService;
-import de.fraunhofer.iosb.maypadbackend.services.reporefresh.RepoService;
 import de.fraunhofer.iosb.maypadbackend.services.webhook.WebhookService;
 import org.junit.Before;
 import org.junit.Test;
@@ -83,10 +82,10 @@ public class BranchControllerTest {
     @Test
     public void getBranches() throws Exception {
         Branch first = BranchBuilder.create()
-                .id(1)
+                .name("master")
                 .build();
         Branch second = BranchBuilder.create()
-                .id(2)
+                .name("development")
                 .build();
 
         when(projectServiceMock.getBranches(1)).thenReturn(Arrays.asList(first, second));
@@ -94,8 +93,8 @@ public class BranchControllerTest {
         mockMvc.perform(get("/api/projects/{id}/branches", 1))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].id", is(1)))
-                .andExpect(jsonPath("$[0].id", is(2)));
+                .andExpect(jsonPath("$[0].name", is("master")))
+                .andExpect(jsonPath("$[1].name", is("development")));
 
         verify(projectServiceMock, times(1)).getBranches(1);
         verifyNoMoreInteractions(projectServiceMock);
@@ -113,7 +112,6 @@ public class BranchControllerTest {
         mockMvc.perform(get("/api/projects/{id}/branches/{ref}", 2, "master"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isMap())
-                .andExpect(jsonPath("$.id", is(3)))
                 .andExpect(jsonPath("$.name", is("master")));
 
         verify(projectServiceMock, times(1)).getBranch(2, "master");
@@ -213,15 +211,13 @@ public class BranchControllerTest {
 
         doThrow(BuildRunningException.class).when(buildServiceMock).buildBranch(anyInt(), anyString(), any(), any());
 
-        when(projectServiceMock.getBranch(2, "master")).thenReturn(BranchBuilder.create().build());
-
         ObjectMapper mapper = new ObjectMapper();
 
         mockMvc.perform(post("/api/projects/{id}/branches/{ref}/builds", 2, "master")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(request))
         )
-                .andExpect(status().isOk());
+                .andExpect(status().isBadRequest());
 
         verify(buildServiceMock, times(1)).buildBranch(2, "master", request, null);
         verify(restExceptionHandlerSpy, times(1)).handleBuildRunningException(any());
@@ -255,18 +251,18 @@ public class BranchControllerTest {
                 .withDependencies(true)
                 .build();
 
-        doThrow(DeploymentRunningException.class).when(buildServiceMock).buildBranch(anyInt(), anyString(), any(), any());
+        doThrow(DeploymentRunningException.class).when(deploymentServiceMock).deployBuild(anyInt(), anyString(), any(), any());
 
         ObjectMapper mapper = new ObjectMapper();
 
-        mockMvc.perform(post("/api/projects/{id}/branches/{ref}/builds", 2, "master")
+        mockMvc.perform(post("/api/projects/{id}/branches/{ref}/deployments", 2, "master")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(request))
         )
-                .andExpect(status().isOk());
+                .andExpect(status().isBadRequest());
 
-        verify(deploymentServiceMock, times(1)).deployBuild(2, "master", request, null);
-        verify(restExceptionHandlerSpy, times(1)).handleDeploymentRunningException(any());
+        verify(deploymentServiceMock).deployBuild(2, "master", request, null);
+        verify(restExceptionHandlerSpy).handleDeploymentRunningException(any());
         verifyNoMoreInteractions(deploymentServiceMock);
         verifyNoMoreInteractions(restExceptionHandlerSpy);
         verifyNoMoreInteractions(projectServiceMock);

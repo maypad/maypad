@@ -42,6 +42,9 @@ public interface BranchMapper {
      */
     @Named("toDependencies")
     default String[] toDependencies(Branch branch) {
+        if (branch == null || branch.getDependencies() == null) {
+            return null;
+        }
         List<DependencyDescriptor> dependencies = branch.getDependencies();
         String[] dependenciesArr = new String[dependencies.size()];
         int i = 0;
@@ -61,6 +64,9 @@ public interface BranchMapper {
      */
     @Named("toMembers")
     default String[] toMembers(Branch branch) {
+        if (branch == null || branch.getMembers() == null) {
+            return null;
+        }
         List<Person> members = branch.getMembers();
         String[] membersArr = new String[members.size()];
         int i = 0;
@@ -79,6 +85,9 @@ public interface BranchMapper {
      */
     @Named("toMails")
     default String[] toMails(Branch branch) {
+        if (branch == null || branch.getMails() == null) {
+            return null;
+        }
         List<Mail> mails = branch.getMails();
         String[] mailsArr = new String[mails.size()];
         int i = 0;

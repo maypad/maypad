@@ -8,10 +8,10 @@ import de.fraunhofer.iosb.maypadbackend.dtos.request.DeploymentRequest;
 import de.fraunhofer.iosb.maypadbackend.dtos.response.BranchResponse;
 import de.fraunhofer.iosb.maypadbackend.dtos.response.BuildResponse;
 import de.fraunhofer.iosb.maypadbackend.dtos.response.DeploymentResponse;
-import de.fraunhofer.iosb.maypadbackend.model.repository.Branch;
 import de.fraunhofer.iosb.maypadbackend.services.ProjectService;
 import de.fraunhofer.iosb.maypadbackend.services.build.BuildService;
 import de.fraunhofer.iosb.maypadbackend.services.deployment.DeploymentService;
+import de.fraunhofer.iosb.maypadbackend.services.webhook.WebhookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,6 +30,7 @@ public class BranchController implements BranchApi {
     private DeploymentMapper deploymentMapper;
     private BuildService buildService;
     private DeploymentService deploymentService;
+    private WebhookService webhookService;
 
     /**
      * Constructor for BranchController.
@@ -43,13 +44,15 @@ public class BranchController implements BranchApi {
      */
     @Autowired
     public BranchController(ProjectService projectService, BranchMapper branchMapper, BuildMapper buildMapper,
-                            DeploymentMapper deploymentMapper, BuildService buildService, DeploymentService deploymentService) {
+                            DeploymentMapper deploymentMapper, BuildService buildService, DeploymentService deploymentService,
+                            WebhookService webhookService) {
         this.projectService = projectService;
         this.branchMapper = branchMapper;
         this.buildMapper = buildMapper;
         this.deploymentMapper = deploymentMapper;
         this.buildService = buildService;
         this.deploymentService = deploymentService;
+        this.webhookService = webhookService;
     }
 
     @Override
@@ -74,34 +77,26 @@ public class BranchController implements BranchApi {
 
     @Override
     public void triggerBuild(int id, String ref, @Valid BuildRequest request) {
-        Branch branch = projectService.getBranch(id, ref);
-        buildService.buildBranch(id, ref, request, "");
+        buildService.buildBranch(id, ref, request, null);
     }
 
     @Override
     public void triggerDeployment(int id, String ref, @Valid DeploymentRequest request) {
-        Branch branch = projectService.getBranch(id, ref);
         deploymentService.deployBuild(id, ref, request, null);
     }
 
     @Override
     public void notifyRepoUpdate(int id, String ref, String token) {
-        Branch branch = projectService.getBranch(id, ref);
-
-        //TODO: Call RepoService
+        webhookService.handle(token);
     }
 
     @Override
     public void notifyBuildSuccess(int id, String ref, String token) {
-        Branch branch = projectService.getBranch(id, ref);
-
-        //TODO: Call WebhookService
+        webhookService.handle(token);
     }
 
     @Override
     public void notifyBuildFailure(int id, String ref, String token) {
-        Branch branch = projectService.getBranch(id, ref);
-
-        //TODO: Call WebhookService
+        webhookService.handle(token);
     }
 }
