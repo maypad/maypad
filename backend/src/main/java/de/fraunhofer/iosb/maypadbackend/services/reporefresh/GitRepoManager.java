@@ -237,11 +237,9 @@ public class GitRepoManager extends RepoManager {
      */
     @Override
     public void cleanUp() {
-        Git git = getGit();
-        if (git != null) {
-            git.close();
+        if (localGit != null) {
+            localGit.close();
         }
-
         localGit = null;
     }
 
