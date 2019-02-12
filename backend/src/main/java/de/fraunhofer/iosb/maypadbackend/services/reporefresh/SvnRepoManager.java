@@ -143,6 +143,9 @@ public class SvnRepoManager extends RepoManager {
     @Override
     public void prepareRefresh() {
         try {
+            if (getProjectConfig() == null) {
+                return;
+            }
             projConfig = getProjectConfig().getKey();
             svnClientManager.getUpdateClient().doUpdate(
                     this.getProjectRootDir(),
