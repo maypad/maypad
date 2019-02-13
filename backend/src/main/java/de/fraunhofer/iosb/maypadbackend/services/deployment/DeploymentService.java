@@ -155,10 +155,10 @@ public class DeploymentService {
         }
         Deployment deployment = getDeployment(branch, runningDeployments.get(branchMapEntry));
         deployment.setStatus(status);
-        sseService.push(EventData.builder(SseEventType.DEPLOYMENT_UPDATE).projectId(id).name(ref).status(status).build());
         runningDeployments.remove(branchMapEntry);
         Project project = projectService.getProject(id);
         projectService.saveProject(project);
+        sseService.push(EventData.builder(SseEventType.DEPLOYMENT_UPDATE).projectId(id).name(ref).status(status).build());
     }
 
 
