@@ -183,11 +183,7 @@ public class BuildService {
         BuildLock lock = runningBuilds.get(branchMapEntry);
         Build build = getBuild(branch, lock.getBuildId());
         build.setStatus(status);
-        if (status == Status.RUNNING) {
-            sseService.push(EventData.builder(SseEventType.BUILD_UPDATE).projectId(id).name(ref).status(status).build());
-        }
         if (status == Status.FAILED || status == Status.SUCCESS || status == Status.TIMEOUT) {
-            sseService.push(EventData.builder(SseEventType.BUILD_UPDATE).projectId(id).name(ref).status(status).build());
             lock.release();
             runningBuilds.remove(branchMapEntry);
         }
@@ -195,6 +191,9 @@ public class BuildService {
                 status, id, ref));
         projectService.saveProject(project);
         projectService.statusPropagation(project.getId());
+        if (status == Status.FAILED || status == Status.SUCCESS || status == Status.TIMEOUT || status == Status.RUNNING) {
+            sseService.push(EventData.builder(SseEventType.BUILD_UPDATE).projectId(id).name(ref).status(status).build());
+        }
     }
 
     /**
