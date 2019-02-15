@@ -15,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,8 @@ public class Repository {
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @MapKeyColumn(name = "name", length = 200)
     private Map<String, Branch> branches;
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private Commit lastCommit;
 
     /**
      * Constructor for Repository.
