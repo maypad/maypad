@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Branch } from 'src/app/model/branch';
+import { BuildStatus } from 'src/app/model/buildStatus';
 
 @Component({
   selector: 'app-branch-list-item',
@@ -9,24 +10,10 @@ import { Branch } from 'src/app/model/branch';
 export class BranchListItemComponent implements OnInit {
   @Input() branch: Branch;
   fmtTimestamp: string;
+  BuildStatus = BuildStatus;
   constructor() { }
 
   ngOnInit() {
-    $(function () {
-      $('[data-toggle="tooltip"]').tooltip({
-        title: function (this: Element) {
-          if (this.className.includes('dot-0')) {
-            return 'Successful';
-          } else if (this.className.includes('dot-1')) {
-            return 'Failing';
-          } else if (this.className.includes('dot-2')) {
-            return 'Running';
-          } else if (this.className.includes('dot-3')) {
-            return 'Unknown';
-          }
-        }
-      });
-    });
     const mom = moment(this.branch.lastCommit.timestamp, moment.ISO_8601);
     this.fmtTimestamp = mom.fromNow();
   }

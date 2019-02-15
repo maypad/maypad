@@ -6,6 +6,8 @@ import { DashboardService } from './dashboard.service';
 import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
 import { NotificationService } from '../notification.service';
 import { Subscription } from 'rxjs';
+import { ProjectService } from '../project.service';
+import { Project } from '../model/project';
 
 @Component({
   selector: 'app-dashboard',
@@ -23,7 +25,8 @@ export class DashboardComponent implements OnInit {
     private route: ActivatedRoute,
     private dashService: DashboardService,
     private notificationService: NotificationService,
-    private router: Router) { }
+    private router: Router,
+    private projService: ProjectService) { }
 
   ngOnInit() {
     this.crumbs.setBreadcrumbs([]);
@@ -45,11 +48,16 @@ export class DashboardComponent implements OnInit {
 
     this.evtSource = new EventSource('/sse');
     const initHandler = (e: MessageEvent) => { this.setProjectInfo(e); };
+    const refreshHandler = (e: MessageEvent) => { this.refreshProject(e); };
     this.evtSource.addEventListener('project_init', initHandler);
+    this.evtSource.addEventListener('project_refreshed', refreshHandler);
+    this.evtSource.addEventListener('build_updated', refreshHandler);
     // Remove event listeners when navigating away
     this.routeSubscription = this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
         this.evtSource.removeEventListener('project_init', initHandler);
+        this.evtSource.removeEventListener('project_refreshed', refreshHandler);
+        this.evtSource.removeEventListener('build_updated', refreshHandler);
         this.routeSubscription.unsubscribe();
         this.evtSource.close();
       }
@@ -64,6 +72,20 @@ export class DashboardComponent implements OnInit {
           proj.name = data['name'];
           this.notificationService.send(`Project(${proj.id}): ${proj.name} has been initialized.`, 'success');
         }
+      });
+    });
+  }
+
+  refreshProject(e: MessageEvent) {
+    const data = JSON.parse(e.data);
+    this.projService.loadProject(data['projectId']).subscribe((proj: Project) => {
+      this.projectGroups.forEach((group) => {
+        group.projects.forEach((existingProject) => {
+          if (existingProject.id === proj.id) {
+            existingProject.status = proj.status;
+            existingProject.name = proj.name;
+          }
+        });
       });
     });
   }

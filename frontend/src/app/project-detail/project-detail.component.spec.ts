@@ -65,7 +65,7 @@ describe('ProjectDetailComponent', () => {
 
   it('should reload project', () => {
     const projService: ProjectService = TestBed.get(ProjectService);
-    spyOn(projService, 'loadProject').and.returnValue(of({}));
+    spyOn(projService, 'loadProject').and.callThrough();
     const notService: NotificationService = TestBed.get(NotificationService);
     spyOn(notService, 'send');
     const evt = new MessageEvent('build_updated', {

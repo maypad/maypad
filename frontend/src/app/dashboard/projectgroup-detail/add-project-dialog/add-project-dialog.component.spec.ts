@@ -67,7 +67,7 @@ describe('AddProjectDialogComponent', () => {
 
   it('should add project none auth', () => {
     const groupService: ProjectgroupService = TestBed.get(ProjectgroupService);
-    spyOn(groupService, 'createProject').and.returnValue(of({}));
+    spyOn(groupService, 'createProject').and.callThrough();
     const notService: NotificationService = TestBed.get(NotificationService);
     spyOn(notService, 'send');
 
@@ -79,7 +79,7 @@ describe('AddProjectDialogComponent', () => {
 
   it('should add project ssh auth', () => {
     const groupService: ProjectgroupService = TestBed.get(ProjectgroupService);
-    spyOn(groupService, 'createProject').and.returnValue(of({}));
+    spyOn(groupService, 'createProject').and.callThrough();
     const notService: NotificationService = TestBed.get(NotificationService);
     spyOn(notService, 'send');
 
@@ -93,7 +93,7 @@ describe('AddProjectDialogComponent', () => {
 
   it('should add project serviceaccount auth', () => {
     const groupService: ProjectgroupService = TestBed.get(ProjectgroupService);
-    spyOn(groupService, 'createProject').and.returnValue(of({}));
+    spyOn(groupService, 'createProject').and.callThrough();
     const notService: NotificationService = TestBed.get(NotificationService);
     spyOn(notService, 'send');
 

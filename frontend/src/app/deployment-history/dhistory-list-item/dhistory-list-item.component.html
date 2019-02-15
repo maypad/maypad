@@ -1,7 +1,8 @@
 <div class="container w-50 d-flex flex-row border-bottom border-dark justify-content-between py-2">
   <span>Type: {{ deployment.type }}</span>
   <span>Time: {{ deployment.timestamp | date : 'H:mm:ss, d/M/yy (z)'}}</span>
-  <span *ngIf="deployment.build && deployment.build.commit">Commit: <<span>{{
+  <span *ngIf="deployment.build && deployment.build.commit && deployment.build.commit.identifier">Commit: <<span>{{
+      deployment.build.commit.identifier.includes('Revision') ? deployment.build.commit.identifier :
       deployment.build.commit.identifier.substr(0, 7)
       }}</span>></span>
 </div>

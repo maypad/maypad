@@ -7,9 +7,10 @@
   </span>
   <div class="container d-flex flex-row">
     <span class="mr-1 text-dark" i18n="Build status">Build Status:</span>
-    <span class="dot dot-{{ branch.status }} mt-1 mr-2" data-toggle="tooltip"></span>
+    <span class="dot dot-{{ branch.status }} mt-1 mr-2" title="{{ branch.status }}"></span>
     <span class="text-dark" *ngIf="branch.lastCommit" i18n="Last Commit">Last Commit<span *ngIf="branch.lastCommit.identifier">
         ({{
+        branch.lastCommit.identifier.includes('Revision') ? branch.lastCommit.identifier :
         branch.lastCommit.identifier.substr(0, 7)
         }})
       </span> </span>

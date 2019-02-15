@@ -24,7 +24,10 @@
             <b i18n="Last commit">Last Commit:</b>
             <ul class="mt-1">
                 <li *ngIf="branch.lastCommit.identifier"><b i18n="Commit identifier">Identifier: </b>
-                    {{ branch.lastCommit.identifier.substr(0, 7) }}
+                    {{
+                    branch.lastCommit.identifier.includes('Revision') ? branch.lastCommit.identifier :
+                    branch.lastCommit.identifier.substr(0, 7)
+                    }}
                 </li>
                 <li><b i18n="Commit author" *ngIf="branch.lastCommit.author">Author: </b>{{ branch.lastCommit.author }}</li>
                 <li><b i18n="Commit Message" *ngIf="branch.lastCommit.message">Message: </b>{{
