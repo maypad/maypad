@@ -14,18 +14,19 @@ import de.fraunhofer.iosb.maypadbackend.repositories.ProjectRepository;
 import de.fraunhofer.iosb.maypadbackend.services.sse.SseService;
 import de.fraunhofer.iosb.maypadbackend.util.Tuple;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
@@ -42,29 +43,37 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
+@RunWith(MockitoJUnitRunner.class)
 public class WebhookServiceTest {
 
-    @MockBean
+    private static ServerConfig serverConfig;
+
+    @Spy
+    private static RestTemplate restTemplate;
+
+    @Mock
     private SseService sseServiceMock;
 
-    @MockBean
+    @Mock
     private ProjectRepository projectRepositoryMock;
 
-    @Autowired
+    @InjectMocks
     private WebhookService webhookService;
-
-    @Autowired
-    private ServerConfig serverConfig;
-
-    @Autowired
-    private RestTemplate restTemplate;
 
     private MockRestServiceServer mockServer;
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
+
+    /**
+     * Setup config.
+     */
+    @BeforeClass
+    public static void setupConfig() {
+        serverConfig = mock(ServerConfig.class);
+        when(serverConfig.getDomain()).thenReturn("domain");
+        when(serverConfig.getWebhookTokenLength()).thenReturn(24);
+    }
 
     @Before
     public void setup() {
