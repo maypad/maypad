@@ -13,6 +13,7 @@ import de.fraunhofer.iosb.maypadbackend.model.deployment.WebhookDeployment;
 import de.fraunhofer.iosb.maypadbackend.model.person.Mail;
 import de.fraunhofer.iosb.maypadbackend.model.person.Person;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Branch;
+import de.fraunhofer.iosb.maypadbackend.model.repository.Commit;
 import de.fraunhofer.iosb.maypadbackend.model.repository.DependencyDescriptor;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Repository;
 import de.fraunhofer.iosb.maypadbackend.model.repository.RepositoryType;
@@ -387,17 +388,25 @@ public class RepoService {
             project.getRepository().getBranches().remove(branchname);
         }
 
+        Commit lastProjectCommit = null;
+
         //update repo data from projects
         for (Branch branch : project.getRepository().getBranches().values()) {
             if (!repoManager.switchBranch(branch.getName())) {
                 logger.info("Can't switch to branch " + branch.getName());
                 continue;
             }
+
             //last branch commit
+            Commit lastCommit = repoManager.getLastCommit();
             if (branch.getLastCommit() == null) {
-                branch.setLastCommit(repoManager.getLastCommit());
+                branch.setLastCommit(lastCommit);
             } else {
-                branch.getLastCommit().compareAndUpdate(repoManager.getLastCommit());
+                branch.getLastCommit().compareAndUpdate(lastCommit);
+            }
+
+            if (lastProjectCommit == null || lastCommit.getTimestamp().getTime() < lastCommit.getTimestamp().getTime()) {
+                lastProjectCommit = lastCommit;
             }
 
             //readme
@@ -405,6 +414,13 @@ public class RepoService {
             if (!readme.equals(branch.getReadme())) {
                 branch.setReadme(readme);
             }
+        }
+
+        //Project last commit
+        if (project.getRepository().getLastCommit() == null) {
+            project.getRepository().setLastCommit(lastProjectCommit);
+        } else {
+            project.getRepository().getLastCommit().compareAndUpdate(lastProjectCommit);
         }
 
 
