@@ -38,15 +38,13 @@ public class SchedulerService {
      * @param repoService       the RepoService used to update repositories
      */
     @Autowired
-    public SchedulerService(ServerConfig serverConfig, RepoService repoService, ProjectRepository projectRepository) {
+    public SchedulerService(ServerConfig serverConfig, RepoService repoService, ProjectRepository projectRepository,
+                            ThreadPoolTaskScheduler scheduler) {
         this.serverConfig = serverConfig;
         this.repoService = repoService;
         this.projectRepository = projectRepository;
-        threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
+        this.threadPoolTaskScheduler = scheduler;
         taskMapping = new ConcurrentHashMap<>();
-        threadPoolTaskScheduler.setPoolSize(serverConfig.getSchedulerPoolSize());
-        threadPoolTaskScheduler.setRemoveOnCancelPolicy(true);
-        threadPoolTaskScheduler.initialize();
     }
 
     /**
@@ -81,7 +79,7 @@ public class SchedulerService {
     }
 
     @PostConstruct
-    private void init() {
+    protected void init() {
         for (Project project : projectRepository.findAll()) {
             logger.info("Scheduled Project " + project.getId());
             RefreshTask task = new RefreshTask(project.getId(), repoService);
