@@ -41,7 +41,7 @@ public class DeploymentService {
     private ProjectService projectService;
     private BuildService buildService;
     private SseService sseService;
-    private Collection<? extends DeploymentTypeExecutor> executors;
+    private Collection<DeploymentTypeExecutor> executors;
     private Map<Class<? extends DeploymentType>, DeploymentTypeExecutor> deploymentTypeMappings;
     private Map<Tuple<Integer, String>, Integer> runningDeployments;
 
@@ -116,7 +116,7 @@ public class DeploymentService {
      * @param buildService   the BuildService used to build branches
      */
     @Autowired
-    public DeploymentService(ProjectService projectService, Collection<? extends DeploymentTypeExecutor> executors,
+    public DeploymentService(ProjectService projectService, Collection<DeploymentTypeExecutor> executors,
                              BuildService buildService, SseService sseService) {
         this.projectService = projectService;
         this.executors = executors;
