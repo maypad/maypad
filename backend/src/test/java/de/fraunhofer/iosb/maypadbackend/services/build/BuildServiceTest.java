@@ -1,16 +1,17 @@
-package de.fraunhofer.iosb.maypadbackend.services.deployment;
+package de.fraunhofer.iosb.maypadbackend.services.build;
 
-import de.fraunhofer.iosb.maypadbackend.dtos.mapper.request.DeploymentRequestBuilder;
-import de.fraunhofer.iosb.maypadbackend.dtos.request.DeploymentRequest;
+import de.fraunhofer.iosb.maypadbackend.dtos.mapper.request.BuildRequestBuilder;
+import de.fraunhofer.iosb.maypadbackend.dtos.request.BuildRequest;
 import de.fraunhofer.iosb.maypadbackend.exceptions.httpexceptions.NotFoundException;
 import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.ProjectBuilder;
-import de.fraunhofer.iosb.maypadbackend.model.deployment.WebhookDeployment;
+import de.fraunhofer.iosb.maypadbackend.model.Status;
+import de.fraunhofer.iosb.maypadbackend.model.build.WebhookBuild;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Branch;
 import de.fraunhofer.iosb.maypadbackend.model.repository.BranchBuilder;
+import de.fraunhofer.iosb.maypadbackend.model.repository.Commit;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Repository;
 import de.fraunhofer.iosb.maypadbackend.services.ProjectService;
-import de.fraunhofer.iosb.maypadbackend.services.build.BuildService;
 import de.fraunhofer.iosb.maypadbackend.services.sse.EventData;
 import de.fraunhofer.iosb.maypadbackend.services.sse.SseService;
 import de.fraunhofer.iosb.maypadbackend.services.webhook.WebhookService;
@@ -30,24 +31,25 @@ import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.startsWith;
+import static org.mockito.Mockito.after;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DeploymentServiceTest {
+public class BuildServiceTest {
 
     @Mock
     private ProjectService projectService;
-
-    @Mock
-    private BuildService buildService;
 
     @Mock
     private SseService sseService;
@@ -55,22 +57,26 @@ public class DeploymentServiceTest {
     @Mock
     private WebhookService webhookService;
 
+    @Mock
+    private DependencyBuildHelper dependencyBuildHelper;
+
     @Spy
-    Collection<DeploymentTypeExecutor> executors = new ArrayList<>();
+    Collection<BuildTypeExecutor> executors = new ArrayList<>();
 
     @InjectMocks
-    private DeploymentService deploymentService;
+    private BuildService buildService;
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
-
     @Test
-    public void deployBuildValid() {
+    public void buildBranchValid() throws Exception {
         Branch branch = BranchBuilder.create()
                 .name("master")
-                .deployments(new ArrayList<>())
-                .deploymentType(new WebhookDeployment())
+                .builds(new ArrayList<>())
+                .dependencies(new ArrayList<>())
+                .buildType(new WebhookBuild())
+                .lastCommit(new Commit())
                 .build();
         Repository repository = new Repository();
         repository.setBranches(Stream.of(new Object[][] {
@@ -81,58 +87,69 @@ public class DeploymentServiceTest {
                 .repository(repository)
                 .build();
 
-        executors.add(new WebhookDeploymentExecutor(webhookService, deploymentService));
+        executors.add(new WebhookBuildExecutor(webhookService, buildService));
         when(projectService.getBranch(1, "master")).thenReturn(branch);
         when(projectService.getProject(1)).thenReturn(project);
+        when(projectService.saveProject(project)).thenReturn(project);
+        when(dependencyBuildHelper.runBuildWithDependencies(1, "master")).thenReturn(true);
         when(webhookService.call(any(), any(), any(), any(), any()))
                 .thenReturn(CompletableFuture.completedFuture(new ResponseEntity(HttpStatus.OK)));
 
-        DeploymentRequest request = DeploymentRequestBuilder.create()
-                .withDependencies(true)
-                .withBuild(true)
-                .build();
+        BuildRequest request = BuildRequestBuilder.create().withDependencies(true).build();
 
-        deploymentService.initDeploymentTypeMappings();
-        deploymentService.deployBuild(1, "master", request, "");
+        buildService.initBuildTypeMappings();
 
-        verify(sseService, times(1)).push(any(EventData.class));
-        assertThat(branch.getDeployments().size()).isEqualTo(1);
+        Thread startBuild = new Thread(
+                () -> {
+                    try {
+                        buildService.buildBranch(1, "master", request, null).get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                        fail();
+                    }
+                }
+        );
+        startBuild.start();
+
+
+        verify(sseService, after(2000)).push(any(EventData.class)); //wait for build to be running
+        buildService.signalStatus(1, "master", Status.SUCCESS); //report build as successful
+        startBuild.join();
+
+        verify(sseService, times(2)).push(any(EventData.class));
+        assertThat(branch.getBuilds().size()).isEqualTo(1);
+        assertThat(branch.getBuilds().get(0).getStatus()).isEqualTo(Status.SUCCESS);
     }
 
     @Test
-    public void deployBuildInvalidBranch() {
-        Project project = ProjectBuilder.create()
-                .id(1)
-                .repository(new Repository())
+    public void getLatestBuildInvalid() {
+        Branch branch = BranchBuilder.create()
+                .builds(new ArrayList<>())
                 .build();
 
         expectedException.expect(NotFoundException.class);
-
-        executors.add(new WebhookDeploymentExecutor(webhookService, deploymentService));
-        when(projectService.getProject(1)).thenReturn(project);
-
-        deploymentService.initDeploymentTypeMappings();
-        deploymentService.deployBuild(1, "master", true, true, "");
+        buildService.getLatestBuild(branch);
     }
 
     @Test
     public void initInvalid() {
-        DeploymentTypeExecutor executor = mock(DeploymentTypeExecutor.class);
+        BuildTypeExecutor executor = mock(BuildTypeExecutor.class);
         executors.add(executor);
 
         expectedException.expect(RuntimeException.class);
+        expectedException.expectMessage(startsWith("No BuildTypeExecutor found for "));
 
-        deploymentService.initDeploymentTypeMappings();
+        buildService.initBuildTypeMappings();
     }
 
     @Test
     public void initProxy() {
-        Object proxy = Proxy.newProxyInstance(this.getClass().getClassLoader(), Arrays.array(DeploymentTypeExecutor.class),
+        Object proxy = Proxy.newProxyInstance(this.getClass().getClassLoader(), Arrays.array(BuildTypeExecutor.class),
                 (o, method, objects) -> null);
-        executors.add((DeploymentTypeExecutor) proxy);
+        executors.add((BuildTypeExecutor) proxy);
 
         expectedException.expect(RuntimeException.class);
 
-        deploymentService.initDeploymentTypeMappings();
+        buildService.initBuildTypeMappings();
     }
 }
