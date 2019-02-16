@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -37,7 +36,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * Manage the deployment for a project.
  */
 @Service
-@EnableScheduling
 public class DeploymentService {
 
     private ProjectService projectService;
@@ -157,10 +155,10 @@ public class DeploymentService {
         }
         Deployment deployment = getDeployment(branch, runningDeployments.get(branchMapEntry));
         deployment.setStatus(status);
-        sseService.push(EventData.builder(SseEventType.DEPLOYMENT_UPDATE).projectId(id).name(ref).status(status).build());
         runningDeployments.remove(branchMapEntry);
         Project project = projectService.getProject(id);
         projectService.saveProject(project);
+        sseService.push(EventData.builder(SseEventType.DEPLOYMENT_UPDATE).projectId(id).name(ref).status(status).build());
     }
 
 

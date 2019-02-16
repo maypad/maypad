@@ -22,7 +22,6 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +37,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * Manage the builds for a project.
  */
 @Service
-@EnableScheduling
 public class BuildService {
 
     private ProjectService projectService;
@@ -119,6 +117,7 @@ public class BuildService {
             if (withDependencies) {
                 if (!dependencyBuildHelper.runBuildWithDependencies(id, ref)) {
                     logger.debug("Build of dependencies failed for project %d.", id);
+                    signalStatus(id, ref, Status.FAILED);
                     return CompletableFuture.completedFuture(Status.FAILED);
                 }
             }
@@ -132,6 +131,7 @@ public class BuildService {
                 return CompletableFuture.completedFuture(Status.FAILED);
             }
             branch = projectService.getBranch(id, ref);
+            signalStatus(id, ref, getBuild(branch, build.getId()).getStatus());
             return CompletableFuture.completedFuture(getBuild(branch, build.getId()).getStatus());
         } else {
             throw new BuildRunningException("BUILD_RUNNING", String.format("There's already a build running for %s.",
@@ -183,11 +183,7 @@ public class BuildService {
         BuildLock lock = runningBuilds.get(branchMapEntry);
         Build build = getBuild(branch, lock.getBuildId());
         build.setStatus(status);
-        if (status == Status.RUNNING) {
-            sseService.push(EventData.builder(SseEventType.BUILD_UPDATE).projectId(id).name(ref).status(status).build());
-        }
         if (status == Status.FAILED || status == Status.SUCCESS || status == Status.TIMEOUT) {
-            sseService.push(EventData.builder(SseEventType.BUILD_UPDATE).projectId(id).name(ref).status(status).build());
             lock.release();
             runningBuilds.remove(branchMapEntry);
         }
@@ -195,6 +191,9 @@ public class BuildService {
                 status, id, ref));
         projectService.saveProject(project);
         projectService.statusPropagation(project.getId());
+        if (status == Status.FAILED || status == Status.SUCCESS || status == Status.TIMEOUT || status == Status.RUNNING) {
+            sseService.push(EventData.builder(SseEventType.BUILD_UPDATE).projectId(id).name(ref).status(status).build());
+        }
     }
 
     /**

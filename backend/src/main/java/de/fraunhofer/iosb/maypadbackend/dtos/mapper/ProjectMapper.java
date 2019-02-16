@@ -17,7 +17,8 @@ import java.util.List;
 public interface ProjectMapper {
     @Mappings({
             @Mapping(source = "refreshWebhook.url", target = "refreshUrl"),
-            @Mapping(source = "repository.tags", target = "tags")
+            @Mapping(source = "repository.tags", target = "tags"),
+            @Mapping(source = "repository.lastCommit", target = "lastCommit")
     })
     ProjectResponse toResponse(Project project);
 
