@@ -3,8 +3,13 @@
     <div class="mr-1">{{project.name}}</div>
   </a>
   <div class="text-secondary mr-2">(#{{project.id}})</div>
-  <div class="d-flex flex-row" i18n="Build status">
+  <div class="d-flex flex-row mr-2" i18n="Build status">
     Build Status:
     <span class="dot dot-{{project.status}} mt-1 ml-1" title="{{ project.status }}"></span>
+  </div>
+  <div>
+    <span class="timestamp" *ngIf="project.lastCommit && project.lastCommit.timestamp" title="{{ project.lastCommit.timestamp | date : 'H:mm:ss, d/M/yy (z)' }}">
+      Last Commit: {{ fmtTimestamp }}
+    </span>
   </div>
 </div>

@@ -2,6 +2,7 @@ import { ServiceAccount } from './serviceAccount';
 import { BuildStatus } from './buildStatus';
 import { Branch } from './branch';
 import { Tag } from './tag';
+import { Commit } from './commit';
 
 export class Project {
     name: string;
@@ -16,4 +17,5 @@ export class Project {
     tags: Tag[];
     versionControlSystem: string;
     repoWebsiteUrl: string;
+    lastCommit: Commit;
 }
