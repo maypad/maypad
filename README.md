@@ -29,3 +29,24 @@ MAYPAD was developed as a "Praxis of Software-Development" project of students a
 * The environment variable `MAYPAD_HOME` indicates where MAYPAD will look for the configuration file and the frontend files and defaults to `/usr/share/maypad/`.
 * For an example config file see `config.yaml.sample`
 * Note that MAYPAD will generate an encryption key for database entries under `MAYPAD_HOME/security/key.dat` that you should save between container restarts. The default docker-compose will take care of that.
+* To add authorization to MAYPAD, consider proxying the requests through a webserver such as nginx and then add http basic authentication. An example configuration could look like this (note the extra nginx configuration parameters because MAYPAD uses Server-Send-Events for notifications):
+```
+server {
+  listen 80 default_server;
+  server_name demo.maypad.de;
+
+  location / {
+    proxy_pass http://maypad-app:8080/;
+    proxy_http_version 1.1;
+    proxy_set_header Connection "";
+    proxy_buffering off;
+    
+    add_header Transfer-Encoding: chunked;
+    add_header X-Accel-Buffering: no;
+    add_header X-Frame-Options SAMEORIGIN;
+
+    auth_basic "MAYPAD Demo";
+    auth_basic_user_file /etc/nginx/conf.d/htpasswd;
+  }
+}
+```
