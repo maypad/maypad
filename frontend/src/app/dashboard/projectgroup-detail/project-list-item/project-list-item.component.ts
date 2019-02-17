@@ -9,24 +9,12 @@ import { Project } from 'src/app/model/project';
 export class ProjectListItemComponent implements OnInit {
   @Input() project: Project;
   @Input() border: boolean;
+  fmtTimestamp;
   constructor() { }
 
   ngOnInit() {
-    $(function () {
-      $('[data-toggle="tooltip"]').tooltip({
-        title: function (this: Element) {
-          if (this.className.includes('dot-0')) {
-            return 'Successful';
-          } else if (this.className.includes('dot-1')) {
-            return 'Failing';
-          } else if (this.className.includes('dot-2')) {
-            return 'Running';
-          } else if (this.className.includes('dot-3')) {
-            return 'Unknown';
-          }
-        }
-      });
-    });
+    const mom = moment(this.project.lastCommit.timestamp, moment.ISO_8601);
+    this.fmtTimestamp = mom.fromNow();
   }
 
 }

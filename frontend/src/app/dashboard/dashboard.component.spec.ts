@@ -19,6 +19,8 @@ import { EnumToArrayPipe } from '../enum-to-array.pipe';
 import { NotificationService } from '../notification.service';
 import { NotificationServiceStub } from 'src/testing/notification-service-stub';
 import { Project } from '../model/project';
+import { ProjectService } from '../project.service';
+import { ProjectServiceStub } from 'src/testing/project-service-stub';
 
 describe('DashboardComponent', () => {
   let component: DashboardComponent;
@@ -43,6 +45,9 @@ describe('DashboardComponent', () => {
         },
         {
           provide: NotificationService, useClass: NotificationServiceStub
+        },
+        {
+          provide: ProjectService, useClass: ProjectServiceStub
         }
       ]
     })
@@ -77,12 +82,24 @@ describe('DashboardComponent', () => {
     const notService: NotificationService = TestBed.get(NotificationService);
     spyOn(notService, 'send');
     component.projectGroups[0].projects = [projectResponse['default']];
-    const evt = new MessageEvent('build_updated', {
+    const evt = new MessageEvent('init_project', {
       data: `{ "projectId": ${project['id']},
             "name": "${projectResponse['name']}" }`
     });
     component.setProjectInfo(evt);
     expect(notService.send).toHaveBeenCalled();
+  });
+
+  it('should refresh projects', () => {
+    const projService: ProjectServiceStub = TestBed.get(ProjectService);
+    spyOn(projService, 'loadProject').and.callThrough();
+    component.projectGroups[0].projects = [projectResponse['default']];
+    const evt = new MessageEvent('project_refreshed', {
+      data: `{ "projectId": ${project['id']},
+            "name": "${project['name']}" }`
+    });
+    component.refreshProject(evt);
+    expect(projService.loadProject).toHaveBeenCalledWith(project['id']);
   });
 
   it('should toggle true groups', () => {

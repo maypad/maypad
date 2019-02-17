@@ -1,6 +1,6 @@
 export enum BuildStatus {
-    SUCCESS,
-    FAILED,
-    RUNNING,
-    UNKNOWN
+    SUCCESS = 'Success',
+    FAILED = 'Failed',
+    RUNNING = 'Running',
+    UNKNOWN = 'Unknown'
 }

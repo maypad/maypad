@@ -1,30 +1,51 @@
 [
     {
-        "id":1,
-        "name":"One Test Project",
-        "buildStatus":"SUCCESS",
-        "refreshUrl":"https://maypad.de/projects/1/refresh",
-        "repositoryUrl":"https://git.maypad.de/one-test-project.git",
-        "serviceAccount":null
+        "id": 1,
+        "name": "One Test Project",
+        "buildStatus": "SUCCESS",
+        "refreshUrl": "https://maypad.de/projects/1/refresh",
+        "repositoryUrl": "https://git.maypad.de/one-test-project.git",
+        "serviceAccount": null,
+        "lastCommit": {
+            "identifier": "e37ab2d1f1eddc11b1b6531372569793bd110b83",
+            "timestamp": "Wed Jan 2 14:37:30 2019 +0100",
+            "message": "Fix various bugs",
+            "author": "Developer One <developer.one@maypad.de>"
+        },
+        "repoWebsiteUrl": "https://some.test/link"
     },
     {
-        "id":2,
-        "name":"Another Test Project",
-        "buildStatus":"FAILED",
-        "refreshUrl":"https://maypad.de/projects/2/refresh",
-        "repositoryUrl":"https://git.maypad.de/another-test-project.git",
+        "id": 2,
+        "name": "Another Test Project",
+        "buildStatus": "FAILED",
+        "refreshUrl": "https://maypad.de/projects/2/refresh",
+        "repositoryUrl": "https://git.maypad.de/another-test-project.git",
         "serviceAccount": {
-            "username":"maypad-git"
-        }
+            "username": "maypad-git"
+        },
+        "lastCommit": {
+            "identifier": "e37ab2d1f1eddc11b1b6531372569793bd110b83",
+            "timestamp": "Wed Jan 2 14:37:30 2019 +0100",
+            "message": "Fix various bugs",
+            "author": "Developer One <developer.one@maypad.de>"
+        },
+        "repoWebsiteUrl": "https://some.test/link"
     },
     {
-        "id":3,
-        "name":"Yet Another Test Project",
-        "buildStatus":"RUNNING",
-        "refreshUrl":"https://maypad.de/projects/3/refresh",
-        "repositoryUrl":"https://git.maypad.de/yet-another-test-project.git",
+        "id": 3,
+        "name": "Yet Another Test Project",
+        "buildStatus": "RUNNING",
+        "refreshUrl": "https://maypad.de/projects/3/refresh",
+        "repositoryUrl": "https://git.maypad.de/yet-another-test-project.git",
         "serviceAccount": {
-            "key":"djnsvkgfbjsngjkbgjbkluaernl..."
-        }
+            "key": "djnsvkgfbjsngjkbgjbkluaernl..."
+        },
+        "lastCommit": {
+            "identifier": "e37ab2d1f1eddc11b1b6531372569793bd110b83",
+            "timestamp": "Wed Jan 2 14:37:30 2019 +0100",
+            "message": "Fix various bugs",
+            "author": "Developer One <developer.one@maypad.de>"
+        },
+        "repoWebsiteUrl": "https://some.test/link"
     }
 ]
