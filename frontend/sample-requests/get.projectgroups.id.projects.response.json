@@ -11,7 +11,8 @@
             "timestamp": "Wed Jan 2 14:37:30 2019 +0100",
             "message": "Fix various bugs",
             "author": "Developer One <developer.one@maypad.de>"
-        }
+        },
+        "repoWebsiteUrl": "https://some.test/link"
     },
     {
         "id": 5,
@@ -27,7 +28,8 @@
             "timestamp": "Wed Jan 2 14:37:30 2019 +0100",
             "message": "Fix various bugs",
             "author": "Developer One <developer.one@maypad.de>"
-        }
+        },
+        "repoWebsiteUrl": "https://some.test/link"
     },
     {
         "id": 6,
@@ -43,6 +45,7 @@
             "timestamp": "Wed Jan 2 14:37:30 2019 +0100",
             "message": "Fix various bugs",
             "author": "Developer One <developer.one@maypad.de>"
-        }
+        },
+        "repoWebsiteUrl": "https://some.test/link"
     }
 ]
