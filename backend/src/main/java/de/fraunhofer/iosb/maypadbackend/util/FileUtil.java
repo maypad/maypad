@@ -1,7 +1,7 @@
 package de.fraunhofer.iosb.maypadbackend.util;
 
 import com.google.common.base.Charsets;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
