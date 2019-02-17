@@ -82,7 +82,7 @@ public class SvnRepoManagerTest {
     }
 
     @Test
-    public void test() {
+    public void test() throws NoSuchFieldException, IllegalAccessException {
         assertThat(svnRepoManager.cloneRepository()).isEqualTo(true);
         Tuple<ProjectConfig, File> conf = svnRepoManager.getProjectConfig();
         assertThat(conf.getKey()).isNotNull();
@@ -90,14 +90,9 @@ public class SvnRepoManagerTest {
                 projectRootFolder.getRoot().getAbsolutePath() + File.separator + "maypad.yaml"
         );
         svnRepoManager.prepareRefresh();
-        try {
-            Field privateConfigField = SvnRepoManager.class.getDeclaredField("projConfig");
-            assertThat(privateConfigField.get(svnRepoManager)).isNotNull();
-        } catch (NoSuchFieldException ex) {
-            logger.error("Could not find field projConfig in svnRepoManager.");
-        } catch (IllegalAccessException ex) {
-            logger.error("Could not access field projConfig.");
-        }
+        Field privateConfigField = SvnRepoManager.class.getDeclaredField("projConfig");
+        privateConfigField.setAccessible(true);
+        assertThat(privateConfigField.get(svnRepoManager)).isNotNull();
         assertThat(svnRepoManager.getMainBranchName()).isEqualTo("trunk");
         Commit c = svnRepoManager.getLastCommit();
         assertThat(c.getMessage()).isEqualTo("Test-Commit-Message");
