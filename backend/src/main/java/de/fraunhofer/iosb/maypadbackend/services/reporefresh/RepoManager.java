@@ -165,15 +165,6 @@ public abstract class RepoManager {
         return content == null ? "" : content;
     }
 
-    /**
-     * Get the location root dir of the current branch.
-     *
-     * @return File to the location
-     */
-    public File getCurrentBranchLocation() {
-        return projectRootDir;
-    }
-
     protected int getSshPort() {
         try {
             String[] spl = project.getRepositoryUrl().split(":");
