@@ -3,7 +3,7 @@ package de.fraunhofer.iosb.maypadbackend.config;
 import de.fraunhofer.iosb.maypadbackend.config.server.ServerConfig;
 import de.fraunhofer.iosb.maypadbackend.testutil.EnvironmentUtils;
 import de.fraunhofer.iosb.maypadbackend.testutil.ResourceFileUtils;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,7 +34,7 @@ public class ServerConfigTest  {
     public static void cleanupEnv() throws Exception {
         SpringRunnerTestConfig.cleanup();
     }
-
+    
     @Test
     public void testLoadProperties() {
         assertThat(serverConfig.getWebServerPort()).isEqualTo(1337);

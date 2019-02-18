@@ -29,35 +29,11 @@ public class EncryptionServiceTest {
     @Autowired
     EncryptionService encryptionService;
 
-    private static final File MAYPAD_HOME = new File("target/maypadhome");
-
     @Rule
     public ExpectedException expectedException;
 
     @ClassRule
     public static final EnvironmentVariables environmentVariables = new EnvironmentVariables();
-
-    /**
-     * Setup MaypadHome for testing.
-     * @throws Exception if setup fails
-     */
-    @BeforeClass
-    public static void setupMaypadHome() throws Exception {
-        if (MAYPAD_HOME.exists()) {
-            FileUtils.deleteDirectory(MAYPAD_HOME);
-        }
-        MAYPAD_HOME.mkdir();
-    }
-
-    /**
-     * Deletes the created MAYPAD_HOME folder.
-     */
-    @AfterClass
-    public static void cleanupMaypadHome() throws Exception {
-        if (MAYPAD_HOME.exists()) {
-            FileUtils.deleteDirectory(MAYPAD_HOME);
-        }
-    }
 
     @Test
     public void testEncryption() {
@@ -89,7 +65,6 @@ public class EncryptionServiceTest {
     @Test
     public void testInit() throws Exception {
         FileUtils.deleteDirectory(new File(maypadHomePath.concat("/security/")));
-        encryptionService.init();
         final String password = "12345password54321";
         EncryptedText encryptedText = EncryptionService.encryptText(password);
         String decrypted = EncryptionService.decryptText(encryptedText.getText(), encryptedText.getSalt());
