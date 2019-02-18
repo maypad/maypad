@@ -57,7 +57,7 @@ public class EncryptionService {
 
 
     @PostConstruct
-    private void init() {
+    protected void init() {
         File maypadHome = new File(maypadHomePath);
         if (maypadHome.isDirectory()) {
             File security = new File(maypadHome.getAbsolutePath() + "/security/");

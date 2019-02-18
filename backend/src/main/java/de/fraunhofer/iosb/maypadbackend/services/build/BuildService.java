@@ -131,7 +131,6 @@ public class BuildService {
                 return CompletableFuture.completedFuture(Status.FAILED);
             }
             branch = projectService.getBranch(id, ref);
-            signalStatus(id, ref, getBuild(branch, build.getId()).getStatus());
             return CompletableFuture.completedFuture(getBuild(branch, build.getId()).getStatus());
         } else {
             throw new BuildRunningException("BUILD_RUNNING", String.format("There's already a build running for %s.",
