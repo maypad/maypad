@@ -14,9 +14,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.File;
@@ -46,6 +44,11 @@ public class SvnRepoManagerTest {
     @Rule
     public TemporaryFolder keyFolder = new TemporaryFolder();
 
+    /**
+     * Setup test repo.
+     *
+     * @throws IOException if test repo setup fails
+     */
     @Before
     public void setup() throws IOException {
         File repositoryFile = new ClassPathResource("testrepo_svn").getFile();
@@ -66,7 +69,7 @@ public class SvnRepoManagerTest {
     }
 
     @Test
-    public void test() throws NoSuchFieldException, IllegalAccessException {
+    public void test() throws Exception {
         assertThat(svnRepoManager.cloneRepository()).isEqualTo(true);
         Tuple<ProjectConfig, File> conf = svnRepoManager.getProjectConfig();
         assertThat(conf.getKey()).isNotNull();
