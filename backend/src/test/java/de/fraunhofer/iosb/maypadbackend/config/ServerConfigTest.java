@@ -1,73 +1,40 @@
 package de.fraunhofer.iosb.maypadbackend.config;
 
 import de.fraunhofer.iosb.maypadbackend.config.server.ServerConfig;
-import org.apache.commons.io.FileUtils;
+import de.fraunhofer.iosb.maypadbackend.testutil.EnvironmentUtils;
+import de.fraunhofer.iosb.maypadbackend.testutil.ResourceFileUtils;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.contrib.java.lang.system.EnvironmentVariables;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
+@RunWith(ServerConfigTest.SpringRunnerTestConfig.class)
 @SpringBootTest
-public class ServerConfigTest {
+public class ServerConfigTest  {
 
     @Autowired
     private ServerConfig serverConfig;
 
-    private static final File MAYPAD_HOME = new File("target/maypadhome");
-
-    @ClassRule
-    public static final EnvironmentVariables environmentVariables = new EnvironmentVariables();
-
     /**
-     * Setup MaypadHome for testing.
-     * @throws Exception if setup fails
-     */
-    @BeforeClass
-    public static void setupMaypadHome() throws Exception {
-        if (MAYPAD_HOME.exists()) {
-            FileUtils.deleteDirectory(MAYPAD_HOME);
-        }
-        MAYPAD_HOME.mkdir();
-
-        ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        InputStream in = classLoader.getResourceAsStream("config.yaml");
-        OutputStream out = new FileOutputStream(MAYPAD_HOME.getAbsolutePath() + "/config.yaml");
-        int readBytes;
-        byte[] buffer = new byte[4096];
-        while ((readBytes = in.read(buffer)) > 0) {
-            out.write(buffer, 0, readBytes);
-        }
-        in.close();
-        out.close();
-        environmentVariables.set("MAYPAD_HOME", MAYPAD_HOME.getAbsolutePath());
-    }
-
-    /**
-     * Deletes the created MAYPAD_HOME folder.
+     * Recover environment.
+     *
+     * @throws Exception if cleanup fails
      */
     @AfterClass
-    public static void cleanupMaypadHome() throws Exception {
-        if (MAYPAD_HOME.exists()) {
-            FileUtils.deleteDirectory(MAYPAD_HOME);
-        }
+    public static void cleanupEnv() throws Exception {
+        SpringRunnerTestConfig.cleanup();
     }
 
-
-    @Ignore
     @Test
     public void testLoadProperties() {
         assertThat(serverConfig.getWebServerPort()).isEqualTo(1337);
@@ -88,4 +55,32 @@ public class ServerConfigTest {
     }
 
 
+    public static final class SpringRunnerTestConfig extends SpringJUnit4ClassRunner {
+
+        private static File maypadHome;
+
+        private static void setupMaypadHome() throws Exception {
+            maypadHome = Files.createTempDirectory("maypad_home").toFile();
+
+            File frontend = new File(maypadHome.getAbsolutePath() + "/frontend/index.html");
+            frontend.mkdirs();
+            frontend.createNewFile();
+            File config = new File(maypadHome.getAbsolutePath() + "/config.yaml");
+            ResourceFileUtils.copyFileFromResources("config.yaml", config);
+            Map<String, String> env = new HashMap(System.getenv());
+            env.put("MAYPAD_HOME", maypadHome.getAbsolutePath());
+            EnvironmentUtils.setEnv(env);
+        }
+
+        private static void cleanup() throws Exception {
+            FileUtils.deleteDirectory(maypadHome);
+            EnvironmentUtils.recoverEnv();
+        }
+
+        public SpringRunnerTestConfig(Class<?> clazz) throws Exception {
+            super(clazz);
+            setupMaypadHome();
+        }
+
+    }
 }

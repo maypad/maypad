@@ -3,50 +3,56 @@ package de.fraunhofer.iosb.maypadbackend.config;
 import de.fraunhofer.iosb.maypadbackend.config.project.ProjectConfig;
 import de.fraunhofer.iosb.maypadbackend.config.project.YamlProjectConfig;
 import de.fraunhofer.iosb.maypadbackend.config.project.data.BranchProperty;
+import de.fraunhofer.iosb.maypadbackend.exceptions.FormatParseException;
+import de.fraunhofer.iosb.maypadbackend.testutil.ResourceFileUtils;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 import org.springframework.http.HttpMethod;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.FileNotFoundException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
 public class ProjectConfigTest {
 
-    private ProjectConfig projectConfig;
-    private boolean isLoaded;
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-    private static final Logger logger = LoggerFactory.getLogger(ProjectConfigTest.class);
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     /**
      * Setup test.
      */
     @Before
-    public void setup() {
-        File f = new File("src/test/resources/project.yaml");
-        try {
-            projectConfig = new YamlProjectConfig(f);
-            isLoaded = true;
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-            isLoaded = false;
-        }
+    public void setup() throws Exception {
+        ResourceFileUtils.copyFileFromResources("project.yaml",
+                new File(temporaryFolder.getRoot().getAbsolutePath() + "/project.yaml"));
     }
 
     @Test
-    public void testServerConfig() {
-        if (!isLoaded) {
-            fail();
-        }
+    public void projectConfigNotFound() throws Exception {
+        expectedException.expect(FileNotFoundException.class);
+        new YamlProjectConfig(new File(temporaryFolder.getRoot().getAbsolutePath() + "/nofile.yaml"));
+    }
+
+    @Test
+    public void projectConfigInvalid() throws Exception {
+        expectedException.expect(FormatParseException.class);
+
+        File output = new File(temporaryFolder.getRoot().getAbsolutePath() + "/invalid.yaml");
+        ResourceFileUtils.copyFileFromResources("invalid.yaml",output);
+        new YamlProjectConfig(output);
+    }
+
+    @Test
+    public void projectConfigValid() throws Exception {
+        ProjectConfig projectConfig =
+                new YamlProjectConfig(new File(temporaryFolder.getRoot().getAbsolutePath() + "/project.yaml"));
         assertThat(projectConfig.getProjectName()).isEqualTo("cool_name");
         assertThat(projectConfig.getProjectDescription()).isEqualTo("lorem ipsum dolor sit amet");
         assertThat(projectConfig.getAddAllBranches()).isEqualTo(true);
