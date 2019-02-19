@@ -7,17 +7,14 @@ import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.Projectgroup;
 import de.fraunhofer.iosb.maypadbackend.repositories.ProjectgroupRepository;
 import de.fraunhofer.iosb.maypadbackend.services.reporefresh.RepoService;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Optional;
 
@@ -27,27 +24,20 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
+@RunWith(MockitoJUnitRunner.class)
 public class ProjectgroupTest {
 
-    @Autowired
+    @InjectMocks
     private ProjectgroupService projectgroupService;
 
-    @MockBean
+    @Mock
     private ProjectgroupRepository projectgroupRepository;
 
-    @MockBean
+    @Mock
     private RepoService repoService;
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
-
-    @Before
-    public void setup() {
-        Mockito.reset(projectgroupRepository, repoService);
-    }
-
 
     @Test
     public void getProjectgroups() {
