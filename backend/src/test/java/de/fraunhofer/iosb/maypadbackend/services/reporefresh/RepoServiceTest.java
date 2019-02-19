@@ -52,7 +52,6 @@ public class RepoServiceTest {
     @Before
     public void setup() {
         Mockito.reset(projectServiceMock, serverConfig);
-
     }
 
     @Test

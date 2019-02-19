@@ -7,15 +7,14 @@ import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.Projectgroup;
 import de.fraunhofer.iosb.maypadbackend.repositories.ProjectgroupRepository;
 import de.fraunhofer.iosb.maypadbackend.services.reporefresh.RepoService;
-import de.fraunhofer.iosb.maypadbackend.services.sse.EventData;
-import de.fraunhofer.iosb.maypadbackend.services.sse.SseEventType;
-import de.fraunhofer.iosb.maypadbackend.services.sse.SseService;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.function.Supplier;
 
 /**
@@ -30,16 +29,15 @@ public class ProjectgroupService {
 
     private ProjectgroupRepository projectgroupRepository;
     private RepoService repoService;
-    private SseService sseService;
 
     /**
      * Constructor for ProjectgroupService.
      *
      * @param projectgroupRepository Repository for database access
-     * @param sseService             Service for server-sent events
+     * @param repoService            Service for repositories
      */
     @Autowired
-    public ProjectgroupService(ProjectgroupRepository projectgroupRepository, RepoService repoService, SseService sseService) {
+    public ProjectgroupService(ProjectgroupRepository projectgroupRepository, RepoService repoService) {
         this.projectgroupRepository = projectgroupRepository;
         this.repoService = repoService;
     }
@@ -102,12 +100,13 @@ public class ProjectgroupService {
      * @param id Id of projectgroup
      */
     @Async
-    public void deleteProjectgroup(int id) {
+    public Future<Void> deleteProjectgroup(int id) {
         Projectgroup group = getProjectgroup(id);
         for (Project project : group.getProjects()) {
             repoService.deleteProject(project.getId());
         }
         projectgroupRepository.deleteById(id);
+        return CompletableFuture.completedFuture(null);
     }
 
     /**
