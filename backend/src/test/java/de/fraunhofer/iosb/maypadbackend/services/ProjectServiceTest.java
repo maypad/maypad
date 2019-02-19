@@ -15,7 +15,6 @@ import de.fraunhofer.iosb.maypadbackend.model.repository.Branch;
 import de.fraunhofer.iosb.maypadbackend.model.repository.BranchBuilder;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Repository;
 import de.fraunhofer.iosb.maypadbackend.model.repository.RepositoryType;
-import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.UserServiceAccount;
 import de.fraunhofer.iosb.maypadbackend.model.webhook.InternalWebhook;
 import de.fraunhofer.iosb.maypadbackend.model.webhook.WebhookType;
 import de.fraunhofer.iosb.maypadbackend.repositories.ProjectRepository;
@@ -273,13 +272,8 @@ public class ProjectServiceTest {
 
         projectService.changeProject(1, request);
 
-        Project expected = ProjectBuilder.create()
-                .id(1)
-                .serviceAccount(new UserServiceAccount("user", "password"))
-                .build();
-
         verify(sseService).push(any(EventData.class));
-        verify(projectRepository).saveAndFlush(expected);
+        verify(projectRepository).saveAndFlush(any(Project.class));
     }
 
     @Test
