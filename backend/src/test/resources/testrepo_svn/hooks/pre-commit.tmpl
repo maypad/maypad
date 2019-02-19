@@ -1,0 +1,7 @@
+REPOS="$1"
+TXN="$2"
+SVNLOOK=/usr/bin/svnlook
+$SVNLOOK log -t "$TXN" "$REPOS" | \
+   grep "[a-zA-Z0-9]" > /dev/null || exit 1
+commit-access-control.pl "$REPOS" "$TXN" commit-access-control.cfg || exit 1
+exit 0

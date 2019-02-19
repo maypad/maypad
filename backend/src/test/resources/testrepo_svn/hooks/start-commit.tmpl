@@ -1,0 +1,5 @@
+REPOS="$1"
+USER="$2"
+commit-allower.pl --repository "$REPOS" --user "$USER" || exit 1
+special-auth-check.py --user "$USER" --auth-level 3 || exit 1
+exit 0

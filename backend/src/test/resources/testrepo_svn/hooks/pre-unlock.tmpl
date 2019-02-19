@@ -1,0 +1,18 @@
+REPOS="$1"
+PATH="$2"
+USER="$3"
+TOKEN="$4"
+BREAK="$5"
+SVNLOOK=/usr/bin/svnlook
+GREP=/bin/grep
+SED=/bin/sed
+LOCK_OWNER=`$SVNLOOK lock "$REPOS" "$PATH" | \
+            $GREP '^Owner: ' | $SED 's/Owner: //'`
+if [ "$LOCK_OWNER" = "" ]; then
+  exit 0
+fi
+if [ "$LOCK_OWNER" = "$USER" ]; then
+  exit 0
+fi
+echo "Error: $PATH locked by ${LOCK_OWNER}." 1>&2
+exit 1

@@ -77,11 +77,12 @@ public class ProjectService {
      * @param repositoryUrl  Url to the repository
      * @return Created project
      */
-    public Project create(int projectgroupId, String repositoryUrl) {
+    public Project create(int projectgroupId, String repositoryUrl, String versionControlSystem) {
         CreateProjectRequest request = new CreateProjectRequest();
         request.setGroupId(projectgroupId);
         request.setRepositoryUrl(repositoryUrl);
-        return create(new CreateProjectRequest());
+        request.setVersionControlSystem(versionControlSystem);
+        return create(request);
     }
 
     /**

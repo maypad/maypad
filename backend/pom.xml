@@ -122,7 +122,7 @@
         <dependency>
             <groupId>org.tmatesoft.svnkit</groupId>
             <artifactId>svnkit</artifactId>
-            <version>1.9.3</version>
+            <version>1.10.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
@@ -200,5 +200,13 @@
             </plugin>
         </plugins>
     </reporting>
+
+    <repositories>
+        <repository>
+            <id>svnkit</id>
+            <name>svnkit</name>
+            <url>https://maven.tmatesoft.com/content/repositories/releases/</url>
+        </repository>
+    </repositories>
 
 </project>

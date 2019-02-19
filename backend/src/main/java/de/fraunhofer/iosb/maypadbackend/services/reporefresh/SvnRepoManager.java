@@ -180,6 +180,7 @@ public class SvnRepoManager extends RepoManager {
             if (new File(tagFolder.getAbsolutePath() + File.separator + t).isDirectory()) {
                 Tag tt = new Tag();
                 tt.setName(new File(t).getName());
+                logger.info("Found tag " + tt.getName());
                 tags.add(tt);
             }
         }
@@ -205,7 +206,6 @@ public class SvnRepoManager extends RepoManager {
                     1,
                     rcm
             );
-            Commit ret = rcm.getCommit();
             return rcm.getCommit();
         } catch (SVNException ex) {
             logger.error(ex.getMessage());
@@ -242,12 +242,6 @@ public class SvnRepoManager extends RepoManager {
             return false;
         }
     }
-
-    @Override
-    public File getCurrentBranchLocation() {
-        return new File(projectRoot);
-    }
-
 
     @Override
     public Tuple<ProjectConfig, File> getProjectConfig() {
