@@ -31,7 +31,6 @@ import org.eclipse.jgit.transport.Transport;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.util.FS;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -63,16 +62,6 @@ public class GitRepoManager extends RepoManager {
             }
         }
         return localGit;
-    }
-
-    /**
-     * Constructor, prepare the GitRepoManager.
-     *
-     * @param project        Project for which the git-repository is to be managed
-     * @param projectRootDir The root directory for the repo files
-     */
-    public GitRepoManager(Project project, File projectRootDir) {
-        super(project, projectRootDir);
     }
 
     /**

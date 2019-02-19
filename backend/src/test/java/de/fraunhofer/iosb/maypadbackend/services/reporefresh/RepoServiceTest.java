@@ -46,12 +46,16 @@ public class RepoServiceTest {
     @Autowired
     private RepoService repoService;
 
+    @MockBean
+    private WebhookService webhookServiceMock;
+
     @Rule
     public TemporaryFolder folder = new TemporaryFolder(); //have to be public for junit
 
     @Before
     public void setup() {
-        Mockito.reset(projectServiceMock, serverConfig);
+        Mockito.reset(projectServiceMock, serverConfig, webhookServiceMock);
+
     }
 
     @Test
@@ -80,19 +84,8 @@ public class RepoServiceTest {
 
     @Test
     public void localGitRepoUrl() throws Exception {
-        File ressourceRepo = ResourceUtils.getFile(this.getClass().getResource("/testrepo_git"));
-        File testrepo = folder.newFolder();
-        FileUtils.copyDirectory(ressourceRepo, testrepo);
-        File gitFoler = new File(testrepo.getAbsolutePath() + File.separator + "git");
-        gitFoler.renameTo(new File(testrepo.getAbsolutePath() + File.separator + ".git"));
-        Project project = ProjectBuilder.create().id(1).repositoryUrl(testrepo.getAbsolutePath()
-                .replace("\\", "/")).repository(new Repository(RepositoryType.GIT)).build();
-        when(projectServiceMock.getProject(1)).thenReturn(project);
-        when(projectServiceMock.saveProject(any())).thenReturn(project);
-        doReturn(folder.getRoot().getAbsolutePath()).when(serverConfig).getRepositoryStoragePath();
-        when(projectServiceMock.getRepoDir(1)).thenReturn(new File(folder.getRoot().getAbsolutePath() + File.separator + "1"));
+        Project project = initLocalGitTestRepo();
 
-        repoService.initProject(1).get();
         assertThat(project.getRepositoryStatus()).isEqualTo(Status.SUCCESS);
         assertThat(project.getName()).isEqualTo("Testrepo");
         assertThat(project.getDescription()).isEqualTo("TestDescription");
@@ -130,13 +123,41 @@ public class RepoServiceTest {
         Commit commit = branch.getLastCommit();
         assertThat(commit).isNotNull();
         assertThat(commit.getMessage()).isEqualTo("Create maypadfile");
-        //assertThat(commit.getTimestamp()).isEqualTo("2019-02-12T23:16:28.000");
+        assertThat(commit.getTimestamp()).isEqualTo("2019-02-12T23:16:28.000");
         assertThat(commit.getIdentifier()).isEqualTo("ef890414b4c4da0a3d60fdda8cfae8c818837ed9");
 
-
         //Readme
-        //assertThat(branch.getReadme()).isEqualTo("Testreadme\n");
+        assertThat(branch.getReadme()).isEqualTo("Testreadme\r\n");
 
+        verify(webhookServiceMock).generateSuccessWebhook(new Tuple<>(1, branch.getName()));
+        verify(webhookServiceMock).generateFailWebhook(new Tuple<>(1, branch.getName()));
+
+    }
+
+    @Test
+    public void deleteLocalGitRepo() throws Exception {
+        initLocalGitTestRepo();
+        repoService.deleteProject(1).get();
+        assertThat(new File(folder.getRoot().getAbsolutePath() + File.separator + "1")).doesNotExist();
+        verify(webhookServiceMock, atLeast(2)).removeWebhook(any());
+        verify(projectServiceMock).deleteProject(1);
+    }
+
+    private Project initLocalGitTestRepo() throws Exception {
+        File ressourceRepo = ResourceUtils.getFile(this.getClass().getResource("/testrepo_git"));
+        File testrepo = folder.newFolder();
+        FileUtils.copyDirectory(ressourceRepo, testrepo);
+        File gitFoler = new File(testrepo.getAbsolutePath() + File.separator + "git");
+        gitFoler.renameTo(new File(testrepo.getAbsolutePath() + File.separator + ".git"));
+        Project project = ProjectBuilder.create().id(1).repositoryUrl(testrepo.getAbsolutePath()
+                .replace("\\", "/")).repository(new Repository(RepositoryType.GIT)).build();
+        when(projectServiceMock.getProject(1)).thenReturn(project);
+        when(projectServiceMock.saveProject(any())).thenReturn(project);
+        doReturn(folder.getRoot().getAbsolutePath()).when(serverConfig).getRepositoryStoragePath();
+        when(projectServiceMock.getRepoDir(1)).thenReturn(new File(folder.getRoot().getAbsolutePath() + File.separator + "1"));
+
+        repoService.initProject(1).get();
+        return project;
     }
 
 
