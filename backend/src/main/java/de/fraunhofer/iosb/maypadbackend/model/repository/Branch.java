@@ -141,7 +141,7 @@ public class Branch {
      */
     public Status updateStatus() {
         if (builds != null) {
-            Optional<Build> lastBuild = builds.stream().reduce((a, b) -> b);
+            Optional<Build> lastBuild = builds.stream().findFirst();
             buildStatus = lastBuild.isPresent() ? lastBuild.get().getStatus() : buildStatus;
         }
         return buildStatus;
