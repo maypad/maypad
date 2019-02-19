@@ -15,7 +15,12 @@ public class BuildWebhookHandler implements WebhookHandler {
 
     @Override
     public void handle() {
-        buildService.signalStatus(branch.getKey(), branch.getValue(), status, BuildReason.BUILD_FAILED, null);
+        if (status == Status.FAILED) {
+            buildService.signalStatus(branch.getKey(), branch.getValue(), status, BuildReason.BUILD_FAILED, null);
+        } else {
+            buildService.signalStatus(branch.getKey(), branch.getValue(), status);
+        }
+
     }
 
     /**

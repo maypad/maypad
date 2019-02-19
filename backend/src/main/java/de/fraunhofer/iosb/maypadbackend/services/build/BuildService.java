@@ -147,11 +147,9 @@ public class BuildService {
      * @return the latest build on the given branch
      */
     public Build getLatestBuild(Branch branch) {
-        int buildCount = branch.getBuilds().size();
-        if (buildCount == 0) {
-            throw new NotFoundException("NO_BUILD", String.format("There's no build for branch %s.", branch.getName()));
-        }
-        return branch.getBuilds().stream().skip(branch.getBuilds().size() - 1).findFirst().get();
+        return branch.getBuilds().stream().findFirst().orElseThrow(
+                () -> new NotFoundException("NO_BUILD",
+                        String.format("There's no build for branch %s.", branch.getName())));
     }
 
     /**

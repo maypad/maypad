@@ -104,7 +104,7 @@ public class DeploymentService {
      * @return Last deployment
      */
     private Deployment getLatestDeployment(Branch branch) {
-        return branch.getDeployments().stream().reduce((a, b) -> b).orElseThrow(
+        return branch.getDeployments().stream().findFirst().orElseThrow(
                 () -> new NotFoundException("DEPLOYMENT_NOT_FOUND", "Deployment not found."));
     }
 

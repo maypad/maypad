@@ -73,7 +73,7 @@ public class Branch {
     private BuildType buildType;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
-    @OrderBy("id ASC")
+    @OrderBy("id DESC")
     private List<Build> builds;
     @Enumerated(EnumType.STRING)
     private Status buildStatus;
@@ -83,6 +83,7 @@ public class Branch {
     private DeploymentType deploymentType;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
+    @OrderBy("id DESC")
     private List<Deployment> deployments;
 
     //webhooks
