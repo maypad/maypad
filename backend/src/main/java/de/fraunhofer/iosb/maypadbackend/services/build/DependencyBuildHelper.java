@@ -5,6 +5,7 @@ import de.fraunhofer.iosb.maypadbackend.model.Status;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Branch;
 import de.fraunhofer.iosb.maypadbackend.model.repository.DependencyDescriptor;
 import de.fraunhofer.iosb.maypadbackend.services.ProjectService;
+import de.fraunhofer.iosb.maypadbackend.util.Tuple;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,8 +14,10 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Stack;
 import java.util.concurrent.CompletableFuture;
@@ -51,7 +54,7 @@ public class DependencyBuildHelper {
      *
      * @return true if all builds were successful, false otherwise.
      */
-    public boolean runBuildWithDependencies(int id, String ref) {
+    public Tuple<Boolean, String> runBuildWithDependencies(int id, String ref) {
         init(id, ref);
         Stack<BuildNode> buildStack = getBuildStack(root);
         int highestLayer = buildStack.peek().getLayer();
@@ -62,22 +65,23 @@ public class DependencyBuildHelper {
             while (!buildStack.empty() && buildStack.peek().getLayer() == i) {
                 currentLayer.add(buildStack.pop());
             }
-            List<CompletableFuture<Status>> buildFutures = new LinkedList<>();
+            Map<DependencyDescriptor, CompletableFuture<Status>> buildFutureMappigns = new HashMap<>();
             currentLayer.forEach(
-                    n -> buildFutures.add(buildService.buildBranch(n.getProjectId(), n.getBranchRef(), false, null))
+                    n -> buildFutureMappigns.put(new DependencyDescriptor(n.getProjectId(), n.getBranchRef()),
+                            buildService.buildBranch(n.getProjectId(), n.getBranchRef(), false, null))
             );
             try {
-                for (CompletableFuture<Status> f : buildFutures) {
-                    if (f.get() != Status.SUCCESS) {
-                        return false;
+                for (Map.Entry<DependencyDescriptor, CompletableFuture<Status>> entry : buildFutureMappigns.entrySet()) {
+                    if (entry.getValue().get() != Status.SUCCESS) {
+                        return new Tuple<>(false, entry.getKey().toString());
                     }
                 }
             } catch (InterruptedException | ExecutionException e) {
                 logger.warn("Build of project %d interrupted.", id);
-                return false;
+                return new Tuple<>(false, null);
             }
         }
-        return true;
+        return new Tuple<>(true, null);
     }
 
     private void setNodeChildren(BuildNode node) {

@@ -1,6 +1,7 @@
 package de.fraunhofer.iosb.maypadbackend.services.build;
 
 import de.fraunhofer.iosb.maypadbackend.model.Status;
+import de.fraunhofer.iosb.maypadbackend.model.build.BuildReason;
 import de.fraunhofer.iosb.maypadbackend.model.build.BuildType;
 import de.fraunhofer.iosb.maypadbackend.model.build.WebhookBuild;
 import de.fraunhofer.iosb.maypadbackend.model.webhook.ExternalWebhook;
@@ -64,7 +65,7 @@ public class WebhookBuildExecutorTest {
 
         webhookBuildExecutor.build(buildType, 1, "master");
 
-        verify(buildService).signalStatus(1, "master", Status.FAILED);
+        verify(buildService).signalStatus(1, "master", Status.FAILED, BuildReason.BUILD_NOT_STARTED, null);
         verifyNoMoreInteractions(buildService);
     }
 }

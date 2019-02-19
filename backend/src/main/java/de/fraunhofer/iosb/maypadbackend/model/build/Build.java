@@ -45,6 +45,12 @@ public class Build {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    @Enumerated(EnumType.STRING)
+    private BuildReason reason;
+
+    @Column
+    private String reasonDependency;
+
     /**
      * Constructor for Build.
      *
