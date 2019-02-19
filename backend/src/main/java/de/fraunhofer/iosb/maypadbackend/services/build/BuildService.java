@@ -109,7 +109,7 @@ public class BuildService {
             }
 
             Build build = new Build(new Date(), branch.getLastCommit(), Status.UNKNOWN);
-            branch.getBuilds().add(build);
+            branch.getBuilds().add(0, build);
             branch = projectService.saveProject(project).getRepository().getBranches().get(ref);
             build = getLatestBuild(branch);
             BuildLock lock = new BuildLock(build.getId());

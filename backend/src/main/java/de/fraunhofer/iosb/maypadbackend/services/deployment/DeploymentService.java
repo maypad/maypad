@@ -86,7 +86,7 @@ public class DeploymentService {
             }
             Build build = buildService.getLatestBuild(branch);
             Deployment deployment = new Deployment(new Date(), build, Status.UNKNOWN);
-            branch.getDeployments().add(deployment);
+            branch.getDeployments().add(0, deployment);
             projectService.saveProject(project);
             deployment = getLatestDeployment(branch);
             runningDeployments.put(new Tuple<>(id, ref), deployment.getId());
