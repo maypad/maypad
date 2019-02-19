@@ -1,12 +1,10 @@
-package de.fraunhofer.iosb.maypadbackend.dtos.mapper.request;
-
-import de.fraunhofer.iosb.maypadbackend.dtos.request.CreateProjectRequest;
-import de.fraunhofer.iosb.maypadbackend.dtos.request.ServiceAccountRequest;
+package de.fraunhofer.iosb.maypadbackend.dtos.request;
 
 public final class CreateProjectRequestBuilder {
     private int groupId;
     private String repositoryUrl;
     private ServiceAccountRequest serviceAccount;
+    private String versionControlSystem;
 
     private CreateProjectRequestBuilder() {
     }
@@ -30,6 +28,11 @@ public final class CreateProjectRequestBuilder {
         return this;
     }
 
+    public CreateProjectRequestBuilder versionControlSystem(String versionControlSystem) {
+        this.versionControlSystem = versionControlSystem;
+        return this;
+    }
+
     /**
      * Build the object.
      * @return the built object.
@@ -39,6 +42,7 @@ public final class CreateProjectRequestBuilder {
         createProjectRequest.setGroupId(groupId);
         createProjectRequest.setRepositoryUrl(repositoryUrl);
         createProjectRequest.setServiceAccount(serviceAccount);
+        createProjectRequest.setVersionControlSystem(versionControlSystem);
         return createProjectRequest;
     }
 }

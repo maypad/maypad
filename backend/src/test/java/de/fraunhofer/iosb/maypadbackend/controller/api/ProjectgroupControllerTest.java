@@ -1,10 +1,10 @@
 package de.fraunhofer.iosb.maypadbackend.controller.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.fraunhofer.iosb.maypadbackend.dtos.mapper.request.ChangeProjectgroupRequestBuilder;
-import de.fraunhofer.iosb.maypadbackend.dtos.mapper.request.CreateProjectgroupRequestBuilder;
 import de.fraunhofer.iosb.maypadbackend.dtos.request.ChangeProjectgroupRequest;
+import de.fraunhofer.iosb.maypadbackend.dtos.request.ChangeProjectgroupRequestBuilder;
 import de.fraunhofer.iosb.maypadbackend.dtos.request.CreateProjectgroupRequest;
+import de.fraunhofer.iosb.maypadbackend.dtos.request.CreateProjectgroupRequestBuilder;
 import de.fraunhofer.iosb.maypadbackend.exceptions.httpexceptions.NotFoundException;
 import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.ProjectBuilder;

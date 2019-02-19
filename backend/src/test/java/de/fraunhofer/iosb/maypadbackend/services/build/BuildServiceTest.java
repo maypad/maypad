@@ -1,7 +1,7 @@
 package de.fraunhofer.iosb.maypadbackend.services.build;
 
-import de.fraunhofer.iosb.maypadbackend.dtos.mapper.request.BuildRequestBuilder;
 import de.fraunhofer.iosb.maypadbackend.dtos.request.BuildRequest;
+import de.fraunhofer.iosb.maypadbackend.dtos.request.BuildRequestBuilder;
 import de.fraunhofer.iosb.maypadbackend.exceptions.httpexceptions.NotFoundException;
 import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.ProjectBuilder;

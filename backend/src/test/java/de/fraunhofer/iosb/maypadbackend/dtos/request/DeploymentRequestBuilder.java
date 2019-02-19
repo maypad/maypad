@@ -1,6 +1,4 @@
-package de.fraunhofer.iosb.maypadbackend.dtos.mapper.request;
-
-import de.fraunhofer.iosb.maypadbackend.dtos.request.DeploymentRequest;
+package de.fraunhofer.iosb.maypadbackend.dtos.request;
 
 public final class DeploymentRequestBuilder {
     private boolean withDependencies;

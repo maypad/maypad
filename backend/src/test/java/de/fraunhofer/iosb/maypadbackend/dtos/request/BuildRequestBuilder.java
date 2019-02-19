@@ -1,6 +1,4 @@
-package de.fraunhofer.iosb.maypadbackend.dtos.mapper.request;
-
-import de.fraunhofer.iosb.maypadbackend.dtos.request.BuildRequest;
+package de.fraunhofer.iosb.maypadbackend.dtos.request;
 
 public final class BuildRequestBuilder {
     private boolean withDependencies;
