@@ -59,7 +59,7 @@ describe('ProjectgroupDetailComponent', () => {
     expect(nativeElement.querySelector('h4').textContent).toBe(response.name);
     expect(items.length).toBe(projects.length);
     for (let i = 0; i < items.length; i++) {
-      expect(items[i].querySelectorAll('div')[1].textContent).toBe(projects[i].name);
+      expect(items[i].querySelectorAll('div')[2].textContent).toBe(projects[i].name);
     }
   });
 });
