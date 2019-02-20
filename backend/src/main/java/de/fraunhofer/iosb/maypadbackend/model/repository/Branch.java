@@ -73,7 +73,7 @@ public class Branch {
     private BuildType buildType;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
-    @OrderBy("id ASC")
+    @OrderBy("id DESC")
     private List<Build> builds;
     @Enumerated(EnumType.STRING)
     private Status buildStatus;
@@ -83,6 +83,7 @@ public class Branch {
     private DeploymentType deploymentType;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
+    @OrderBy("id DESC")
     private List<Deployment> deployments;
 
     //webhooks
@@ -140,7 +141,7 @@ public class Branch {
      */
     public Status updateStatus() {
         if (builds != null) {
-            Optional<Build> lastBuild = builds.stream().reduce((a, b) -> b);
+            Optional<Build> lastBuild = builds.stream().findFirst();
             buildStatus = lastBuild.isPresent() ? lastBuild.get().getStatus() : buildStatus;
         }
         return buildStatus;

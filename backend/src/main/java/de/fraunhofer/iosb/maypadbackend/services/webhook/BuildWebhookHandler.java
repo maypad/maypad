@@ -1,6 +1,7 @@
 package de.fraunhofer.iosb.maypadbackend.services.webhook;
 
 import de.fraunhofer.iosb.maypadbackend.model.Status;
+import de.fraunhofer.iosb.maypadbackend.model.build.BuildReason;
 import de.fraunhofer.iosb.maypadbackend.services.build.BuildService;
 import de.fraunhofer.iosb.maypadbackend.util.Tuple;
 
@@ -14,7 +15,12 @@ public class BuildWebhookHandler implements WebhookHandler {
 
     @Override
     public void handle() {
-        buildService.signalStatus(branch.getKey(), branch.getValue(), status);
+        if (status == Status.FAILED) {
+            buildService.signalStatus(branch.getKey(), branch.getValue(), status, BuildReason.BUILD_FAILED, null);
+        } else {
+            buildService.signalStatus(branch.getKey(), branch.getValue(), status);
+        }
+
     }
 
     /**

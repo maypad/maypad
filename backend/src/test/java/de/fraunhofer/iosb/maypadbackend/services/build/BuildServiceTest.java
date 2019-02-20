@@ -15,6 +15,7 @@ import de.fraunhofer.iosb.maypadbackend.services.ProjectService;
 import de.fraunhofer.iosb.maypadbackend.services.sse.EventData;
 import de.fraunhofer.iosb.maypadbackend.services.sse.SseService;
 import de.fraunhofer.iosb.maypadbackend.services.webhook.WebhookService;
+import de.fraunhofer.iosb.maypadbackend.util.Tuple;
 import org.assertj.core.util.Arrays;
 import org.junit.Rule;
 import org.junit.Test;
@@ -91,7 +92,7 @@ public class BuildServiceTest {
         when(projectService.getBranch(1, "master")).thenReturn(branch);
         when(projectService.getProject(1)).thenReturn(project);
         when(projectService.saveProject(project)).thenReturn(project);
-        when(dependencyBuildHelper.runBuildWithDependencies(1, "master")).thenReturn(true);
+        when(dependencyBuildHelper.runBuildWithDependencies(1, "master")).thenReturn(new Tuple<>(true, null));
         when(webhookService.call(any(), any(), any(), any(), any()))
                 .thenReturn(CompletableFuture.completedFuture(new ResponseEntity(HttpStatus.OK)));
 

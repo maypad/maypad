@@ -6,6 +6,7 @@ import de.fraunhofer.iosb.maypadbackend.exceptions.httpexceptions.NotFoundExcept
 import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.Status;
 import de.fraunhofer.iosb.maypadbackend.model.build.Build;
+import de.fraunhofer.iosb.maypadbackend.model.build.BuildReason;
 import de.fraunhofer.iosb.maypadbackend.model.build.BuildType;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Branch;
 import de.fraunhofer.iosb.maypadbackend.services.ProjectService;
@@ -108,16 +109,17 @@ public class BuildService {
             }
 
             Build build = new Build(new Date(), branch.getLastCommit(), Status.UNKNOWN);
-            branch.getBuilds().add(build);
+            branch.getBuilds().add(0, build);
             branch = projectService.saveProject(project).getRepository().getBranches().get(ref);
             build = getLatestBuild(branch);
             BuildLock lock = new BuildLock(build.getId());
             lock.tryAcquire();
             runningBuilds.put(new Tuple<>(id, ref), lock);
             if (withDependencies) {
-                if (!dependencyBuildHelper.runBuildWithDependencies(id, ref)) {
+                Tuple<Boolean, String> dependencyBuildStatus = dependencyBuildHelper.runBuildWithDependencies(id, ref);
+                if (!dependencyBuildStatus.getKey()) {
                     logger.debug("Build of dependencies failed for project %d.", id);
-                    signalStatus(id, ref, Status.FAILED);
+                    signalStatus(id, ref, Status.FAILED, BuildReason.DEPENDENCY_BUILD_FAILED, dependencyBuildStatus.getValue());
                     return CompletableFuture.completedFuture(Status.FAILED);
                 }
             }
@@ -127,7 +129,7 @@ public class BuildService {
                 lock.acquire();
             } catch (InterruptedException e) {
                 logger.warn("Build of project %d interrupted.", id);
-                signalStatus(id, ref, Status.FAILED);
+                signalStatus(id, ref, Status.FAILED, BuildReason.BUILD_FAILED, null);
                 return CompletableFuture.completedFuture(Status.FAILED);
             }
             branch = projectService.getBranch(id, ref);
@@ -145,11 +147,9 @@ public class BuildService {
      * @return the latest build on the given branch
      */
     public Build getLatestBuild(Branch branch) {
-        int buildCount = branch.getBuilds().size();
-        if (buildCount == 0) {
-            throw new NotFoundException("NO_BUILD", String.format("There's no build for branch %s.", branch.getName()));
-        }
-        return branch.getBuilds().stream().skip(branch.getBuilds().size() - 1).findFirst().get();
+        return branch.getBuilds().stream().findFirst().orElseThrow(
+                () -> new NotFoundException("NO_BUILD",
+                        String.format("There's no build for branch %s.", branch.getName())));
     }
 
     /**
@@ -173,6 +173,20 @@ public class BuildService {
      * @param status the new status
      */
     public void signalStatus(int id, String ref, Status status) {
+        signalStatus(id, ref, status, null, null);
+    }
+
+    /**
+     * Updates the status of a running build for the given branch, if there is a running build. If status is RUNNING no
+     * update is required.
+     *
+     * @param id               the id of the project
+     * @param ref              the name of the Branch
+     * @param status           the new status
+     * @param reason           provides additional information about the build
+     * @param reasonDependency provides additional information about the dependency that failed
+     */
+    public void signalStatus(int id, String ref, Status status, BuildReason reason, String reasonDependency) {
         Tuple<Integer, String> branchMapEntry = new Tuple<>(id, ref);
         Project project = projectService.getProject(id);
         Branch branch = project.getRepository().getBranches().get(ref);
@@ -185,6 +199,10 @@ public class BuildService {
         if (status == Status.FAILED || status == Status.SUCCESS || status == Status.TIMEOUT) {
             lock.release();
             runningBuilds.remove(branchMapEntry);
+            if (reason != null) {
+                build.setReason(reason);
+                build.setReasonDependency(reasonDependency);
+            }
         }
         logger.debug(String.format("Build %d changed its status to %s on (project %d, branch %s)", build.getId(),
                 status, id, ref));

@@ -8,6 +8,7 @@ import de.fraunhofer.iosb.maypadbackend.model.repository.BranchBuilder;
 import de.fraunhofer.iosb.maypadbackend.model.repository.DependencyDescriptor;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Repository;
 import de.fraunhofer.iosb.maypadbackend.services.ProjectService;
+import de.fraunhofer.iosb.maypadbackend.util.Tuple;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -91,7 +93,8 @@ public class DependencyBuildHelperTest {
 
         InOrder inOrderVerifier = inOrder(buildService);
 
-        assertThat(dependencyBuildHelper.runBuildWithDependencies(1, "master")).isEqualTo(true);
+        assertThat(dependencyBuildHelper.runBuildWithDependencies(1, "master"))
+                .isEqualTo(new Tuple<>(true, null));
 
         inOrderVerifier.verify(buildService).buildBranch(3, "master", false, null);
         inOrderVerifier.verify(buildService).buildBranch(2, "stable", false, null);
@@ -149,7 +152,8 @@ public class DependencyBuildHelperTest {
 
         InOrder inOrderVerifier = inOrder(buildService);
 
-        assertThat(dependencyBuildHelper.runBuildWithDependencies(1, "master")).isEqualTo(false);
+        assertThat(dependencyBuildHelper.runBuildWithDependencies(1, "master"))
+                .isEqualTo(new Tuple<>(false, "3:master"));
 
         inOrderVerifier.verify(buildService).buildBranch(3, "master", false, null);
         inOrderVerifier.verifyNoMoreInteractions();
