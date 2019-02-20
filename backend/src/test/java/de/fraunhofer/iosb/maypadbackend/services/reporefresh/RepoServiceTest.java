@@ -131,7 +131,7 @@ public class RepoServiceTest {
         assertThat(commit.getIdentifier()).isEqualTo("ef890414b4c4da0a3d60fdda8cfae8c818837ed9");
 
         //Readme
-        assertThat(branch.getReadme()).isEqualTo("Testreadme\r\n");
+        assertThat(branch.getReadme()).isEqualTo("Testreadme\n");
 
         verify(webhookServiceMock).generateSuccessWebhook(new Tuple<>(1, branch.getName()));
         verify(webhookServiceMock).generateFailWebhook(new Tuple<>(1, branch.getName()));
