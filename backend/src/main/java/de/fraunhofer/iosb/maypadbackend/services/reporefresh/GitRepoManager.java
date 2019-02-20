@@ -74,6 +74,17 @@ public class GitRepoManager extends RepoManager {
     }
 
     /**
+     * Constructor, prepare the GitRepoManager.
+     *
+     * @param project Project for which the git-repository is to be managed
+     * @param git     Git instance
+     */
+    public GitRepoManager(Project project, Git git) {
+        this(project);
+        this.localGit = git;
+    }
+
+    /**
      * Get the names of all existing branches of the repository.
      *
      * @return List of all branchnames
@@ -196,16 +207,6 @@ public class GitRepoManager extends RepoManager {
 
         return tags;
     }
-
-    /**
-     * Get the last commit of all branches.
-     *
-     * @return The last commit
-     */
-    public Commit getGlobalLastCommit() {
-        return getLastCommitByBranch(null);
-    }
-
 
     /**
      * Get the last Commit of the current selected branch.
