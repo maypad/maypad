@@ -8,8 +8,16 @@ import { Build } from 'src/app/model/build';
 })
 export class BhistoryListItemComponent implements OnInit {
   @Input() build: Build;
+  fmtDependency: string;
   constructor() { }
 
-  ngOnInit() { }
+  ngOnInit() {
+    if (this.build.reasonDependency) {
+      const parts = this.build.reasonDependency.split(':');
+      if (parts.length === 2) {
+        this.fmtDependency = `Project ID: ${parts[0]} Branch: ${parts[1]}`;
+      }
+    }
+  }
 
 }

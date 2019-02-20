@@ -1,11 +1,17 @@
-<div class="container w-50 d-flex flex-row border-bottom border-dark justify-content-between py-2">
-  <div class="d-flex flex-row">
-    <span>Status:</span>
-    <span class="dot ml-1 mt-1 dot-{{ build.status }}" title="{{ build.status }}"></span>
-  </div>
-  <span>Time: {{ build.timestamp | date : 'H:mm:ss, d/M/yy (z)'}}</span>
-  <span *ngIf="build.commit.identifier">Identifier: <<span>{{
+<div class="container w-50 border-bottom border-dark py-2">
+  <div class="row">
+    <div class="d-flex flex-row col-2">
+      <span>Status:</span>
+      <span class="dot ml-1 mt-1 dot-{{ build.status }}" title="{{ build.status }}"></span>
+    </div>
+    <div class="col-4">
+      <span *ngIf="build.reason" [ngClass]="{ 'dot-underline': fmtDependency }" title="{{ fmtDependency }}">Reason:
+        {{ build.reason }}</span>
+    </div>
+    <span class="col-3 d-flex justify-content-center">Time: {{ build.timestamp | date : 'H:mm:ss, dd.MM.yy'}}</span>
+    <span class="col-3 d-flex justify-content-end" *ngIf="build.commit.identifier">Identifier: <<span>{{
       build.commit.identifier.includes('Revision') ? build.commit.identifier :
       build.commit.identifier.substr(0, 7)
       }}</span>></span>
+  </div>
 </div>

@@ -32,8 +32,8 @@ describe('ProjectListItemComponent', () => {
   it('should list project details', () => {
     const nativeElement: HTMLElement = fixture.nativeElement;
 
-    expect(nativeElement.querySelectorAll('div')[1].textContent).toBe(response.name);
-    expect(nativeElement.querySelectorAll('div')[2].textContent).toBe('(#' + response.id.toString() + ')');
-    expect(nativeElement.querySelectorAll('div')[3].textContent).toBe(' Build Status: ');
+    expect(nativeElement.querySelectorAll('div')[2].textContent).toBe(response.name);
+    expect(nativeElement.querySelectorAll('div')[3].textContent).toBe('(#' + response.id.toString() + ')');
+    expect(nativeElement.querySelectorAll('div')[4].textContent).toBe(' Build Status: ');
   });
 });

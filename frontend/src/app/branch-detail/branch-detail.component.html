@@ -29,12 +29,13 @@
                     branch.lastCommit.identifier.substr(0, 7)
                     }}
                 </li>
-                <li><b i18n="Commit author" *ngIf="branch.lastCommit.author">Author: </b>{{ branch.lastCommit.author }}</li>
+                <li><b i18n="Commit author" *ngIf="branch.lastCommit.author">Author: </b>{{ branch.lastCommit.author }}
+                </li>
                 <li><b i18n="Commit Message" *ngIf="branch.lastCommit.message">Message: </b>{{
                     branch.lastCommit.message }}</li>
                 <li><b i18n="Timestamp" *ngIf="branch.lastCommit.timestamp">Timestamp: </b>{{
                     branch.lastCommit.timestamp |
-                    date : 'H:mm:ss, d/M/yy (z)'}} ({{ fmtTimestamp }})</li>
+                    date : 'H:mm:ss, dd.MM.yy'}} ({{ fmtTimestamp }})</li>
             </ul>
         </li>
         <li *ngIf="branch.mails.length > 0">
@@ -63,8 +64,8 @@
                 History</a>
         </li>
     </ul>
-    <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#readmeCollapse" aria-expanded="false"
-        aria-controls="readmeCollapse" i18n="Show readme">Show Readme</button>
+    <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#readmeCollapse"
+        aria-expanded="false" aria-controls="readmeCollapse" i18n="Show readme">Show Readme</button>
     <div class="collapse" id="readmeCollapse">
         <div class="card card-body">
             <markdown [data]="branch.readme"></markdown>
