@@ -3,6 +3,8 @@
     <span>Status:</span>
     <span class="dot ml-1 mt-1 dot-{{ build.status }}" title="{{ build.status }}"></span>
   </div>
+  <span *ngIf="build.reason" [ngClass]="{ 'dot-underline': fmtDependency }" title="{{ fmtDependency }}">Reason:
+    {{ build.reason }}</span>
   <span>Time: {{ build.timestamp | date : 'H:mm:ss, d/M/yy (z)'}}</span>
   <span *ngIf="build.commit.identifier">Identifier: <<span>{{
       build.commit.identifier.includes('Revision') ? build.commit.identifier :

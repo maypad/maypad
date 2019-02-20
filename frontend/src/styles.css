@@ -33,3 +33,8 @@
 [data-toggle="collapse"].collapsed .fa:before {
   content: "\f138";
 }
+
+.dot-underline {
+  text-decoration: underline;
+  text-decoration-style: dotted;
+}

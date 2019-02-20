@@ -8,6 +8,7 @@ import * as get_projects_id_branches_ref_deployments_r from '../../sample-reques
 import * as get_projects_id_branches_ref_response from '../../sample-requests/get.projects.id.branches.ref.response.json';
 import * as post_projects_id_branches_ref_builds_request from '../../sample-requests/post.projects.id.branches.ref.builds.request.json';
 import * as post_projects_id_branches_ref_deployments_r from '../../sample-requests/post.projects.id.branches.ref.deployments.request.json';
+import { BuildReason } from './model/build';
 
 
 describe('Service: BranchService', () => {
@@ -30,9 +31,9 @@ describe('Service: BranchService', () => {
   it('loads a build history',
     fakeAsync(() => {
       service.loadBuildHistory(2, 'master').subscribe((data) => {
-        expect(data.length).toEqual(4);
+        expect(data.length).toEqual(5);
 
-        for (let i = 0; i++; i < 4) {
+        for (let i = 0; i++; i < data.length) {
           expect(data[i].commit.identifier).toEqual('e37ab2d1f1eddc11b1b6531372569793bd110b83');
           expect(data[i].commit.message).toEqual('Fix various bugs');
           expect(data[i].commit.author).toEqual('Developer One <developer.one@maypad.de>');
@@ -41,18 +42,32 @@ describe('Service: BranchService', () => {
         expect(data[0].timestamp).toEqual('Wed Jan 1 14:45:30 2019 +0100');
         expect(data[0].status).toEqual(BuildStatus.SUCCESS);
         expect(data[0].commit.timestamp).toEqual('Wed Jan 1 14:37:30 2019 +0100');
+        expect(data[0].reason).toBeUndefined();
+        expect(data[0].reasonDependency).toBeUndefined();
 
         expect(data[1].timestamp).toEqual('Wed Jan 2 14:45:30 2019 +0100');
         expect(data[1].status).toEqual(BuildStatus.FAILED);
         expect(data[1].commit.timestamp).toEqual('Wed Jan 2 14:37:30 2019 +0100');
+        expect(data[1].reason).toBe(BuildReason.BUILD_FAILED);
+        expect(data[1].reasonDependency).toBeUndefined();
 
         expect(data[2].timestamp).toEqual('Wed Jan 3 14:45:30 2019 +0100');
         expect(data[2].status).toEqual(BuildStatus.FAILED);
         expect(data[2].commit.timestamp).toEqual('Wed Jan 3 14:37:30 2019 +0100');
+        expect(data[2].reason).toBe(BuildReason.DEPENDENCY_BUILD_FAILED);
+        expect(data[2].reasonDependency).toEqual('13:master');
 
-        expect(data[3].timestamp).toEqual('Wed Jan 4 14:45:30 2019 +0100');
-        expect(data[3].status).toEqual(BuildStatus.RUNNING);
-        expect(data[3].commit.timestamp).toEqual('Wed Jan 4 14:37:30 2019 +0100');
+        expect(data[3].timestamp).toEqual('Wed Jan 3 14:45:30 2019 +0100');
+        expect(data[3].status).toEqual(BuildStatus.FAILED);
+        expect(data[3].commit.timestamp).toEqual('Wed Jan 3 14:37:30 2019 +0100');
+        expect(data[3].reason).toBe(BuildReason.BUILD_NOT_STARTED);
+        expect(data[3].reasonDependency).toBeUndefined();
+
+        expect(data[4].timestamp).toEqual('Wed Jan 4 14:45:30 2019 +0100');
+        expect(data[4].status).toEqual(BuildStatus.RUNNING);
+        expect(data[4].commit.timestamp).toEqual('Wed Jan 4 14:37:30 2019 +0100');
+        expect(data[4].reason).toBeUndefined();
+        expect(data[4].reasonDependency).toBeUndefined();
       });
 
       const req = httpTestingController.expectOne(`${environment.baseUrl}projects/2/branches/master/builds`);

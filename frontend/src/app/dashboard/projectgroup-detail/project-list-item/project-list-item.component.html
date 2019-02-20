@@ -8,7 +8,8 @@
     <span class="dot dot-{{project.status}} mt-1 ml-1" title="{{ project.status }}"></span>
   </div>
   <div>
-    <span class="timestamp" *ngIf="project.lastCommit && project.lastCommit.timestamp" title="{{ project.lastCommit.timestamp | date : 'H:mm:ss, d/M/yy (z)' }}">
+    <span class="dot-underline" *ngIf="project.lastCommit && project.lastCommit.timestamp"
+      title="{{ project.lastCommit.timestamp | date : 'H:mm:ss, d/M/yy (z)' }}">
       Last Commit: {{ fmtTimestamp }}
     </span>
   </div>

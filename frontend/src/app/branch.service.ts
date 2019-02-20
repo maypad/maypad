@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
 import { Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { Build } from './model/build';
+import { Build, BuildReason } from './model/build';
 import { Deployment } from './model/deployment';
 import { Branch } from './model/branch';
 import { BuildStatus } from './model/buildStatus';
@@ -26,6 +26,7 @@ export class BranchService {
           return response.map(build => {
             build.status = (<any>BuildStatus)[build['status']];
             build.commit = <Commit>build['commit'];
+            build.reason = (<any>BuildReason)[build['reason']];
             return build;
           });
         }),

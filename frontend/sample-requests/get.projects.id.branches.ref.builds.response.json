@@ -1,50 +1,56 @@
 [
     {
-        "projectName":"One Test Project",
-        "branchName":"master",
-        "timestamp":"Wed Jan 1 14:45:30 2019 +0100",
-        "status":"SUCCESS",
-        "commit":{
-            "identifier":"e37ab2d1f1eddc11b1b6531372569793bd110b83",
-            "timestamp":"Wed Jan 1 14:37:30 2019 +0100",
-            "message":"Fix various bugs",
-            "author":"Developer One <developer.one@maypad.de>"
+        "timestamp": "Wed Jan 1 14:45:30 2019 +0100",
+        "status": "SUCCESS",
+        "commit": {
+            "identifier": "e37ab2d1f1eddc11b1b6531372569793bd110b83",
+            "timestamp": "Wed Jan 1 14:37:30 2019 +0100",
+            "message": "Fix various bugs",
+            "author": "Developer One <developer.one@maypad.de>"
         }
     },
     {
-        "projectName":"One Test Project",
-        "branchName":"master",
-        "timestamp":"Wed Jan 2 14:45:30 2019 +0100",
-        "status":"FAILED",
-        "commit":{
-            "identifier":"e37ab2d1f1eddc11b1b6531372569793bd110b83",
-            "timestamp":"Wed Jan 2 14:37:30 2019 +0100",
-            "message":"Fix various bugs",
-            "author":"Developer One <developer.one@maypad.de>"
-        }
+        "timestamp": "Wed Jan 2 14:45:30 2019 +0100",
+        "status": "FAILED",
+        "commit": {
+            "identifier": "e37ab2d1f1eddc11b1b6531372569793bd110b83",
+            "timestamp": "Wed Jan 2 14:37:30 2019 +0100",
+            "message": "Fix various bugs",
+            "author": "Developer One <developer.one@maypad.de>"
+        },
+        "reason": "BUILD_FAILED"
     },
     {
-        "projectName":"One Test Project",
-        "branchName":"master",
-        "timestamp":"Wed Jan 3 14:45:30 2019 +0100",
-        "status":"FAILED",
-        "commit":{
-            "identifier":"e37ab2d1f1eddc11b1b6531372569793bd110b83",
-            "timestamp":"Wed Jan 3 14:37:30 2019 +0100",
-            "message":"Fix various bugs",
-            "author":"Developer One <developer.one@maypad.de>"
-        }
+        "timestamp": "Wed Jan 3 14:45:30 2019 +0100",
+        "status": "FAILED",
+        "commit": {
+            "identifier": "e37ab2d1f1eddc11b1b6531372569793bd110b83",
+            "timestamp": "Wed Jan 3 14:37:30 2019 +0100",
+            "message": "Fix various bugs",
+            "author": "Developer One <developer.one@maypad.de>"
+        },
+        "reason": "DEPENDENCY_BUILD_FAILED",
+        "reasonDependency": "13:master"
     },
     {
-        "projectName":"One Test Project",
-        "branchName":"master",
-        "timestamp":"Wed Jan 4 14:45:30 2019 +0100",
-        "status":"RUNNING",
-        "commit":{
-            "identifier":"e37ab2d1f1eddc11b1b6531372569793bd110b83",
-            "timestamp":"Wed Jan 4 14:37:30 2019 +0100",
-            "message":"Fix various bugs",
-            "author":"Developer One <developer.one@maypad.de>"
+        "timestamp": "Wed Jan 3 14:45:30 2019 +0100",
+        "status": "FAILED",
+        "commit": {
+            "identifier": "e37ab2d1f1eddc11b1b6531372569793bd110b83",
+            "timestamp": "Wed Jan 3 14:37:30 2019 +0100",
+            "message": "Fix various bugs",
+            "author": "Developer One <developer.one@maypad.de>"
+        },
+        "reason": "BUILD_NOT_STARTED"
+    },
+    {
+        "timestamp": "Wed Jan 4 14:45:30 2019 +0100",
+        "status": "RUNNING",
+        "commit": {
+            "identifier": "e37ab2d1f1eddc11b1b6531372569793bd110b83",
+            "timestamp": "Wed Jan 4 14:37:30 2019 +0100",
+            "message": "Fix various bugs",
+            "author": "Developer One <developer.one@maypad.de>"
         }
     }
 ]
