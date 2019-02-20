@@ -14,7 +14,6 @@ export class BhistoryListItemComponent implements OnInit {
   ngOnInit() {
     if (this.build.reasonDependency) {
       const parts = this.build.reasonDependency.split(':');
-      console.log(parts);
       if (parts.length === 2) {
         this.fmtDependency = `Project ID: ${parts[0]} Branch: ${parts[1]}`;
       }
