@@ -1,7 +1,4 @@
-package de.fraunhofer.iosb.maypadbackend.dtos.mapper.request;
-
-import de.fraunhofer.iosb.maypadbackend.dtos.request.ChangeProjectRequest;
-import de.fraunhofer.iosb.maypadbackend.dtos.request.ServiceAccountRequest;
+package de.fraunhofer.iosb.maypadbackend.dtos.request;
 
 public final class ChangeProjectRequestBuilder {
     private ServiceAccountRequest serviceAccount;

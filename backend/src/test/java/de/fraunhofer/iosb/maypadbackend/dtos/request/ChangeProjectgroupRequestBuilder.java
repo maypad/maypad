@@ -1,6 +1,4 @@
-package de.fraunhofer.iosb.maypadbackend.dtos.mapper.request;
-
-import de.fraunhofer.iosb.maypadbackend.dtos.request.ChangeProjectgroupRequest;
+package de.fraunhofer.iosb.maypadbackend.dtos.request;
 
 public final class ChangeProjectgroupRequestBuilder {
     private String name;

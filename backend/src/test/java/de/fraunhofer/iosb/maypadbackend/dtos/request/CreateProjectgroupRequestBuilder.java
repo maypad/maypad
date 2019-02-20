@@ -1,6 +1,4 @@
-package de.fraunhofer.iosb.maypadbackend.dtos.mapper.request;
-
-import de.fraunhofer.iosb.maypadbackend.dtos.request.CreateProjectgroupRequest;
+package de.fraunhofer.iosb.maypadbackend.dtos.request;
 
 public final class CreateProjectgroupRequestBuilder {
     private String name;

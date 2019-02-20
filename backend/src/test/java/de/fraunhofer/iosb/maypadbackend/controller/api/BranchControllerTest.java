@@ -1,10 +1,10 @@
 package de.fraunhofer.iosb.maypadbackend.controller.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.fraunhofer.iosb.maypadbackend.dtos.mapper.request.BuildRequestBuilder;
-import de.fraunhofer.iosb.maypadbackend.dtos.mapper.request.DeploymentRequestBuilder;
 import de.fraunhofer.iosb.maypadbackend.dtos.request.BuildRequest;
+import de.fraunhofer.iosb.maypadbackend.dtos.request.BuildRequestBuilder;
 import de.fraunhofer.iosb.maypadbackend.dtos.request.DeploymentRequest;
+import de.fraunhofer.iosb.maypadbackend.dtos.request.DeploymentRequestBuilder;
 import de.fraunhofer.iosb.maypadbackend.exceptions.httpexceptions.BuildRunningException;
 import de.fraunhofer.iosb.maypadbackend.exceptions.httpexceptions.DeploymentRunningException;
 import de.fraunhofer.iosb.maypadbackend.exceptions.httpexceptions.InvalidTokenException;

@@ -1,6 +1,4 @@
-package de.fraunhofer.iosb.maypadbackend.dtos.mapper.request;
-
-import de.fraunhofer.iosb.maypadbackend.dtos.request.ServiceAccountRequest;
+package de.fraunhofer.iosb.maypadbackend.dtos.request;
 
 import java.util.Optional;
 
