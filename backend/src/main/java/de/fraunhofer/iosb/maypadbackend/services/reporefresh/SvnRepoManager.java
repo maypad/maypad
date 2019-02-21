@@ -206,10 +206,11 @@ public class SvnRepoManager extends RepoManager {
                     1,
                     rcm
             );
-            return rcm.getCommit();
+            Commit ret = rcm.getCommit();
+            return (ret == null) ? Commit.DEFAULT : ret;
         } catch (SVNException ex) {
             logger.error(ex.getMessage());
-            return null;
+            return Commit.DEFAULT;
         }
     }
 
