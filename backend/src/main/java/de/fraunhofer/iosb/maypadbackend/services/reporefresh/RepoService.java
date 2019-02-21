@@ -160,7 +160,7 @@ public class RepoService {
      * @param id id of the project
      */
     @Async
-    public void deleteProject(int id) {
+    public Future<Void> deleteProject(int id) {
         boolean weHaveTheLock = false;
         while (!weHaveTheLock) {
             if (repoLock(id)) {
@@ -175,7 +175,7 @@ public class RepoService {
                     semaphore.acquire();
                 } catch (InterruptedException e) {
                     logger.error("Error deleting project with id " + id);
-                    return;
+                    return CompletableFuture.completedFuture(null);
                 }
             }
         }
@@ -186,11 +186,11 @@ public class RepoService {
             project = projectService.getProject(id);
         } catch (NotFoundException e) {
             //project does not exist.
-            return;
+            return CompletableFuture.completedFuture(null);
         }
         if (project == null) {
             //some error with the project occurred
-            return;
+            return CompletableFuture.completedFuture(null);
         }
 
         if (project.getRepository().getBranches() != null) {
@@ -202,7 +202,7 @@ public class RepoService {
         projectService.deleteProject(project.getId());
         removeLock(id);
         FileUtil.deleteAllFiles(projectService.getRepoDir(project.getId()));
-
+        return CompletableFuture.completedFuture(null);
     }
 
     /**

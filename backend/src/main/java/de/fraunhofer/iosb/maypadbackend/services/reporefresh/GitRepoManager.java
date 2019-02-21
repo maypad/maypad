@@ -31,7 +31,6 @@ import org.eclipse.jgit.transport.Transport;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.util.FS;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -68,20 +67,21 @@ public class GitRepoManager extends RepoManager {
     /**
      * Constructor, prepare the GitRepoManager.
      *
-     * @param project        Project for which the git-repository is to be managed
-     * @param projectRootDir The root directory for the repo files
+     * @param project Project for which the git-repository is to be managed
      */
-    public GitRepoManager(Project project, File projectRootDir) {
-        super(project, projectRootDir);
+    public GitRepoManager(Project project) {
+        super(project);
     }
 
     /**
      * Constructor, prepare the GitRepoManager.
      *
      * @param project Project for which the git-repository is to be managed
+     * @param git     Git instance
      */
-    public GitRepoManager(Project project) {
-        super(project);
+    public GitRepoManager(Project project, Git git) {
+        this(project);
+        this.localGit = git;
     }
 
     /**
@@ -207,16 +207,6 @@ public class GitRepoManager extends RepoManager {
 
         return tags;
     }
-
-    /**
-     * Get the last commit of all branches.
-     *
-     * @return The last commit
-     */
-    public Commit getGlobalLastCommit() {
-        return getLastCommitByBranch(null);
-    }
-
 
     /**
      * Get the last Commit of the current selected branch.
