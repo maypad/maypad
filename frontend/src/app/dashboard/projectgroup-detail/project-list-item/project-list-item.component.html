@@ -11,7 +11,7 @@
     </div>
   </div>
   <span class="dot-underline" *ngIf="project.lastCommit && project.lastCommit.timestamp"
-    title="{{ project.lastCommit.timestamp | date : 'H:mm:ss, dd.MM.yy' }}">
+    title="{{ project.lastCommit ? project.lastCommit.timestamp : null | date : 'H:mm:ss, dd.MM.yy' }}">
     Last Commit: {{ fmtTimestamp }}
   </span>
 </div>
