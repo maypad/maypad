@@ -127,7 +127,8 @@ public class RepoServiceTest {
         Commit commit = branch.getLastCommit();
         assertThat(commit).isNotNull();
         assertThat(commit.getMessage()).isEqualTo("Create maypadfile");
-        assertThat(commit.getTimestamp()).isEqualTo("2019-02-12T23:16:28.000");
+        System.out.println(commit.getTimestamp());
+        assertThat(commit.getTimestamp().getTime()).isEqualTo(1550009788000L);
         assertThat(commit.getIdentifier()).isEqualTo("ef890414b4c4da0a3d60fdda8cfae8c818837ed9");
 
         //Readme
