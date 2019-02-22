@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -31,6 +32,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Manage the deployment for a project.
@@ -56,6 +58,7 @@ public class DeploymentService {
      * @param request        the request that contains the deployment parameters
      * @param deploymentName the name of the deployment type
      */
+    @Async
     public void deployBuild(int id, String ref, DeploymentRequest request, String deploymentName) {
         deployBuild(id, ref, request.isWithBuild(), request.isWithDependencies(), deploymentName);
     }
@@ -69,7 +72,9 @@ public class DeploymentService {
      * @param withDependencies if the the dependencies should be build
      * @param deploymentName   the name of the deployment type
      */
-    public void deployBuild(int id, String ref, boolean withBuild, boolean withDependencies, String deploymentName) {
+    @Async
+    public void deployBuild(int id, String ref, boolean withBuild, boolean withDependencies,
+                                                 String deploymentName) {
         Project project = projectService.getProject(id);
         Branch branch = project.getRepository().getBranches().get(ref);
         if (branch == null) {
@@ -81,15 +86,29 @@ public class DeploymentService {
                 logger.error("No DeploymentTypeExecutor registered for " + deploymentType.getClass());
                 throw new RuntimeException("Failed to find DeploymentTypeExecutor for " + deploymentType.getClass());
             }
-            if (withBuild) {
-                buildService.buildBranch(id, ref, withDependencies, null);
-            }
             Build build = buildService.getLatestBuild(branch);
             Deployment deployment = new Deployment(new Date(), build, Status.UNKNOWN);
             branch.getDeployments().add(0, deployment);
-            projectService.saveProject(project);
+            project = projectService.saveProject(project);
+            branch = project.getRepository().getBranches().get(ref);
             deployment = getLatestDeployment(branch);
             runningDeployments.put(new Tuple<>(id, ref), deployment.getId());
+
+            if (withBuild) {
+                try {
+                    buildService.buildBranch(id, ref, withDependencies, null).get();
+                } catch (InterruptedException e) {
+                    logger.warn("Deployment of project %d interrupted.", id);
+                    Thread.currentThread().interrupt();
+                    signalStatus(id, ref, Status.FAILED);
+                    return;
+                } catch (ExecutionException e) {
+                    logger.warn(e.getCause().getMessage());
+                    signalStatus(id, ref, Status.FAILED);
+                    return;
+                }
+            }
+
             deploymentTypeMappings.get(deploymentType.getClass()).deploy(deploymentType, id, ref);
         } else {
             throw new DeploymentRunningException("DEPLOYMENT_RUNNING",
@@ -146,7 +165,8 @@ public class DeploymentService {
      */
     public void signalStatus(int id, String ref, Status status) {
         Tuple<Integer, String> branchMapEntry = new Tuple<>(id, ref);
-        Branch branch = projectService.getBranch(id, ref);
+        Project project = projectService.getProject(id);
+        Branch branch = project.getRepository().getBranches().get(ref);
         if (branch == null) {
             throw new NotFoundException("BRANCH_NOT_FOUND", "Branch not found.");
         }
@@ -156,7 +176,6 @@ public class DeploymentService {
         Deployment deployment = getDeployment(branch, runningDeployments.get(branchMapEntry));
         deployment.setStatus(status);
         runningDeployments.remove(branchMapEntry);
-        Project project = projectService.getProject(id);
         projectService.saveProject(project);
         sseService.push(EventData.builder(SseEventType.DEPLOYMENT_UPDATE).projectId(id).name(ref).status(status).build());
     }
