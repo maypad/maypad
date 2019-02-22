@@ -53,9 +53,9 @@ public class SvnRepoManagerTest {
     @Before
     public void setup() throws IOException {
         File repositoryFile = new ClassPathResource("testrepo_svn").getFile();
-        UserServiceAccount serviceAccount = new UserServiceAccount();
-        serviceAccount.setUsername("test_user");
-        serviceAccount.setPassword("test_password");
+        UserServiceAccount serviceAccount = mock(UserServiceAccount.class);
+        when(serviceAccount.getUsername()).thenReturn("test_user");
+        when(serviceAccount.getPassword()).thenReturn("test_password");
         project = mock(Project.class);
         when(project.getRepositoryUrl()).thenReturn("file://" + repositoryFile.getAbsolutePath() + "/test_project/");
         when(project.getServiceAccount()).thenReturn(serviceAccount);
