@@ -105,7 +105,6 @@ public class BuildServiceTest {
                     try {
                         buildService.buildBranch(1, "master", request, null).get();
                     } catch (InterruptedException | ExecutionException e) {
-                        e.printStackTrace();
                         fail();
                     }
                 }

@@ -174,6 +174,7 @@ public class RepoService {
                     semaphore.acquire();
                 } catch (InterruptedException e) {
                     logger.error("Error deleting project with id " + id);
+                    Thread.currentThread().interrupt();
                     return CompletableFuture.completedFuture(null);
                 }
             }
@@ -218,7 +219,8 @@ public class RepoService {
         try {
             semaphore.acquire();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.error("Can't get repo-lock for project with id " + projectid);
+            Thread.currentThread().interrupt();
         }
         lockedProjects.put(projectid, semaphore);
         return true;
@@ -404,7 +406,7 @@ public class RepoService {
                 branch.getLastCommit().compareAndUpdate(lastCommit);
             }
 
-            if (lastProjectCommit == null || lastCommit.getTimestamp().getTime() < lastCommit.getTimestamp().getTime()) {
+            if (lastProjectCommit == null || lastProjectCommit.getTimestamp().getTime() < lastCommit.getTimestamp().getTime()) {
                 lastProjectCommit = lastCommit;
             }
 

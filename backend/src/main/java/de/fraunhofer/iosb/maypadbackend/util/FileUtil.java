@@ -67,7 +67,7 @@ public class FileUtil {
             }
             return DatatypeConverter.printHexBinary(digest.digest());
         } catch (NoSuchAlgorithmException | IOException e) {
-            e.printStackTrace();
+            logger.error("Cant't calc checksum for file " + input.getAbsolutePath());
         }
         return null;
     }
@@ -109,7 +109,6 @@ public class FileUtil {
             return asCharSource(file, Charsets.UTF_8).read();
         } catch (IOException e) {
             logger.warn("Can't read file: " + file.getAbsoluteFile());
-            e.printStackTrace();
         }
         return null;
     }
