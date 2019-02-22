@@ -74,8 +74,12 @@ public class DependencyBuildHelper {
                         return new Tuple<>(false, entry.getKey().toString());
                     }
                 }
-            } catch (InterruptedException | ExecutionException e) {
+            } catch (InterruptedException e) {
                 logger.warn("Build of project %d interrupted.", id);
+                Thread.currentThread().interrupt();
+                return new Tuple<>(false, null);
+            } catch (ExecutionException e) {
+                logger.warn(e.getCause().getMessage());
                 return new Tuple<>(false, null);
             }
         }

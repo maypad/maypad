@@ -58,7 +58,10 @@ public class WebhookBuildExecutor implements BuildTypeExecutor {
                 } else {
                     buildService.signalStatus(id, ref, Status.FAILED, BuildReason.BUILD_NOT_STARTED, null);
                 }
-            } catch (ExecutionException | InterruptedException ex) {
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                buildService.signalStatus(id, ref, Status.FAILED, BuildReason.BUILD_NOT_STARTED, null);
+            } catch (ExecutionException ex) {
                 buildService.signalStatus(id, ref, Status.FAILED, BuildReason.BUILD_NOT_STARTED, null);
             }
         }

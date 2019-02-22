@@ -130,6 +130,7 @@ public class BuildService {
             } catch (InterruptedException e) {
                 logger.warn("Build of project %d interrupted.", id);
                 signalStatus(id, ref, Status.FAILED, BuildReason.BUILD_FAILED, null);
+                Thread.currentThread().interrupt();
                 return CompletableFuture.completedFuture(Status.FAILED);
             }
             branch = projectService.getBranch(id, ref);
