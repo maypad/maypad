@@ -14,7 +14,6 @@ import javax.persistence.InheritanceType;
 /**
  * A Serviceaccount for authentication.
  *
- * @author Lukas Brosch
  * @version 1.0
  */
 @Data

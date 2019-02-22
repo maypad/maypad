@@ -10,7 +10,6 @@ import java.io.File;
 /**
  * Deployment where a script should be executed.
  *
- * @author Lukas Brosch
  * @version 1.0
  */
 @Data

@@ -28,7 +28,6 @@ import java.util.Optional;
 /**
  * A project in maypad which has a {@link Repository}.
  *
- * @author Lukas Brosch
  * @version 1.0
  */
 @Data

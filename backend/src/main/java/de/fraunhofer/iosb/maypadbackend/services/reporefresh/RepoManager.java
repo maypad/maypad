@@ -21,7 +21,6 @@ import java.util.List;
 /**
  * Provides specific methods to interact with a version control system.
  *
- * @author Lukas Brosch
  * @version 1.0
  */
 public abstract class RepoManager {

@@ -20,7 +20,6 @@ import java.util.function.Supplier;
 /**
  * Service which manage the projectgroups.
  *
- * @author Lukas Brosch
  * @version 1.0
  */
 @Service

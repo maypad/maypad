@@ -19,7 +19,6 @@ import javax.persistence.OneToOne;
 /**
  * Deployment where a webhook should be called.
  *
- * @author Lukas Brosch
  * @version 1.0
  */
 @Data

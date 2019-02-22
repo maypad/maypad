@@ -6,8 +6,6 @@ import java.util.Optional;
 
 /**
  * Data transfer object to store a Service-Account-request as a POJO.
- *
- * @author Max Willich
  */
 @Data
 public class ServiceAccountRequest {

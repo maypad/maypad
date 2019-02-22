@@ -9,7 +9,6 @@ import javax.persistence.Entity;
 /**
  * A webhook provided by another system.
  *
- * @author Lukas Brosch
  * @version 1.0
  */
 @Data

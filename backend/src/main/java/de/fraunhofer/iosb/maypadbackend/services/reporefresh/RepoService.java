@@ -58,7 +58,6 @@ import java.util.concurrent.TimeUnit;
 /**
  * RepoService, managing all operations with repositories.
  *
- * @author Lukas Brosch
  * @version 1.0
  */
 @Service

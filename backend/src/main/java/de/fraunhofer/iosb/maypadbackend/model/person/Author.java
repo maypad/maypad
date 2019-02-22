@@ -11,7 +11,6 @@ import javax.persistence.OneToOne;
 /**
  * Author for a commit.
  *
- * @author Lukas Brosch
  * @version 1.0
  */
 @Data

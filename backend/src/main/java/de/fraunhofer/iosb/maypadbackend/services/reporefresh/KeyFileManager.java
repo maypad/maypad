@@ -18,7 +18,6 @@ import java.util.List;
 /**
  * Handles the file for a SSH-key.
  *
- * @author Lukas Brosch
  * @version 1.0
  */
 @AllArgsConstructor

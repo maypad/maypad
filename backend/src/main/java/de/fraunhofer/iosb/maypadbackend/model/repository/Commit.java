@@ -19,7 +19,6 @@ import java.util.Date;
 /**
  * A commit in a {@link Repository}.
  *
- * @author Lukas Brosch
  * @version 1.0
  */
 @Data

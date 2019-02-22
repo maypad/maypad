@@ -7,7 +7,6 @@ import java.util.List;
 /**
  * Remove an entry of the map, if ttl expired.
  *
- * @author Lukas Brosch
  * @version 1.0
  */
 @AllArgsConstructor

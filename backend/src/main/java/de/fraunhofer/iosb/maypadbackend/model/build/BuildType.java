@@ -14,7 +14,6 @@ import javax.persistence.InheritanceType;
 /**
  * BuildTypes start / trigger a build.
  *
- * @author Lukas Brosch
  * @version 1.0
  */
 @Data

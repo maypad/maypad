@@ -4,8 +4,6 @@ import lombok.Data;
 
 /**
  * Data transfer object for transferring information about a Tag entity.
- *
- * @author Max Willich
  */
 @Data
 public class TagResponse {

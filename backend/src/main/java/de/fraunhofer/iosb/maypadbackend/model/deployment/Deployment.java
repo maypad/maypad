@@ -20,7 +20,6 @@ import java.util.Date;
 /**
  * A deployment with its metadata.
  *
- * @author Lukas Brosch
  * @version 1.0
  */
 @Data

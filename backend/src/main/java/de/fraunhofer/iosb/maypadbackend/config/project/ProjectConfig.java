@@ -6,8 +6,6 @@ import java.util.List;
 
 /**
  * Interface for classes that implement the parsing of a Maypad configuration file.
- *
- * @author Max Willich
  */
 public interface ProjectConfig {
 

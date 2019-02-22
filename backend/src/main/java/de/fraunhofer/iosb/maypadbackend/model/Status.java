@@ -3,7 +3,6 @@ package de.fraunhofer.iosb.maypadbackend.model;
 /**
  * Describes different states for an action (e.g. a build).
  *
- * @author Lukas Brosch
  * @version 1.0
  */
 public enum Status {

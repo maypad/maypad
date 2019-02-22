@@ -23,7 +23,6 @@ import java.util.Optional;
 /**
  * A projectgroup in which can have {@link Project}s.
  *
- * @author Lukas Brosch
  * @version 1.0
  */
 

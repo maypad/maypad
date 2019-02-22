@@ -11,7 +11,6 @@ import java.util.concurrent.Executor;
 /**
  * Threadpool executor for reporefresh.
  *
- * @author Lukas Brosch
  * @version 1.0
  */
 @Configuration

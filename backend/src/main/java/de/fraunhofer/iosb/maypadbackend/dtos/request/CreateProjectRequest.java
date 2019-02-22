@@ -4,8 +4,6 @@ import lombok.Data;
 
 /**
  * Data transfer object to store a Create-Project-request as a POJO.
- *
- * @author Max Willich
  */
 @Data
 public class CreateProjectRequest {

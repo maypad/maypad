@@ -30,7 +30,6 @@ import java.util.List;
 /**
  * Manager for a svn repository.
  *
- * @author Max Willich
  * @version 1.0
  */
 public class SvnRepoManager extends RepoManager {

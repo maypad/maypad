@@ -6,7 +6,6 @@ import lombok.Data;
 /**
  * A Tuple.
  *
- * @author Lukas Brosch
  * @version 1.0
  */
 @Data

@@ -13,7 +13,6 @@ import javax.persistence.Id;
 /**
  * An Email-address.
  *
- * @author Lukas Brosch
  * @version 1.0
  */
 @Data
