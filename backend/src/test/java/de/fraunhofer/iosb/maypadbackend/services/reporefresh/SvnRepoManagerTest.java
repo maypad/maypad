@@ -4,6 +4,7 @@ import de.fraunhofer.iosb.maypadbackend.config.project.ProjectConfig;
 import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Commit;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Tag;
+import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.UserServiceAccount;
 import de.fraunhofer.iosb.maypadbackend.util.Tuple;
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Before;
@@ -52,8 +53,12 @@ public class SvnRepoManagerTest {
     @Before
     public void setup() throws IOException {
         File repositoryFile = new ClassPathResource("testrepo_svn").getFile();
+        UserServiceAccount serviceAccount = new UserServiceAccount();
+        serviceAccount.setUsername("test_user");
+        serviceAccount.setPassword("test_password");
         project = mock(Project.class);
         when(project.getRepositoryUrl()).thenReturn("file://" + repositoryFile.getAbsolutePath() + "/test_project/");
+        when(project.getServiceAccount()).thenReturn(serviceAccount);
         logger.info("Found testrepo at " + repositoryFile.getAbsolutePath());
         svnRepoManager = new SvnRepoManager(project);
         svnRepoManager.initRepoManager(keyFolder.getRoot(), projectRootFolder.getRoot());
@@ -81,10 +86,19 @@ public class SvnRepoManagerTest {
         privateConfigField.setAccessible(true);
         assertThat(privateConfigField.get(svnRepoManager)).isNotNull();
         assertThat(svnRepoManager.getMainBranchName()).isEqualTo("trunk");
+        // Test most recent commit
         Commit c = svnRepoManager.getLastCommit();
         assertThat(c.getMessage()).isEqualTo("Test-Commit-Message");
+        // Tets branches
         List<String> branches = svnRepoManager.getBranchNames();
         assertThat(CollectionUtils.isEqualCollection(branches, correctBranchList)).isEqualTo(true);
+        // Switch branch
+        svnRepoManager.switchBranch("branch1");
+        Field repoRootField = SvnRepoManager.class.getDeclaredField("projectRoot");
+        repoRootField.setAccessible(true);
+        String branchDir = projectRootFolder.getRoot().getAbsolutePath() + File.separator + "branches/branch1";
+        assertThat(repoRootField.get(svnRepoManager)).isEqualTo(branchDir);
+        // Test tags
         List<Tag> tags = svnRepoManager.getTags();
         List<String> tagNames = new ArrayList<>();
         for (Tag t : tags) {
@@ -92,5 +106,15 @@ public class SvnRepoManagerTest {
         }
         assertThat(CollectionUtils.isEqualCollection(tagNames, correctTagList));
         assertThat(svnRepoManager.switchBranch("trunk")).isTrue();
+    }
+
+    @Test
+    public void testErrorCases() {
+        assertThat(svnRepoManager.cloneRepository()).isEqualTo(true);
+        assertThat(svnRepoManager.switchBranch("fakeBranch")).isEqualTo(false);
+        when(project.getRepositoryUrl()).thenReturn("https://fake-svn-repo.com/bla/");
+        svnRepoManager = new SvnRepoManager(project);
+        svnRepoManager.initRepoManager(keyFolder.getRoot(), projectRootFolder.getRoot());
+        assertThat(svnRepoManager.cloneRepository()).isFalse();
     }
 }
