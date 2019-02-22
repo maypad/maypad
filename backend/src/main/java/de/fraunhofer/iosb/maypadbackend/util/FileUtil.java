@@ -19,7 +19,6 @@ import static com.google.common.io.Files.asCharSource;
 /**
  * Utils for file and directory operations.
  *
- * @author Lukas Brosch
  * @version 1.0
  */
 public class FileUtil {

@@ -12,7 +12,6 @@ import javax.persistence.Entity;
 /**
  * Service account whose authentication is using an SSH key.
  *
- * @author Lukas Brosch
  * @version 1.0
  */
 @Data

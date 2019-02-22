@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 /**
  * General exception for rest with an (internal) error-message.
  *
- * @author Lukas Brosch
  * @version 1.0
  */
 public abstract class RestException extends RuntimeException {

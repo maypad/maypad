@@ -33,7 +33,6 @@ import java.util.function.Supplier;
 /**
  * Service managing projects of a {@link Projectgroup}.
  *
- * @author Lukas Brosch
  * @version 1.0
  */
 @Service

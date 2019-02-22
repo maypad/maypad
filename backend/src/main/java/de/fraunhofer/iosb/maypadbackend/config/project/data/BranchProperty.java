@@ -6,8 +6,6 @@ import java.util.List;
 
 /**
  * Class to store Branch properties as listed in Maypad YAML-File.
- *
- * @author Max Willich
  */
 @Data
 public class BranchProperty {

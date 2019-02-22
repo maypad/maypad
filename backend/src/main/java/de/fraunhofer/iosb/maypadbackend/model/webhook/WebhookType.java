@@ -3,7 +3,6 @@ package de.fraunhofer.iosb.maypadbackend.model.webhook;
 /**
  * Functionality provided by a internal webhook.
  *
- * @author Lukas Brosch
  * @version 1.0
  */
 public enum WebhookType {

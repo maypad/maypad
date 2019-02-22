@@ -15,7 +15,6 @@ import javax.persistence.OneToOne;
 /**
  * Tag in a {@link Repository}. It can belong to a {@link Commit}.
  *
- * @author Lukas Brosch
  * @version 1.0
  */
 @Data

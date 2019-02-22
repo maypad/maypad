@@ -9,7 +9,6 @@ import de.fraunhofer.iosb.maypadbackend.services.reporefresh.SvnRepoManager;
 /**
  * Types of a version control system.
  *
- * @author Lukas Brosch
  * @version 1.0
  */
 

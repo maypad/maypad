@@ -40,7 +40,6 @@ import java.util.List;
 /**
  * Manager for a git repository.
  *
- * @author Lukas Brosch
  * @version 1.0
  */
 public class GitRepoManager extends RepoManager {

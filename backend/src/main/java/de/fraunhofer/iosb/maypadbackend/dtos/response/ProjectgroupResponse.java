@@ -5,8 +5,6 @@ import lombok.Data;
 
 /**
  * Data transfer object for transferring information about a Projectgroup entity.
- *
- * @author Max Willich
  */
 @Data
 public class ProjectgroupResponse {

@@ -5,7 +5,6 @@ import org.springframework.http.HttpStatus;
 /**
  * Exception for an non existing element.
  *
- * @author Lukas Brosch
  * @version 1.0
  */
 public class NotFoundException extends RestException {

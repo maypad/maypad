@@ -5,7 +5,6 @@ import java.util.concurrent.TimeUnit;
 /**
  * A general element with TTL.
  *
- * @author Lukas Brosch
  * @version 1.0
  */
 public class ExpiringElement {

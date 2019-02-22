@@ -10,6 +10,7 @@ import de.fraunhofer.iosb.maypadbackend.model.repository.Branch;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Commit;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Repository;
 import de.fraunhofer.iosb.maypadbackend.model.repository.RepositoryType;
+import de.fraunhofer.iosb.maypadbackend.model.repository.Tag;
 import de.fraunhofer.iosb.maypadbackend.services.ProjectService;
 import de.fraunhofer.iosb.maypadbackend.services.webhook.WebhookService;
 import de.fraunhofer.iosb.maypadbackend.util.Tuple;
@@ -88,7 +89,8 @@ public class RepoServiceTest {
 
     @Test
     public void localGitRepoUrl() throws Exception {
-        Project project = initLocalGitTestRepo();
+        File testrepo = folder.newFolder();
+        Project project = initLocalGitTestRepo(testrepo);
 
         assertThat(project.getRepositoryStatus()).isEqualTo(Status.SUCCESS);
         assertThat(project.getName()).isEqualTo("Testrepo");
@@ -135,21 +137,29 @@ public class RepoServiceTest {
 
         verify(webhookServiceMock).generateSuccessWebhook(new Tuple<>(1, branch.getName()));
         verify(webhookServiceMock).generateFailWebhook(new Tuple<>(1, branch.getName()));
+    }
 
+    @Test
+    public void refreshLocalGitRepoUrl() throws Exception {
+        File testrepo = folder.newFolder();
+        Project project = initLocalGitTestRepo(testrepo);
+        updateLocalGitTestRepo(testrepo);
+        repoService.refreshProject(1).get();
+        checkRefreshedLocalGitTestRepo(project, testrepo.getAbsolutePath().replace("\\", "/"));
     }
 
     @Test
     public void deleteLocalGitRepo() throws Exception {
-        initLocalGitTestRepo();
+        File testrepo = folder.newFolder();
+        initLocalGitTestRepo(testrepo);
         repoService.deleteProject(1).get();
         assertThat(new File(folder.getRoot().getAbsolutePath() + File.separator + "1")).doesNotExist();
         verify(webhookServiceMock, atLeast(2)).removeWebhook(any());
         verify(projectServiceMock).deleteProject(1);
     }
 
-    private Project initLocalGitTestRepo() throws Exception {
+    private Project initLocalGitTestRepo(File testrepo) throws Exception {
         File ressourceRepo = ResourceUtils.getFile(this.getClass().getResource("/testrepo_git"));
-        File testrepo = folder.newFolder();
         FileUtils.copyDirectory(ressourceRepo, testrepo);
         File gitFoler = new File(testrepo.getAbsolutePath() + File.separator + "git");
         gitFoler.renameTo(new File(testrepo.getAbsolutePath() + File.separator + ".git"));
@@ -162,6 +172,70 @@ public class RepoServiceTest {
 
         repoService.initProject(1).get();
         return project;
+    }
+
+    private void updateLocalGitTestRepo(File path) throws Exception {
+        File ressourceRepo = ResourceUtils.getFile(this.getClass().getResource("/testrepo_git_refresh"));
+        FileUtils.cleanDirectory(path);
+        FileUtils.copyDirectory(ressourceRepo, path);
+        File gitFoler = new File(path.getAbsolutePath() + File.separator + "git");
+        gitFoler.renameTo(new File(path.getAbsolutePath() + File.separator + ".git"));
+    }
+
+    private void checkRefreshedLocalGitTestRepo(Project project, String repoUrl) {
+        assertThat(project.getRepositoryStatus()).isEqualTo(Status.SUCCESS);
+        assertThat(project.getName()).isEqualTo("Testrepo Changed");
+        assertThat(project.getDescription()).isEqualTo("New TestDescription");
+        assertThat(project.getRepositoryUrl()).isEqualTo(repoUrl);
+
+        //Repository
+        Repository repository = project.getRepository();
+        assertThat(repository.getRepositoryType()).isEqualTo(RepositoryType.GIT);
+        assertThat(repository.getBranches().get("master")).isNotNull();
+
+        //Branch
+        Branch branch = project.getRepository().getBranches().get("master");
+        assertThat(branch.getName()).isEqualTo("master");
+        assertThat(branch.getDescription()).isEqualTo("Lorem Ipsum 42");
+        assertThat(branch.getMembers().size()).isEqualTo(2);
+        assertThat(branch.getMembers().get(0).getName()).isEqualTo("Peter");
+        assertThat(branch.getMembers().get(1).getName()).isEqualTo("Dieter");
+        assertThat(branch.getMails().size()).isEqualTo(1);
+        assertThat(branch.getMails().get(0).getMailAddress()).isEqualTo("example.mail@gmail.com");
+
+        //Build
+        assertThat(branch.getBuildType()).isExactlyInstanceOf(WebhookBuild.class);
+        WebhookBuild build = (WebhookBuild) branch.getBuildType();
+        assertThat(build.getBuildWebhook().getUrl()).isEqualTo("https://greatBuild.com/12345abc");
+        assertThat(build.getBody()).isEqualTo("{}");
+        assertThat(build.getMethod()).isEqualTo(HttpMethod.POST);
+
+        //Deployment
+        assertThat(branch.getDeploymentType()).isNull();
+
+        //Depends on
+        assertThat(branch.getDependencies().size()).isEqualTo(1);
+        assertThat(branch.getDependencies().get(0).getProjectId()).isEqualTo(2);
+        assertThat(branch.getDependencies().get(0).getBranchName()).isEqualTo("master");
+
+        //Last commit
+        Commit commit = branch.getLastCommit();
+        assertThat(commit.getAuthor()).isNotNull();
+        assertThat(commit.getMessage()).isEqualTo("Update the maypad.yaml file");
+        assertThat(commit.getTimestamp().getTime()).isEqualTo(1550702597000L);
+        assertThat(commit.getIdentifier()).isEqualTo("c3f3f879974680b374b0b8be134fa4dd28f83f59");
+
+        //Tags
+        assertThat(repository.getTags().size()).isEqualTo(1);
+        Tag tag = repository.getTags().get(0);
+        assertThat(tag.getName()).isEqualTo("testtag");
+        assertThat(tag.getCommit().getIdentifier()).isEqualTo("ef890414b4c4da0a3d60fdda8cfae8c818837ed9");
+        assertThat(tag.getCommit().getMessage()).isEqualTo("Create maypadfile");
+        assertThat(tag.getCommit().getTimestamp().getTime()).isEqualTo(1550009788000L);
+        assertThat(tag.getCommit().getAuthor()).isNotNull();
+
+        //Readme
+        assertThat(branch.getReadme()).isEqualTo("Testreadme\n");
     }
 
 

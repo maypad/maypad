@@ -15,7 +15,6 @@ import javax.persistence.InheritanceType;
 /**
  * Webhook, which is a URL for triggering an event.
  *
- * @author Lukas Brosch
  * @version 1.0
  */
 @Data

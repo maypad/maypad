@@ -25,8 +25,6 @@ import java.util.concurrent.ExecutionException;
 
 /**
  * Provides method to execute builds starting with least dependent dependency.
- *
- * @Author Max Willich
  */
 @Component
 public class DependencyBuildHelper {

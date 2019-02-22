@@ -6,8 +6,6 @@ import java.util.Date;
 
 /**
  * Data transfer object for transferring information about a Commit entity.
- *
- * @author Max Willich
  */
 @Data
 public class CommitResponse {

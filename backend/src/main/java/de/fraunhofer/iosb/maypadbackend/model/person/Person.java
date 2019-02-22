@@ -15,7 +15,6 @@ import javax.persistence.InheritanceType;
 /**
  * A general person.
  *
- * @author Lukas Brosch
  * @version 1.0
  */
 @Data

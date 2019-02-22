@@ -16,7 +16,6 @@ import java.util.List;
 /**
  * Dummy for an unknown type of a repository.
  *
- * @author Lukas Brosch
  * @version 1.0
  */
 public class NullRepoManager extends RepoManager {

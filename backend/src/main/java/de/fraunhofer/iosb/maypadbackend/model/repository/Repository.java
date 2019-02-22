@@ -24,7 +24,6 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Repository of a version management system.
  *
- * @author Lukas Brosch
  * @version 1.0
  */
 @Data

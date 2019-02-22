@@ -33,7 +33,6 @@ import java.util.Optional;
 /**
  * A branch within a {@link Repository}.
  *
- * @author Lukas Brosch
  * @version 1.0
  */
 @Data
