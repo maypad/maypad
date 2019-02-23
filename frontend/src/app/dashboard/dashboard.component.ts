@@ -70,6 +70,9 @@ export class DashboardComponent implements OnInit {
       group.projects.forEach((proj) => {
         if (proj.id === data['projectId']) {
           proj.name = data['name'];
+          if (data['name'] === 'ERROR') {
+            this.notificationService.send(`Project(${proj.id}): ${proj.name} has encountered an error while initializing.`, 'danger');
+          }
           this.notificationService.send(`Project(${proj.id}): ${proj.name} has been initialized.`, 'success');
         }
       });
