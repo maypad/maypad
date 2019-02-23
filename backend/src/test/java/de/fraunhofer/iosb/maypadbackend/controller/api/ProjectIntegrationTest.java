@@ -144,6 +144,46 @@ public class ProjectIntegrationTest {
     }
 
     @Test
+    public void createSvnProjectValid() throws Exception {
+
+        when(serverConfig.getRepositoryStoragePath()).thenReturn(folder.getRoot().getAbsolutePath());
+
+        CreateProjectgroupRequest projectGroupRequest = CreateProjectgroupRequestBuilder.create()
+                .name("Test")
+                .build();
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        mockMvc.perform(post("/api/projectgroups")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(projectGroupRequest))
+        );
+
+        File svnRepo = initLocalSvnTestRepo();
+        final String repoUrl = "file://" + (svnRepo.getAbsolutePath() + File.separator + "test_project" + File.separator);
+        CreateProjectRequest projectRequest = CreateProjectRequestBuilder.create()
+                .groupId(1)
+                .repositoryUrl(repoUrl)
+                .versionControlSystem("svn")
+                .build();
+
+        mockMvc.perform(post("/api/projects")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(projectRequest))
+        )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isMap())
+                .andExpect(jsonPath("$.id", is(1)));
+
+        Mockito.verify(sseService, timeout(60000)).push(any(EventData.class));
+
+        assertThat(projectService.getProjects().size()).isEqualTo(1);
+        Project project = projectService.getProject(1);
+        assertThat(project.getServiceAccount()).isNull();
+        checkLocalSvnTestRepo(project, repoUrl);
+    }
+
+    @Test
     public void createProjectValidWithUserServiceaccount() throws Exception {
 
         when(serverConfig.getRepositoryStoragePath()).thenReturn(folder.getRoot().getAbsolutePath());
@@ -202,6 +242,13 @@ public class ProjectIntegrationTest {
         FileUtils.copyDirectory(ressourceRepo, testrepo);
         File gitFoler = new File(testrepo.getAbsolutePath() + File.separator + "git");
         gitFoler.renameTo(new File(testrepo.getAbsolutePath() + File.separator + ".git"));
+        return testrepo;
+    }
+
+    private File initLocalSvnTestRepo() throws Exception {
+        File ressourceRepo = ResourceUtils.getFile(this.getClass().getResource("/testrepo_svn"));
+        File testrepo = folder.newFolder();
+        FileUtils.copyDirectory(ressourceRepo, testrepo);
         return testrepo;
     }
 
@@ -269,6 +316,64 @@ public class ProjectIntegrationTest {
 
         //Readme
         assertThat(branch.getReadme()).isEqualTo("Testreadme\n");
+    }
+
+    private void checkLocalSvnTestRepo(Project project, String repoUrl) {
+        assertThat(project.getRepositoryStatus()).isEqualTo(Status.SUCCESS);
+        assertThat(project.getName()).isEqualTo("svn_project");
+        assertThat(project.getDescription()).isEqualTo("lorem ipsum dolor sit amet");
+        assertThat(project.getRepositoryUrl()).isEqualTo(repoUrl);
+        assertThat(project.getBuildStatus()).isEqualTo(Status.UNKNOWN);
+
+        //Repository
+        Repository repository = project.getRepository();
+        assertThat(repository.getRepositoryType()).isEqualTo(RepositoryType.SVN);
+        assertThat(repository.getBranches().get("trunk")).isNotNull();
+        assertThat(repository.getBranches().size()).isEqualTo(3);
+
+        //RefreshWebhook
+        assertThat(project.getRefreshWebhook()).isNotNull();
+
+        //Branch
+        Branch branch = project.getRepository().getBranches().get("trunk");
+        assertThat(branch.getName()).isEqualTo("trunk");
+        assertThat(branch.getDescription()).isEqualTo("Lorem Ipsum");
+        assertThat(branch.getMembers().size()).isEqualTo(5);
+        assertThat(branch.getMembers().get(0).getName()).isEqualTo("Max");
+        assertThat(branch.getMembers().get(1).getName()).isEqualTo("Daniel");
+        assertThat(branch.getMembers().get(2).getName()).isEqualTo("Lukas");
+        assertThat(branch.getMembers().get(3).getName()).isEqualTo("Jonas");
+        assertThat(branch.getMembers().get(4).getName()).isEqualTo("Julian");
+        assertThat(branch.getMails().size()).isEqualTo(2);
+        assertThat(branch.getMails().get(0).getMailAddress()).isEqualTo("example.mail@gmail.com");
+        assertThat(branch.getMails().get(1).getMailAddress()).isEqualTo("mail.example@protonmail.com");
+
+        //other branches
+        assertThat(project.getRepository().getBranches().get("branch1")).isNotNull();
+        assertThat(project.getRepository().getBranches().get("branch1").getName()).isEqualTo("branch1");
+        assertThat(project.getRepository().getBranches().get("branch2")).isNotNull();
+        assertThat(project.getRepository().getBranches().get("branch2").getName()).isEqualTo("branch2");
+
+        //Build
+        assertThat(branch.getBuildType()).isNull();
+        assertThat(branch.getBuildSuccessWebhook()).isNotNull();
+        assertThat(branch.getBuildFailureWebhook()).isNotNull();
+
+        //Deployment
+        assertThat(branch.getDeploymentType()).isNull();
+
+        //Depends on
+        assertThat(branch.getDependencies().size()).isEqualTo(0);
+
+        //Last commit
+        Commit commit = branch.getLastCommit();
+        assertThat(commit.getAuthor()).isNotNull();
+        assertThat(commit.getMessage()).isEqualTo("Test-Commit-Message");
+        assertThat(commit.getTimestamp().getTime()).isEqualTo(1550422060887L);
+        assertThat(commit.getIdentifier()).isEqualTo("Revision 2");
+
+        //Readme
+        assertThat(branch.getReadme()).isEqualTo("");
     }
 
 
