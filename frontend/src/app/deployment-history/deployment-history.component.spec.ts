@@ -15,7 +15,6 @@ describe('DeploymentHistoryComponent', () => {
   let fixture: ComponentFixture<DeploymentHistoryComponent>;
   const deployments: Deployment[] = deploymentsResponse['default'];
   const branch = branchResponse['default'];
-  const project = projectResponse['default'];
   const snapshot = new ActivatedRouteSnapshot();
 
   beforeEach(async(() => {

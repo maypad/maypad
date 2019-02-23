@@ -25,7 +25,7 @@ export class BranchService {
         map(response => {
           return response.map(build => {
             build.status = (<any>BuildStatus)[build['status']];
-            build.commit = <Commit>build['commit'];
+            build.commit = build['commit'];
             build.reason = (<any>BuildReason)[build['reason']];
             return build;
           });
@@ -47,7 +47,7 @@ export class BranchService {
       .pipe(
         map(response => {
           response.status = (<any>BuildStatus)[response['buildStatus']];
-          response.lastCommit = <Commit>response['lastCommit'];
+          response.lastCommit = response['lastCommit'];
           return response;
         }),
         catchError(this.api.handleError<Branch>('loadBranch'))
