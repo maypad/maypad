@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 
@@ -57,10 +58,11 @@ public class DeploymentService {
      * @param ref            the name of the branch
      * @param request        the request that contains the deployment parameters
      * @param deploymentName the name of the deployment type
+     * @return future
      */
     @Async
-    public void deployBuild(int id, String ref, DeploymentRequest request, String deploymentName) {
-        deployBuild(id, ref, request.isWithBuild(), request.isWithDependencies(), deploymentName);
+    public CompletableFuture<Void> deployBuild(int id, String ref, DeploymentRequest request, String deploymentName) {
+        return deployBuild(id, ref, request.isWithBuild(), request.isWithDependencies(), deploymentName);
     }
 
     /**
@@ -71,9 +73,10 @@ public class DeploymentService {
      * @param withBuild        if a build should be triggered
      * @param withDependencies if the the dependencies should be build
      * @param deploymentName   the name of the deployment type
+     * @return future
      */
     @Async
-    public void deployBuild(int id, String ref, boolean withBuild, boolean withDependencies,
+    public CompletableFuture<Void> deployBuild(int id, String ref, boolean withBuild, boolean withDependencies,
                                                  String deploymentName) {
         Project project = projectService.getProject(id);
         Branch branch = project.getRepository().getBranches().get(ref);
@@ -101,11 +104,11 @@ public class DeploymentService {
                     logger.warn("Deployment of project %d interrupted.", id);
                     Thread.currentThread().interrupt();
                     signalStatus(id, ref, Status.FAILED);
-                    return;
+                    return CompletableFuture.completedFuture(null);
                 } catch (ExecutionException e) {
                     logger.warn(e.getCause().getMessage());
                     signalStatus(id, ref, Status.FAILED);
-                    return;
+                    return CompletableFuture.completedFuture(null);
                 }
             }
 
@@ -114,6 +117,7 @@ public class DeploymentService {
             throw new DeploymentRunningException("DEPLOYMENT_RUNNING",
                     String.format("There's already a deployment running for %s", branch.getName()));
         }
+        return CompletableFuture.completedFuture(null);
     }
 
     /**
