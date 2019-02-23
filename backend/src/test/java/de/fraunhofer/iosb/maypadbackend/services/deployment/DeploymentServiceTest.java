@@ -5,9 +5,13 @@ import de.fraunhofer.iosb.maypadbackend.dtos.request.DeploymentRequestBuilder;
 import de.fraunhofer.iosb.maypadbackend.exceptions.httpexceptions.NotFoundException;
 import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.ProjectBuilder;
+import de.fraunhofer.iosb.maypadbackend.model.Status;
+import de.fraunhofer.iosb.maypadbackend.model.build.Build;
+import de.fraunhofer.iosb.maypadbackend.model.build.BuildBuilder;
 import de.fraunhofer.iosb.maypadbackend.model.deployment.WebhookDeployment;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Branch;
 import de.fraunhofer.iosb.maypadbackend.model.repository.BranchBuilder;
+import de.fraunhofer.iosb.maypadbackend.model.repository.Commit;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Repository;
 import de.fraunhofer.iosb.maypadbackend.services.ProjectService;
 import de.fraunhofer.iosb.maypadbackend.services.build.BuildService;
@@ -29,6 +33,7 @@ import org.springframework.http.ResponseEntity;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -66,10 +71,17 @@ public class DeploymentServiceTest {
 
 
     @Test
-    public void deployBuildValid() {
+    public void deployBuildValid() throws Exception {
+        Build build = BuildBuilder.create()
+                .id(1)
+                .status(Status.SUCCESS)
+                .timestamp(new Date())
+                .commit(new Commit())
+                .build();
         Branch branch = BranchBuilder.create()
                 .name("master")
                 .deployments(new ArrayList<>())
+                .builds(Stream.of(build).collect(Collectors.toList()))
                 .deploymentType(new WebhookDeployment())
                 .build();
         Repository repository = new Repository();
@@ -82,7 +94,10 @@ public class DeploymentServiceTest {
                 .build();
 
         executors.add(new WebhookDeploymentExecutor(webhookService, deploymentService));
-        when(projectService.getBranch(1, "master")).thenReturn(branch);
+        when(buildService.buildBranch(1, "master", true, null))
+                .thenReturn(CompletableFuture.completedFuture(Status.SUCCESS));
+        when(buildService.getLatestBuild(branch)).thenReturn(build);
+        when(projectService.saveProject(project)).thenReturn(project);
         when(projectService.getProject(1)).thenReturn(project);
         when(webhookService.call(any(), any(), any(), any(), any()))
                 .thenReturn(CompletableFuture.completedFuture(new ResponseEntity(HttpStatus.OK)));
@@ -93,14 +108,16 @@ public class DeploymentServiceTest {
                 .build();
 
         deploymentService.initDeploymentTypeMappings();
-        deploymentService.deployBuild(1, "master", request, "");
+        Status status = deploymentService.deployBuild(1, "master", request, "").get();
 
+        assertThat(status).isEqualTo(Status.SUCCESS);
+        verify(buildService).buildBranch(1, "master", true, null);
         verify(sseService, times(1)).push(any(EventData.class));
         assertThat(branch.getDeployments().size()).isEqualTo(1);
     }
 
     @Test
-    public void deployBuildInvalidBranch() {
+    public void deployBuildInvalidBranch() throws Exception {
         Project project = ProjectBuilder.create()
                 .id(1)
                 .repository(new Repository())
@@ -112,7 +129,7 @@ public class DeploymentServiceTest {
         when(projectService.getProject(1)).thenReturn(project);
 
         deploymentService.initDeploymentTypeMappings();
-        deploymentService.deployBuild(1, "master", true, true, "");
+        deploymentService.deployBuild(1, "master", true, true, "").get();
     }
 
     @Test
