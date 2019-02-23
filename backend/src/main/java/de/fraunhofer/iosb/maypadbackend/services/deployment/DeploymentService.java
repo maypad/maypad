@@ -58,10 +58,10 @@ public class DeploymentService {
      * @param ref            the name of the branch
      * @param request        the request that contains the deployment parameters
      * @param deploymentName the name of the deployment type
-     * @return future
+     * @return future of Status (either FAILED or RUNNING)
      */
     @Async
-    public CompletableFuture<Void> deployBuild(int id, String ref, DeploymentRequest request, String deploymentName) {
+    public CompletableFuture<Status> deployBuild(int id, String ref, DeploymentRequest request, String deploymentName) {
         return deployBuild(id, ref, request.isWithBuild(), request.isWithDependencies(), deploymentName);
     }
 
@@ -73,10 +73,10 @@ public class DeploymentService {
      * @param withBuild        if a build should be triggered
      * @param withDependencies if the the dependencies should be build
      * @param deploymentName   the name of the deployment type
-     * @return future
+     * @return future of Status (either FAILED or RUNNING)
      */
     @Async
-    public CompletableFuture<Void> deployBuild(int id, String ref, boolean withBuild, boolean withDependencies,
+    public CompletableFuture<Status> deployBuild(int id, String ref, boolean withBuild, boolean withDependencies,
                                                  String deploymentName) {
         Project project = projectService.getProject(id);
         Branch branch = project.getRepository().getBranches().get(ref);
@@ -90,7 +90,7 @@ public class DeploymentService {
                 throw new RuntimeException("Failed to find DeploymentTypeExecutor for " + deploymentType.getClass());
             }
             Build build = buildService.getLatestBuild(branch);
-            Deployment deployment = new Deployment(new Date(), build, Status.UNKNOWN);
+            Deployment deployment = new Deployment(new Date(), build, Status.RUNNING);
             branch.getDeployments().add(0, deployment);
             project = projectService.saveProject(project);
             branch = project.getRepository().getBranches().get(ref);
@@ -104,20 +104,20 @@ public class DeploymentService {
                     logger.warn("Deployment of project %d interrupted.", id);
                     Thread.currentThread().interrupt();
                     signalStatus(id, ref, Status.FAILED);
-                    return CompletableFuture.completedFuture(null);
+                    return CompletableFuture.completedFuture(Status.FAILED);
                 } catch (ExecutionException e) {
                     logger.warn(e.getCause().getMessage());
                     signalStatus(id, ref, Status.FAILED);
-                    return CompletableFuture.completedFuture(null);
+                    return CompletableFuture.completedFuture(Status.FAILED);
                 }
             }
 
             deploymentTypeMappings.get(deploymentType.getClass()).deploy(deploymentType, id, ref);
+            return CompletableFuture.completedFuture(deployment.getStatus());
         } else {
             throw new DeploymentRunningException("DEPLOYMENT_RUNNING",
                     String.format("There's already a deployment running for %s", branch.getName()));
         }
-        return CompletableFuture.completedFuture(null);
     }
 
     /**

@@ -108,8 +108,9 @@ public class DeploymentServiceTest {
                 .build();
 
         deploymentService.initDeploymentTypeMappings();
-        deploymentService.deployBuild(1, "master", request, "").get();
+        Status status = deploymentService.deployBuild(1, "master", request, "").get();
 
+        assertThat(status).isEqualTo(Status.SUCCESS);
         verify(buildService).buildBranch(1, "master", true, null);
         verify(sseService, times(1)).push(any(EventData.class));
         assertThat(branch.getDeployments().size()).isEqualTo(1);
