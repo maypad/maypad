@@ -48,7 +48,7 @@ export class ProjectService {
         map(response => {
           return response.map(branch => {
             branch.status = (<any>BuildStatus)[branch['buildStatus']];
-            branch.lastCommit = <Commit>branch['lastCommit'];
+            branch.lastCommit = branch['lastCommit'];
             return branch;
           });
         }),

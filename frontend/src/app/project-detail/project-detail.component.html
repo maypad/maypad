@@ -4,12 +4,13 @@
     <div>
       <button type="button" class="btn btn-primary mr-2" (click)="refreshProject()" i18n="Refresh Project">Refresh
         Project</button>
-      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editProjectModal" i18n="Edit project">Edit
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editProjectModal"
+        i18n="Edit project">Edit
         Project</button>
     </div>
   </div>
-  <a *ngIf="project.name !== 'Initialize' && project.name !=='Error'" class="container infoCollapse" data-toggle="collapse"
-    href="#collapse" role="button" aria-expanded="true" attr.aria-controls="collapse">
+  <a *ngIf="project.name !== 'Initialize' && project.name !=='Error'" class="container infoCollapse"
+    data-toggle="collapse" href="#collapse" role="button" aria-expanded="true" attr.aria-controls="collapse">
     <h6 class="text-dark mr-2" i18n="Show more project info">Show more information about the project</h6>
   </a>
   <div class="container collapse" id="collapse">
@@ -17,15 +18,16 @@
       <a href="{{ project.repoWebsiteUrl }}">Open Repository</a>
     </div>
     <div *ngIf="project.refreshUrl">
-      <b>Refresh Url:</b> {{ project.refreshUrl }}
+      <strong>Refresh Url:</strong> {{ project.refreshUrl }}
     </div>
     <div *ngIf="project.description">
-      <b>Description:</b> {{ project.description }}
+      <strong>Description:</strong> {{ project.description }}
     </div>
     <div *ngIf="project.tags && project.tags.length > 0" i18n="tags">
-      <b>Tags:</b>
+      <strong>Tags:</strong>
       <ul class="tagList">
-        <li *ngFor="let tag of project.tags" data-toggle="tooltip" title="{{ tag.commit ? 'Identifier: ' + tag.commit.identifier : null }}">
+        <li *ngFor="let tag of project.tags" data-toggle="tooltip"
+          title="{{ tag.commit ? 'Identifier: ' + tag.commit.identifier : null }}">
           {{ tag.name }}
         </li>
       </ul>

@@ -26,7 +26,7 @@ export class ApiService {
       this.errorLog(`${operation} failed: ${error.message}`);
 
       // Let the app keep running by returning an empty result.
-      return of(result as T);
+      return of(result);
     };
   }
 

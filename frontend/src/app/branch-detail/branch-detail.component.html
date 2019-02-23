@@ -3,16 +3,16 @@
 <div class="container w-50 mt-3">
     <ul>
         <li *ngIf="branch.description">
-            <b>Description: </b>{{ branch.description }}
+            <strong>Description: </strong>{{ branch.description }}
         </li>
         <li *ngIf="branch.members.length > 0">
-            <b i18n="Members">Members:</b>
+            <strong i18n="Members">Members:</strong>
             <ul class="mt-1">
                 <li *ngFor="let member of branch.members;">{{member}}</li>
             </ul>
         </li>
         <li *ngIf="branch.dependencies.length > 0">
-            <b i18n="Dependencies">Dependencies:</b>
+            <strong i18n="Dependencies">Dependencies:</strong>
             <ul class="mt-1">
                 <li *ngFor="let dep of branch.dependencies;">
                     <a routerLink="/projects/{{ dep.split(':', 2)[0] }}/branches/{{ dep.split(':', 2)[1] }}">
@@ -21,40 +21,41 @@
             </ul>
         </li>
         <li *ngIf="branch.lastCommit">
-            <b i18n="Last commit">Last Commit:</b>
+            <strong i18n="Last commit">Last Commit:</strong>
             <ul class="mt-1">
-                <li *ngIf="branch.lastCommit.identifier"><b i18n="Commit identifier">Identifier: </b>
+                <li *ngIf="branch.lastCommit.identifier"><strong i18n="Commit identifier">Identifier: </strong>
                     {{
                     branch.lastCommit.identifier.includes('Revision') ? branch.lastCommit.identifier :
                     branch.lastCommit.identifier.substr(0, 7)
                     }}
                 </li>
-                <li><b i18n="Commit author" *ngIf="branch.lastCommit.author">Author: </b>{{ branch.lastCommit.author }}
+                <li><strong i18n="Commit author" *ngIf="branch.lastCommit.author">Author:
+                    </strong>{{ branch.lastCommit.author }}
                 </li>
-                <li><b i18n="Commit Message" *ngIf="branch.lastCommit.message">Message: </b>{{
+                <li><strong i18n="Commit Message" *ngIf="branch.lastCommit.message">Message: </strong>{{
                     branch.lastCommit.message }}</li>
-                <li><b i18n="Timestamp" *ngIf="branch.lastCommit.timestamp">Timestamp: </b>{{
+                <li><strong i18n="Timestamp" *ngIf="branch.lastCommit.timestamp">Timestamp: </strong>{{
                     branch.lastCommit.timestamp |
                     date : 'H:mm:ss, dd.MM.yy'}} ({{ fmtTimestamp }})</li>
             </ul>
         </li>
         <li *ngIf="branch.mails.length > 0">
-            <b i18n="Mails">Mails:</b>
+            <strong i18n="Mails">Mails:</strong>
             <ul class="mt-1">
                 <li *ngFor="let mail of branch.mails;"> {{ mail }}</li>
             </ul>
         </li>
         <li *ngIf="branch.deployment">
-            <b i18n="Deplyoment">Deployment:</b> {{ branch.deployment }}
+            <strong i18n="Deplyoment">Deployment:</strong> {{ branch.deployment }}
         </li>
         <li *ngIf="branch.buildWebhook">
-            <b>Build Webhook:</b> {{ branch.buildWebhook }}
+            <strong>Build Webhook:</strong> {{ branch.buildWebhook }}
         </li>
         <li *ngIf="branch.buildSuccessUrl">
-            <b>Build Success Url:</b> {{ branch.buildSuccessUrl }}
+            <strong>Build Success Url:</strong> {{ branch.buildSuccessUrl }}
         </li>
         <li *ngIf="branch.buildFailureUrl">
-            <b>Build Fail Url:</b> {{ branch.buildFailureUrl }}
+            <strong>Build Fail Url:</strong> {{ branch.buildFailureUrl }}
         </li>
         <li>
             <a class="font-weight-bold" routerLink="buildhistory" i18n="Build history">Build History</a>
