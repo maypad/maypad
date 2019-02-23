@@ -55,7 +55,10 @@ public class WebhookDeploymentExecutor implements DeploymentTypeExecutor {
                 } else {
                     deploymentService.signalStatus(id, ref, Status.FAILED);
                 }
-            } catch (ExecutionException | InterruptedException ex) {
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                deploymentService.signalStatus(id, ref, Status.FAILED);
+            } catch (ExecutionException ex) {
                 deploymentService.signalStatus(id, ref, Status.FAILED);
             }
         }

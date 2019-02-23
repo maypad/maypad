@@ -48,8 +48,8 @@ public class BuildService {
     private Map<Tuple<Integer, String>, BuildLock> runningBuilds;
     private DependencyBuildHelper dependencyBuildHelper;
 
-    private static final long buildTimeoutSeconds = 21600; //6h
-    private static final long checkTimeoutInterval = 30000; //in ms
+    private static final long BUILD_TIMEOUT_SECONDS = 21600; //6h
+    private static final long CHECK_TIMEOUT_INTERVAL = 30000; //in ms
 
     /**
      * Constructor for BuildService.
@@ -113,7 +113,6 @@ public class BuildService {
             branch = projectService.saveProject(project).getRepository().getBranches().get(ref);
             build = getLatestBuild(branch);
             BuildLock lock = new BuildLock(build.getId());
-            lock.tryAcquire();
             runningBuilds.put(new Tuple<>(id, ref), lock);
             if (withDependencies) {
                 Tuple<Boolean, String> dependencyBuildStatus = dependencyBuildHelper.runBuildWithDependencies(id, ref);
@@ -130,6 +129,7 @@ public class BuildService {
             } catch (InterruptedException e) {
                 logger.warn("Build of project %d interrupted.", id);
                 signalStatus(id, ref, Status.FAILED, BuildReason.BUILD_FAILED, null);
+                Thread.currentThread().interrupt();
                 return CompletableFuture.completedFuture(Status.FAILED);
             }
             branch = projectService.getBranch(id, ref);
@@ -216,14 +216,14 @@ public class BuildService {
     /**
      * Checks if a build is running for too long in the specified interval.
      */
-    @Scheduled(fixedDelay = checkTimeoutInterval, initialDelay = checkTimeoutInterval)
+    @Scheduled(fixedDelay = CHECK_TIMEOUT_INTERVAL, initialDelay = CHECK_TIMEOUT_INTERVAL)
     public void timeoutRunningBuilds() {
         Date current = new Date();
         for (Map.Entry<Tuple<Integer, String>, BuildLock> entry : runningBuilds.entrySet()) {
             Project project = projectService.getProject(entry.getKey().getKey());
             Branch branch = project.getRepository().getBranches().get(entry.getKey().getValue());
             Build build = getBuild(branch, entry.getValue().getBuildId());
-            if ((current.getTime() - build.getTimestamp().getTime()) / 1000 >= buildTimeoutSeconds) {
+            if ((current.getTime() - build.getTimestamp().getTime()) / 1000 >= BUILD_TIMEOUT_SECONDS) {
                 signalStatus(project.getId(), branch.getName(), Status.TIMEOUT);
             }
         }
