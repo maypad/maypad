@@ -61,25 +61,6 @@ public enum Status {
         return priority;
     }
 
-    /**
-     * Returns the Status to the given priority.
-     *
-     * @param priority the priority of the wanted Status
-     * @return the Status to the given priority.
-     */
-    public static Status fromPriority(int priority) {
-        switch (priority) {
-            case 1:
-                return INIT;
-            case 2:
-                return SUCCESS;
-            case 3:
-                return FAILED;
-            default:
-                return UNKNOWN;
-        }
-    }
-
     public String getName() {
         return this.toString().substring(0, 1).toUpperCase() + this.toString().substring(1);
     }

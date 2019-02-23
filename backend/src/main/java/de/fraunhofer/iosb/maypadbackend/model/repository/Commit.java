@@ -40,16 +40,6 @@ public class Commit {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Author author;
 
-    public static final Commit DEFAULT;
-
-    static {
-        DEFAULT = new Commit();
-        DEFAULT.setMessage("");
-        DEFAULT.setIdentifier("");
-        DEFAULT.setTimestamp(new Date(0));
-        DEFAULT.setAuthor(new Author());
-    }
-
     /**
      * Constructor for Commit.
      *
