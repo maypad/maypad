@@ -34,7 +34,6 @@ import org.eclipse.jgit.util.FS;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -345,15 +344,6 @@ public class GitRepoManager extends RepoManager {
         commit.setTimestamp(revCommit.getAuthorIdent().getWhen());
 
         return commit;
-    }
-
-    /**
-     * Get a dummy commit.
-     *
-     * @return Dummy commit
-     */
-    private Commit getDefaultCommit() {
-        return new Commit("", "", new Date(0), new Author("", new Mail("")));
     }
 
     /**

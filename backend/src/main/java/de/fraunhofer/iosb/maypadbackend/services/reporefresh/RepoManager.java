@@ -3,6 +3,8 @@ package de.fraunhofer.iosb.maypadbackend.services.reporefresh;
 import de.fraunhofer.iosb.maypadbackend.config.project.ProjectConfig;
 import de.fraunhofer.iosb.maypadbackend.config.project.YamlProjectConfig;
 import de.fraunhofer.iosb.maypadbackend.model.Project;
+import de.fraunhofer.iosb.maypadbackend.model.person.Author;
+import de.fraunhofer.iosb.maypadbackend.model.person.Mail;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Commit;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Tag;
 import de.fraunhofer.iosb.maypadbackend.util.FileUtil;
@@ -15,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 
@@ -172,5 +175,14 @@ public abstract class RepoManager {
             logger.warn("Could not get port from URL. Using default port (22).");
             return -1;
         }
+    }
+
+    /**
+     * Get a dummy commit.
+     *
+     * @return Dummy commit
+     */
+    protected Commit getDefaultCommit() {
+        return new Commit("", "", new Date(0), new Author("", new Mail("")));
     }
 }
