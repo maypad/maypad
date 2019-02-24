@@ -10,43 +10,8 @@ MAYPAD allows you to manage your projects lifecycle in one centralized place, ha
 
 MAYPAD was developed as a "Praxis of Software-Development" project of students at @KITedu for @FraunhoferIOSB. The documents during development can be found under [https://github.com/juliantodt/maypad-docs](https://github.com/juliantodt/maypad-docs) (restricted access).
 
-## Quickstart
+## Server Setup
+To start using MAYPAD you need to setup a server running the MAYPAD docker container and a MySQL database. More information about can be found here: [docs/setup.md](docs/setup.md)
 
-### Building yourself
-1. Clone the repo
-2. Make sure all dependencies are installed (java, maven, nodejs, docker)
-3. Install node modules `cd frontend && npm install && cd ..`
-4. Build the container `./build.sh --prod`
-5. Copy the sample config file `cp config.yaml{.sample,}` and make neccessary changes to it
-6. Start MAYPAD using `docker-compose up`
-
-### Using pre-build docker container
-1. Replace the image for the maypad-app in the docker-compose file `maypad` by `juliantodt/maypad`
-2. Start MAYPAD using `docker-compose up`
-
-## Configuration
-* MAYPAD can either be configured using it's configuration file or via environment variables.
-* The environment variable `MAYPAD_HOME` indicates where MAYPAD will look for the configuration file and the frontend files and defaults to `/usr/share/maypad/`.
-* For an example config file see `config.yaml.sample`
-* Note that MAYPAD will generate an encryption key for database entries under `MAYPAD_HOME/security/key.dat` that you should save between container restarts. The default docker-compose will take care of that.
-* To add authorization to MAYPAD, consider proxying the requests through a webserver such as nginx and then add http basic authentication. An example configuration could look like this (note the extra nginx configuration parameters because MAYPAD uses Server-Send-Events for notifications):
-```
-server {
-  listen 80 default_server;
-  server_name demo.maypad.de;
-
-  location / {
-    proxy_pass http://maypad-app:8080/;
-    proxy_http_version 1.1;
-    proxy_set_header Connection "";
-    proxy_buffering off;
-    
-    add_header Transfer-Encoding: chunked;
-    add_header X-Accel-Buffering: no;
-    add_header X-Frame-Options SAMEORIGIN;
-
-    auth_basic "MAYPAD Demo";
-    auth_basic_user_file /etc/nginx/conf.d/htpasswd;
-  }
-}
-```
+## Using MAYPAD
+Add your projects [docs/add.md](docs/add.md), configure them [docs/config.md](docs/config.md) and then use the intuitive web frontend.
