@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.FileSystemResource;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 
 /**
@@ -21,36 +22,58 @@ public class YamlServerConfig implements ServerConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(YamlServerConfig.class);
 
-    @Value("${webServerPort:${MAYPAD_WEBSERVER_PORT:-1}}")
+    @Value("${MAYPAD_WEB_SERVER_PORT:${webServerPort:-1}}")
     private int webServerPort;
-    @Value("${reloadRepositoriesSeconds:${MAYPAD_RELOAD_REPOSITORIES_SECONDS:900}}")
+    @Value("${MAYPAD_RELOAD_REPOSITORIES_SECONDS:${reloadRepositoriesSeconds:900}}")
     private int reloadRepositoriesSeconds;
-    @Value("${maximumRefreshRequests.enabled:${MAYPAD_MAXIMUM_REFRESH_REQUESTS_ENABLED:0}}")
+    @Value("${MAYPAD_MAXIMUM_REFRESH_REQUESTS_ENABLED:${maximumRefreshRequests.enabled:0}}")
     private boolean maximumRefreshRequestsEnabled;
-    @Value("${maximumRefreshRequests.seconds:${MAYPAD_MAXIMUM_REFRESH_REQUESTS_SECONDS:900}}")
+    @Value("${MAYPAD_MAXIMUM_REFRESH_REQUESTS_SECONDS:${maximumRefreshRequests.seconds:900}}")
     private int maximumRefreshRequestsSeconds;
-    @Value("${maximumRefreshRequests.maximumRequests:${MAYPAD_MAXIMUM_REFRESH_REQUESTS:100}}")
+    @Value("${MAYPAD_MAXIMUM_REFRESH_REQUESTS_MAXIMUM_REQUESTS:${maximumRefreshRequests.maximumRequests:100}}")
     private int maximumRefreshRequests;
-    @Value("${logLevel:${MAYPAD_LOG_LEVEL:INFO}}")
+    @Value("${MAYPAD_LOG_LEVEL:${logLevel:INFO}}")
     private String logLevel;
-    @Value("${repositoryStoragePath:${MAYPAD_REPOSITORY_STORAGE_PATH:not set}}")
+    @Value("${MAYPAD_REPOSITORY_STORAGE_PATH:${repositoryStoragePath:not set}}")
     private String repositoryStoragePath;
-    @Value("${mysql.user:${MAYPAD_DB_USER:not set}}")
+    @Value("${MAYPAD_MYSQL_USER:${mysql.user:not set}}")
     private String dbUser;
-    @Value("${mysql.password:${MAYPAD_DB_PASSWORD:not set}}")
+    @Value("${MAYPAD_MYSQL_PASSWORD:${mysql.password:not set}}")
     private String dbPassword;
-    @Value("${mysql.database:${MAYPAD_DB_DATABASE:not set}}")
+    @Value("${MAYPAD_MYSQL_DATABASE:${mysql.database:not set}}")
     private String dbDatabase;
-    @Value("${mysql.host:${MAYPAD_DB_HOST:not set}}")
+    @Value("${MAYPAD_MYSQL_HOST:${mysql.host:not set}}")
     private String dbHost;
-    @Value("${mysql.port:${MAYPAD_DB_PORT:-1}}")
+    @Value("${MAYPAD_MYSQL_PORT:${mysql.port:-1}}")
     private int dbPort;
-    @Value("${scheduler.poolSize:${MAYPAD_SCHEDULER_POOL_SIZE:2}}")
+    @Value("${MAYPAD_SCHEDULER_POOL_SIZE:${scheduler.poolSize:2}}")
     private int schedulerPoolSize;
-    @Value("${webhook.tokenLength:${MAYPAD_WEBHOOK_TOKEN_LENGTH:20}}")
+    @Value("${MAYPAD_WEBHOOK_TOKEN_LENGTH:${webhook.tokenLength:20}}")
     private int webhookTokenLength;
-    @Value("${domain:${MAYPAD_DOMAIN:not set}}")
+    @Value("${MAYPAD_DOMAIN:${domain:not set}}")
     private String domain;
+
+    @PostConstruct
+    private void init() {
+        logger.info("Active configuration:\n"
+                    + "webServerPort: {}\n"
+                    + "reloadRepositoriesSeconds: {}\n"
+                    + "scheduler.reloadRepositoriesSeconds: {}\n"
+                    + "webhook.tokenLength: {}\n"
+                    + "maximumRefreshRequests.enabled: {}\n"
+                    + "maximumRefreshRequests.seconds: {}\n"
+                    + "maximumRefreshRequests.maxiumumRequests: {}\n"
+                    + "logLevel: {}\n"
+                    + "repositoryStoragePath: {}\n"
+                    + "mysql.user: {}\n"
+                    + "mysql.password: {}\n"
+                    + "mysql.database: {}\n"
+                    + "mysql.host: {}\n"
+                    + "mysql.port: {}",
+                    webServerPort, reloadRepositoriesSeconds, reloadRepositoriesSeconds, webhookTokenLength,
+                    maximumRefreshRequestsEnabled, maximumRefreshRequestsSeconds, maximumRefreshRequests,
+                    logLevel, repositoryStoragePath, dbUser, dbPassword, dbDatabase, dbHost, dbPort);
+    }
 
     /**
      * Bean for easy access to properties.
