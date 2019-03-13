@@ -28,7 +28,18 @@ public enum SseEventType {
     /**
      * Thrown when a deployment status was updated.
      */
-    DEPLOYMENT_UPDATE("deployment_updated");
+    DEPLOYMENT_UPDATE("deployment_updated"),
+
+    /**
+     * Thrown when cloning a repository fails.
+     */
+    CLONE_FAILED("clone_failed"),
+
+    /**
+     * Thrown when the maypad config was not found in project root.
+     */
+    CONFIG_NOT_FOUND("config_not_found");
+
 
     private String eventId;
 

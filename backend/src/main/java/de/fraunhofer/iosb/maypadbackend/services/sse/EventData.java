@@ -23,6 +23,7 @@ public class EventData {
     private Integer projectId;
     private String name;
     private Status status;
+    private String message;
 
     /**
      * Constructor for EventData.
@@ -33,12 +34,13 @@ public class EventData {
      * @param name           the branch
      * @param status         the status
      */
-    private EventData(String eventId, Integer projectgroupId, Integer projectId, String name, Status status) {
+    private EventData(String eventId, Integer projectgroupId, Integer projectId, String name, Status status, String message) {
         this.eventId = eventId;
         this.projectgroupId = projectgroupId;
         this.projectId = projectId;
         this.name = name;
         this.status = status;
+        this.message = message;
     }
 
     /**
@@ -104,6 +106,14 @@ public class EventData {
         Builder status(Status status);
 
         /**
+         * Sets detailed message (for example for stack traces).
+         *
+         * @param message The message.
+         * @return This builder.
+         */
+        Builder message(String message);
+
+        /**
          * Builds the eventdata.
          *
          * @return the built eventdata object
@@ -123,6 +133,8 @@ public class EventData {
         private String name;
 
         private Status status;
+
+        private String message;
 
         @Override
         public Builder eventId(String id) {
@@ -148,6 +160,12 @@ public class EventData {
             return this;
         }
 
+        @Override
+        public Builder message(String message) {
+            this.message = message;
+            return this;
+        }
+
         public Builder status(Status status) {
             this.status = status;
             return this;
@@ -155,7 +173,7 @@ public class EventData {
 
         @Override
         public EventData build() {
-            return new EventData(this.eventId, this.projectgroupId, this.projectId, this.name, this.status);
+            return new EventData(this.eventId, this.projectgroupId, this.projectId, this.name, this.status, this.message);
         }
     }
 }

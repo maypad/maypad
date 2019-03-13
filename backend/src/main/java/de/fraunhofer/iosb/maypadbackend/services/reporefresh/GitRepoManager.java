@@ -3,6 +3,8 @@ package de.fraunhofer.iosb.maypadbackend.services.reporefresh;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import de.fraunhofer.iosb.maypadbackend.exceptions.repomanager.ConfigNotFoundException;
+import de.fraunhofer.iosb.maypadbackend.exceptions.repomanager.RepoCloneException;
 import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.person.Author;
 import de.fraunhofer.iosb.maypadbackend.model.person.Mail;
@@ -56,7 +58,6 @@ public class GitRepoManager extends RepoManager {
                 localGit = Git.open(getProjectRootDir());
             } catch (IOException e) {
                 getLogger().error("Can't read local repo from " + getProjectRootDir().getAbsolutePath());
-                cloneRepository();
             }
         }
         return localGit;
@@ -302,7 +303,7 @@ public class GitRepoManager extends RepoManager {
      * @return True in success, else false
      */
     @Override
-    protected boolean cloneRepository() {
+    protected boolean cloneRepository() throws RepoCloneException, ConfigNotFoundException {
         if (!FileUtil.isDirectoryEmpty(getProjectRootDir())) {
             getLogger().error("Folder " + getProjectRootDir().getAbsolutePath() + " isn't empty, so can't clone.");
             return false;
@@ -315,14 +316,16 @@ public class GitRepoManager extends RepoManager {
                     .setDirectory(getProjectRootDir())).call();
         } catch (GitAPIException | JGitInternalException e) {
             cleanUp();
-
             getLogger().warn("Can't access to repo " + getProject().getRepositoryUrl() + " or an internal error occurred.");
             try {
                 FileUtils.deleteDirectory(getProjectRootDir());
             } catch (IOException e1) {
                 getLogger().warn("Can't delete folder at " + getProjectRootDir().getAbsolutePath());
             }
-            return false;
+            throw new RepoCloneException(getProject().getId(), e.getMessage());
+        }
+        if (getProjectConfig() == null) {
+            throw new ConfigNotFoundException(getProject().getId(), "Could not find maypad config in project root folder.");
         }
         return true;
     }

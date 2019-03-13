@@ -2,6 +2,8 @@ package de.fraunhofer.iosb.maypadbackend.services.reporefresh;
 
 import de.fraunhofer.iosb.maypadbackend.config.project.ProjectConfig;
 import de.fraunhofer.iosb.maypadbackend.config.project.YamlProjectConfig;
+import de.fraunhofer.iosb.maypadbackend.exceptions.repomanager.ConfigNotFoundException;
+import de.fraunhofer.iosb.maypadbackend.exceptions.repomanager.RepoCloneException;
 import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.person.Author;
 import de.fraunhofer.iosb.maypadbackend.model.person.Mail;
@@ -209,7 +211,7 @@ public class SvnRepoManager extends RepoManager {
      * @return True in success, else false
      */
     @Override
-    protected boolean cloneRepository() {
+    protected boolean cloneRepository() throws RepoCloneException, ConfigNotFoundException {
         try {
             SVNURL url = SVNURL.parseURIEncoded(this.getProject().getRepositoryUrl());
             svnClientManager.getUpdateClient().doCheckout(
@@ -223,13 +225,13 @@ public class SvnRepoManager extends RepoManager {
             if (getProjectConfig() != null) {
                 projConfig = this.getProjectConfig().getKey();
             } else {
-                return false;
+                throw new ConfigNotFoundException(getProject().getId(), "Could not find maypad project configuration!");
             }
             switchBranch("trunk");
             return true;
         } catch (SVNException ex) {
             logger.error(ex.getMessage());
-            return false;
+            throw new RepoCloneException(getProject().getId(), ex.getMessage());
         }
     }
 

@@ -6,6 +6,9 @@ import de.fraunhofer.iosb.maypadbackend.config.project.data.BuildProperty;
 import de.fraunhofer.iosb.maypadbackend.config.project.data.DeploymentProperty;
 import de.fraunhofer.iosb.maypadbackend.config.server.ServerConfig;
 import de.fraunhofer.iosb.maypadbackend.exceptions.httpexceptions.NotFoundException;
+import de.fraunhofer.iosb.maypadbackend.exceptions.repomanager.ConfigNotFoundException;
+import de.fraunhofer.iosb.maypadbackend.exceptions.repomanager.RepoCloneException;
+import de.fraunhofer.iosb.maypadbackend.exceptions.repomanager.RepositoryException;
 import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.Status;
 import de.fraunhofer.iosb.maypadbackend.model.build.WebhookBuild;
@@ -275,12 +278,22 @@ public class RepoService {
 
         //clone project, if data were deleted
         File repoDir = projectService.getRepoDir(project.getId());
-        if (!repoDir.exists()) {
-            if (!repoDir.mkdirs() || !repoManager.cloneRepository()) {
-                setStatusAndSave(project, Status.ERROR);
-                repoManager.cleanUp();
-                return;
+        try {
+            if (!repoDir.exists()) {
+                if (!repoDir.mkdirs() || !repoManager.cloneRepository()) {
+                    setStatusAndSave(project, Status.ERROR);
+                    repoManager.cleanUp();
+                    return;
+                }
             }
+        } catch (RepoCloneException ex) {
+            sendRepoManagerError(SseEventType.CLONE_FAILED, ex);
+            setStatusAndSave(project, Status.ERROR);
+            repoManager.cleanUp();
+        } catch (ConfigNotFoundException ex) {
+            sendRepoManagerError(SseEventType.CONFIG_NOT_FOUND, ex);
+            setStatusAndSave(project, Status.ERROR);
+            repoManager.cleanUp();
         }
 
         repoManager.switchBranch(repoManager.getMainBranchName());
@@ -479,16 +492,25 @@ public class RepoService {
         RepoManager repoManager = repositoryType.toRepoManager(project);
         repoManager.initRepoManager(parentDir, projectService.getRepoDir(project.getId()));
 
-        boolean cloneSuccess = (repoManager.cloneRepository() && repositoryType != RepositoryType.NONE);
-        if (!cloneSuccess) {
+        try {
+            boolean cloneSuccess = (repoManager.cloneRepository() && repositoryType != RepositoryType.NONE);
+            if (!cloneSuccess) {
+                setStatusAndSave(project, Status.ERROR);
+                repoManager.cleanUp();
+                return;
+            }
+        } catch (RepoCloneException ex) {
+            sendRepoManagerError(SseEventType.CLONE_FAILED, ex);
+            setStatusAndSave(project, Status.ERROR);
+            repoManager.cleanUp();
+            return;
+        } catch (ConfigNotFoundException ex) {
+            sendRepoManagerError(SseEventType.CONFIG_NOT_FOUND, ex);
             setStatusAndSave(project, Status.ERROR);
             repoManager.cleanUp();
             return;
         }
-
         project.setRepositoryStatus(Status.INIT);
-
-
         project = projectService.saveProject(project);
         //if repo isn't null, so we can refresh the data. Preventing call this method twice.
         doRefreshProject(project);
@@ -659,5 +681,13 @@ public class RepoService {
         logger.info("Delete all webhooks in branch " + branch.getName());
         webhookService.removeWebhook(branch.getBuildSuccessWebhook());
         webhookService.removeWebhook(branch.getBuildFailureWebhook());
+    }
+
+    private void sendRepoManagerError(SseEventType type, RepositoryException ex) {
+        sseService.push(EventData.builder(type)
+                .projectId(ex.getProjectId())
+                .status(Status.ERROR)
+                .message(ex.getMessage())
+                .build());
     }
 }
