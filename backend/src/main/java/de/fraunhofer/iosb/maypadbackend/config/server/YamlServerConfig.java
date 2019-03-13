@@ -68,13 +68,12 @@ public class YamlServerConfig implements ServerConfig {
                     + "logLevel: {}\n"
                     + "repositoryStoragePath: {}\n"
                     + "mysql.user: {}\n"
-                    + "mysql.password: {}\n"
                     + "mysql.database: {}\n"
                     + "mysql.host: {}\n"
                     + "mysql.port: {}",
                     webServerPort, domain, reloadRepositoriesSeconds, schedulerPoolSize, webhookTokenLength,
                     maximumRefreshRequestsEnabled, maximumRefreshRequestsSeconds, maximumRefreshRequests,
-                    logLevel, repositoryStoragePath, dbUser, dbPassword, dbDatabase, dbHost, dbPort);
+                    logLevel, repositoryStoragePath, dbUser, dbDatabase, dbHost, dbPort);
     }
 
     /**
