@@ -1,5 +1,6 @@
 webServerPort: 8080
 reloadRepositoriesSeconds: 900
+domain: example.maypad.de
 
 scheduler:
   poolSize: 4
