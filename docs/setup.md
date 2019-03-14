@@ -52,7 +52,7 @@ Defaults to `900` (15 Minutes).
 `MAYPAD_MAXIMUM_REFRESH_REQUESTS_MAXIMUM_REQUESTS`: The maximum allowed refresh requests in the time interval given by `MAYPAD_MAXIMUM_REFRESH_REQUESTS_SECONDS`, as described in `MAYPAD_RELOAD_REPOSITORIES_SECONDS`.  
 Defaults to `100`.
 
-`MAYPAD_LOG_LEVEL`: Sets the level of detail in the server console log. Accepted values are: `ERROR`, `WARN`, `INFO`, `DEBUG`.  
+`MAYPAD_LOGGING_LEVEL_ROOT`: Sets the level of detail in the server console log. Accepted values are: `ERROR`, `WARN`, `INFO`, `DEBUG`, `TRACE`. 
 Defaults to `INFO`.
 
 `MAYPAD_REPOSITORY_STORAGE_PATH`: Sets the path in which repositories are supposed to be cloned into.  

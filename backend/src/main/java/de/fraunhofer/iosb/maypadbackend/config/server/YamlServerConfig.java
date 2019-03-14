@@ -1,5 +1,6 @@
 package de.fraunhofer.iosb.maypadbackend.config.server;
 
+import ch.qos.logback.classic.Level;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +34,7 @@ public class YamlServerConfig implements ServerConfig {
     private int maximumRefreshRequestsSeconds;
     @Value("${MAYPAD_MAXIMUM_REFRESH_REQUESTS_MAXIMUM_REQUESTS:${maypad.maximumRefreshRequests.maximumRequests:100}}")
     private int maximumRefreshRequests;
-    @Value("${MAYPAD_LOG_LEVEL:${maypad.logLevel:INFO}}")
+    @Value("${MAYPAD_LOGGING_LEVEL_ROOT:${maypad.logging.level.root:INFO}}")
     private String logLevel;
     @Value("${MAYPAD_REPOSITORY_STORAGE_PATH:${maypad.repositoryStoragePath:not set}}")
     private String repositoryStoragePath;
@@ -108,6 +109,14 @@ public class YamlServerConfig implements ServerConfig {
                 prefixedProperties.setProperty("maypad." + e.getKey(), e.getValue().toString());
             }
         });
+
+        //Reapply root loglevel from configuration
+        String logLevel = System.getenv("MYAPAD_LOGGING_LEVEL_ROOT");
+        logLevel = logLevel == null ? prefixedProperties.getProperty("maypad.logging.level.root") : logLevel;
+        logLevel = logLevel == null ? "INFO" : logLevel;
+        ((ch.qos.logback.classic.Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME))
+                .setLevel(Level.toLevel(logLevel));
+
         PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer
                 = new PropertySourcesPlaceholderConfigurer();
         propertySourcesPlaceholderConfigurer.setProperties(prefixedProperties);

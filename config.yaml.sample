@@ -12,7 +12,7 @@ maximumRefreshRequests:
   seconds: 3600
   maximumRequests: 100
 
-logLevel: INFO #ERROR, WARN, INFO, DEBUG
+logging.level.root: INFO #ERROR, WARN, INFO, DEBUG, TRACE
 repositoryStoragePath: /home/maypad/repositories
 
 mysql:
