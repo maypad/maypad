@@ -22,7 +22,7 @@ public enum Status {
     /**
      * The process has not been completed yet.
      */
-    RUNNING(0),
+    RUNNING(4),
     /**
      * The process was canceled.
      */
@@ -61,6 +61,11 @@ public enum Status {
         return priority;
     }
 
+    /**
+     * Returns the name of the status.
+     *
+     * @return the name of the status.
+     */
     public String getName() {
         return this.toString().substring(0, 1).toUpperCase() + this.toString().substring(1);
     }
