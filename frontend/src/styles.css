@@ -38,3 +38,7 @@
   text-decoration: underline;
   text-decoration-style: dotted;
 }
+
+.minwidth {
+  min-width: fit-content;
+}
