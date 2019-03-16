@@ -76,6 +76,36 @@ branches:
       url: https://deploy.maypad.de/mvn-test-project/fanvndfhjbvahhdfbvhadbf
 ```
 
+## Adding your CI system to MAYPAD
+In your project's `maypad.yaml` you can add hooks to your project's CI system. This enables MAYPAD to start builds and deployments from it's web interface and also allows builds for dependencies. Refer to the following instructions on how to create to webhook for your CI system:
+
+### Gitlab CI
+You can create a pipeline trigger via Settings -> CI/CD -> Pipeline triggers. Name it for example maypad and click on create. Refer to the "Use webhook" documentation and add the just created trigger token and the `REF_NAME` which is the name of the branch that is being configured in the `maypad.yaml`. Add this webhook to the project's configuration using the POST method. This could look like this:
+```
+build:
+  type: webhook
+  method: POST
+  url: https://gitlab.maypad.de/api/v4/projects/23/ref/master/trigger/pipeline?token=7910c2d7acc27b5285ebaa2486c18
+```
+
+### Jenkins
+You can trigger a Jenkins job using build triggers. On your configured project in Jenkins go to Configuration -> Build Triggers. Enable trigger builds remotely and refer to the documentation on the page for the trigger's URL. Add this webhook to the project's `maypad.yaml` using the POST method. This could look like this:
+```
+build:
+  type: webhook
+  method: POST
+  url: https://jenkins.maypad.de/job/Example/build?token=7910c2d7acc27b5285ebaa2486c18
+```
+
+### Bamboo
+You can trigger a Bamboo build using the following example. Adjust the webhook URL to your project. Note that supplying the username and password here is potentially a security issue. Consider sending the Login information via a `Basic-Authentication` header attribute.
+```
+build:
+  type: webhook
+  method: POST
+  url: http://admin:password@bamboo-host:8085/rest/api/latest/queue/PLAN-KEY?os_authType=basic
+```
+
 ## Adding MAYPAD hooks to your CI-Pipeline
 To automatically update the build status based on the success or failure of your pipeline, MAYPAD provides two webhooks for each project that your pipeline should call appropriately. The webhook Urls are listed in the branch detail page at "Build Success Url" and "Build Failure Url". An example configuration for Gitlab-CI could look like this:
 ```

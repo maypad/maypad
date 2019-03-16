@@ -16,6 +16,8 @@ services:
     image: maypad
     container_name: maypad-app
     restart: always
+    depends_on:
+    - database
     volumes:
     - ./config.yaml:/usr/share/maypad/config.yaml
     - maypad-sec:/usr/share/maypad/security
