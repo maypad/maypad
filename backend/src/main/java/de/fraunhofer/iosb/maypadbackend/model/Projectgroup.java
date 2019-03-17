@@ -73,7 +73,10 @@ public class Projectgroup {
     public Status updateStatus() {
         if (projects != null) {
             projects.forEach(Project::updateStatus);
-            Optional<Project> maxPrioProject = projects.stream().max(Comparator.comparing(p -> p.getBuildStatus().getPriority()));
+            Optional<Project> maxPrioProject = projects.stream().max(Comparator.comparing(p -> {
+                int currentPriority = p.getBuildStatus().getPriority();
+                return (currentPriority != 4) ? currentPriority : (currentPriority - 3);
+            }));
             buildStatus = maxPrioProject.isPresent()
                     ? maxPrioProject.get().getBuildStatus() : buildStatus;
         }
