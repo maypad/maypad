@@ -1,5 +1,6 @@
 package de.fraunhofer.iosb.maypadbackend.config.server;
 
+import ch.qos.logback.classic.Level;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +11,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.FileSystemResource;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
+import java.util.Properties;
 
 /**
  * Serverconfiguration as YAML File.
@@ -21,36 +24,58 @@ public class YamlServerConfig implements ServerConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(YamlServerConfig.class);
 
-    @Value("${webServerPort:${MAYPAD_WEBSERVER_PORT:-1}}")
+    @Value("${MAYPAD_WEB_SERVER_PORT:${maypad.webServerPort:-1}}")
     private int webServerPort;
-    @Value("${reloadRepositoriesSeconds:${MAYPAD_RELOAD_REPOSITORIES_SECONDS:900}}")
+    @Value("${MAYPAD_RELOAD_REPOSITORIES_SECONDS:${maypad.reloadRepositoriesSeconds:900}}")
     private int reloadRepositoriesSeconds;
-    @Value("${maximumRefreshRequests.enabled:${MAYPAD_MAXIMUM_REFRESH_REQUESTS_ENABLED:0}}")
+    @Value("${MAYPAD_MAXIMUM_REFRESH_REQUESTS_ENABLED:${maypad.maximumRefreshRequests.enabled:0}}")
     private boolean maximumRefreshRequestsEnabled;
-    @Value("${maximumRefreshRequests.seconds:${MAYPAD_MAXIMUM_REFRESH_REQUESTS_SECONDS:900}}")
+    @Value("${MAYPAD_MAXIMUM_REFRESH_REQUESTS_SECONDS:${maypad.maximumRefreshRequests.seconds:900}}")
     private int maximumRefreshRequestsSeconds;
-    @Value("${maximumRefreshRequests.maximumRequests:${MAYPAD_MAXIMUM_REFRESH_REQUESTS:100}}")
+    @Value("${MAYPAD_MAXIMUM_REFRESH_REQUESTS_MAXIMUM_REQUESTS:${maypad.maximumRefreshRequests.maximumRequests:100}}")
     private int maximumRefreshRequests;
-    @Value("${logLevel:${MAYPAD_LOG_LEVEL:INFO}}")
+    @Value("${MAYPAD_LOGGING_LEVEL_ROOT:${maypad.logging.level.root:INFO}}")
     private String logLevel;
-    @Value("${repositoryStoragePath:${MAYPAD_REPOSITORY_STORAGE_PATH:not set}}")
+    @Value("${MAYPAD_REPOSITORY_STORAGE_PATH:${maypad.repositoryStoragePath:not set}}")
     private String repositoryStoragePath;
-    @Value("${mysql.user:${MAYPAD_DB_USER:not set}}")
+    @Value("${MAYPAD_MYSQL_USER:${maypad.mysql.user:not set}}")
     private String dbUser;
-    @Value("${mysql.password:${MAYPAD_DB_PASSWORD:not set}}")
+    @Value("${MAYPAD_MYSQL_PASSWORD:${maypad.mysql.password:not set}}")
     private String dbPassword;
-    @Value("${mysql.database:${MAYPAD_DB_DATABASE:not set}}")
+    @Value("${MAYPAD_MYSQL_DATABASE:${maypad.mysql.database:not set}}")
     private String dbDatabase;
-    @Value("${mysql.host:${MAYPAD_DB_HOST:not set}}")
+    @Value("${MAYPAD_MYSQL_HOST:${maypad.mysql.host:not set}}")
     private String dbHost;
-    @Value("${mysql.port:${MAYPAD_DB_PORT:-1}}")
+    @Value("${MAYPAD_MYSQL_PORT:${maypad.mysql.port:-1}}")
     private int dbPort;
-    @Value("${scheduler.poolSize:${MAYPAD_SCHEDULER_POOL_SIZE:2}}")
+    @Value("${MAYPAD_SCHEDULER_POOL_SIZE:${maypad.scheduler.poolSize:2}}")
     private int schedulerPoolSize;
-    @Value("${webhook.tokenLength:${MAYPAD_WEBHOOK_TOKEN_LENGTH:20}}")
+    @Value("${MAYPAD_WEBHOOK_TOKEN_LENGTH:${maypad.webhook.tokenLength:20}}")
     private int webhookTokenLength;
-    @Value("${domain:${MAYPAD_DOMAIN:not set}}")
+    @Value("${MAYPAD_DOMAIN:${maypad.domain:not set}}")
     private String domain;
+
+    @PostConstruct
+    private void init() {
+        logger.info("Active configuration:\n"
+                    + "webServerPort: {}\n"
+                    + "domain: {}\n"
+                    + "reloadRepositoriesSeconds: {}\n"
+                    + "scheduler.poolSize: {}\n"
+                    + "webhook.tokenLength: {}\n"
+                    + "maximumRefreshRequests.enabled: {}\n"
+                    + "maximumRefreshRequests.seconds: {}\n"
+                    + "maximumRefreshRequests.maxiumumRequests: {}\n"
+                    + "logLevel: {}\n"
+                    + "repositoryStoragePath: {}\n"
+                    + "mysql.user: {}\n"
+                    + "mysql.database: {}\n"
+                    + "mysql.host: {}\n"
+                    + "mysql.port: {}",
+                    webServerPort, domain, reloadRepositoriesSeconds, schedulerPoolSize, webhookTokenLength,
+                    maximumRefreshRequestsEnabled, maximumRefreshRequestsSeconds, maximumRefreshRequests,
+                    logLevel, repositoryStoragePath, dbUser, dbDatabase, dbHost, dbPort);
+    }
 
     /**
      * Bean for easy access to properties.
@@ -59,8 +84,6 @@ public class YamlServerConfig implements ServerConfig {
      */
     @Bean
     public static PropertySourcesPlaceholderConfigurer properties() {
-        PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer
-                = new PropertySourcesPlaceholderConfigurer();
         YamlPropertiesFactoryBean yaml = new YamlPropertiesFactoryBean();
         String maypadHomePath = System.getenv("MAYPAD_HOME");
         maypadHomePath = maypadHomePath == null ? "/usr/share/maypad" : maypadHomePath;
@@ -78,7 +101,25 @@ public class YamlServerConfig implements ServerConfig {
             logger.error("MAYPAD_HOME is not set properly.");
             throw new RuntimeException("MAYPAD_HOME ist not set properly");
         }
-        propertySourcesPlaceholderConfigurer.setProperties(yaml.getObject());
+
+        //Add "maypad" prefix to avoid conflicts with environment variables used by other applications.
+        Properties prefixedProperties = new Properties();
+        yaml.getObject().entrySet().forEach(e -> {
+            if (e.getKey() instanceof String) {
+                prefixedProperties.setProperty("maypad." + e.getKey(), e.getValue().toString());
+            }
+        });
+
+        //Reapply root loglevel from configuration
+        String logLevel = System.getenv("MYAPAD_LOGGING_LEVEL_ROOT");
+        logLevel = logLevel == null ? prefixedProperties.getProperty("maypad.logging.level.root") : logLevel;
+        logLevel = logLevel == null ? "INFO" : logLevel;
+        ((ch.qos.logback.classic.Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME))
+                .setLevel(Level.toLevel(logLevel));
+
+        PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer
+                = new PropertySourcesPlaceholderConfigurer();
+        propertySourcesPlaceholderConfigurer.setProperties(prefixedProperties);
         return propertySourcesPlaceholderConfigurer;
     }
 }
