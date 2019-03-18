@@ -31,6 +31,7 @@ describe('DhistoryListItemComponent', () => {
     const nativeElement: HTMLElement = fixture.nativeElement;
     const elements: NodeListOf<Element> = nativeElement.querySelectorAll('span');
 
-    expect(elements[0].textContent).toBe('Type: ' + deployment.type);
+    expect(elements[1].getAttribute('title')).toBe('Success');
+    expect(elements[2].textContent).toBe('Type: ' + deployment.type);
   });
 });
