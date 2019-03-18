@@ -54,7 +54,7 @@ public class DeploymentMapperTest {
 
         assertThat(response).isNotNull();
         assertThat(response.getTimestamp()).isEqualTo(deployDate);
-        assertThat(response.getType()).isEqualTo(testDeployment.getType().getName());
+        assertThat(response.getType()).isEqualTo(testDeployment.getType().getDeploymentType());
         assertThat(response.getStatus()).isEqualTo(Status.SUCCESS);
     }
 }
