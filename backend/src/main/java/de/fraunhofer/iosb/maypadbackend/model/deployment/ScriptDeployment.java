@@ -20,6 +20,8 @@ public class ScriptDeployment extends DeploymentType {
     @Column
     private File script;
 
+    private static final String DEPLOYMENT_TYPE = "Script deployment";
+
     /**
      * Constructor for Script-Deployment.
      *
@@ -38,5 +40,10 @@ public class ScriptDeployment extends DeploymentType {
     public ScriptDeployment(File script, String name) {
         super(name);
         this.script = script;
+    }
+
+    @Override
+    public String getDeploymentType() {
+        return DEPLOYMENT_TYPE;
     }
 }

@@ -37,6 +37,7 @@ public class WebhookDeployment extends DeploymentType {
     @Column(columnDefinition = "TEXT")
     private String body;
 
+    private static final String DEPLOYMENT_TYPE = "Webhook deployment";
 
     /**
      * Constructor for WebhookDeployment.
@@ -59,5 +60,10 @@ public class WebhookDeployment extends DeploymentType {
     @Override
     public String toString() {
         return deploymentWebhook.getUrl();
+    }
+
+    @Override
+    public String getDeploymentType() {
+        return DEPLOYMENT_TYPE;
     }
 }

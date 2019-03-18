@@ -1,6 +1,7 @@
 package de.fraunhofer.iosb.maypadbackend.services.deployment;
 
 import de.fraunhofer.iosb.maypadbackend.dtos.request.DeploymentRequest;
+import de.fraunhofer.iosb.maypadbackend.exceptions.httpexceptions.BuildRunningException;
 import de.fraunhofer.iosb.maypadbackend.exceptions.httpexceptions.DeploymentRunningException;
 import de.fraunhofer.iosb.maypadbackend.exceptions.httpexceptions.NotFoundException;
 import de.fraunhofer.iosb.maypadbackend.model.Project;
@@ -78,6 +79,7 @@ public class DeploymentService {
     @Async
     public CompletableFuture<Status> deployBuild(int id, String ref, boolean withBuild, boolean withDependencies,
                                                  String deploymentName) {
+        logger.info("Start deployment of project {}, branch {}", id, ref);
         Project project = projectService.getProject(id);
         Branch branch = project.getRepository().getBranches().get(ref);
         if (branch == null) {
@@ -91,6 +93,7 @@ public class DeploymentService {
             }
             Build build = buildService.getLatestBuild(branch);
             Deployment deployment = new Deployment(new Date(), build, Status.RUNNING);
+            deployment.setType(deploymentType);
             branch.getDeployments().add(0, deployment);
             project = projectService.saveProject(project);
             branch = project.getRepository().getBranches().get(ref);
@@ -98,6 +101,7 @@ public class DeploymentService {
             runningDeployments.put(new Tuple<>(id, ref), deployment.getId());
 
             if (withBuild) {
+                logger.info("Deployment of project {}, branch {} is running with build", id, ref);
                 try {
                     buildService.buildBranch(id, ref, withDependencies, null).get();
                 } catch (InterruptedException e) {
@@ -109,10 +113,16 @@ public class DeploymentService {
                     logger.warn(e.getCause().getMessage());
                     signalStatus(id, ref, Status.FAILED);
                     return CompletableFuture.completedFuture(Status.FAILED);
+                } catch (BuildRunningException e) {
+                    logger.warn("Can't deploy project {}, branch {} with build when a build is already running",
+                            id, ref);
+                    signalStatus(id, ref, Status.FAILED);
+                    return CompletableFuture.completedFuture(Status.FAILED);
                 }
             }
 
             deploymentTypeMappings.get(deploymentType.getClass()).deploy(deploymentType, id, ref);
+            logger.info("Deployment of project {}, branch {} done", id, ref);
             return CompletableFuture.completedFuture(deployment.getStatus());
         } else {
             throw new DeploymentRunningException("DEPLOYMENT_RUNNING",
