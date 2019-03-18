@@ -1,7 +1,8 @@
 import { Build } from './build';
+import { BuildStatus } from './buildStatus';
 
 export class Deployment {
     timestamp: string;
-    build: Build;
     type: string;
+    status: BuildStatus;
 }

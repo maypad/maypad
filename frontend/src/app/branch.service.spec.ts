@@ -8,7 +8,7 @@ import * as get_projects_id_branches_ref_deployments_r from '../../sample-reques
 import * as get_projects_id_branches_ref_response from '../../sample-requests/get.projects.id.branches.ref.response.json';
 import * as post_projects_id_branches_ref_builds_request from '../../sample-requests/post.projects.id.branches.ref.builds.request.json';
 import * as post_projects_id_branches_ref_deployments_r from '../../sample-requests/post.projects.id.branches.ref.deployments.request.json';
-import { BuildReason } from './model/build';
+import { BuildReason, Build } from './model/build';
 
 
 describe('Service: BranchService', () => {
@@ -88,6 +88,10 @@ describe('Service: BranchService', () => {
         expect(data[0].timestamp).toEqual('Wed Jan 1 14:45:30 2019 +0100');
         expect(data[1].timestamp).toEqual('Wed Jan 2 14:45:30 2019 +0100');
         expect(data[2].timestamp).toEqual('Wed Jan 3 14:45:30 2019 +0100');
+
+        expect(data[0].status).toEqual(BuildStatus.SUCCESS);
+        expect(data[1].status).toEqual(BuildStatus.FAILED);
+        expect(data[2].status).toEqual(BuildStatus.SUCCESS);
       });
 
       const req = httpTestingController.expectOne(`${environment.baseUrl}projects/2/branches/master/deployments`);
