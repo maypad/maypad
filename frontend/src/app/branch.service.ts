@@ -6,7 +6,6 @@ import { Build, BuildReason } from './model/build';
 import { Deployment } from './model/deployment';
 import { Branch } from './model/branch';
 import { BuildStatus } from './model/buildStatus';
-import { Commit } from './model/commit';
 
 
 @Injectable({
@@ -36,9 +35,16 @@ export class BranchService {
 
   loadDeploymentHistory(projId: number, branch: string): Observable<Deployment[]> {
     const url = `${this.api.backendUrl}projects/${projId}/branches/${branch}/deployments`;
-    return this.api.http.get<Deployment[]>(url).pipe(
-      catchError(this.api.handleError<Deployment[]>('loadDeploymentHistory', []))
-    );
+    return this.api.http.get<Deployment[]>(url)
+      .pipe(
+        map(response => {
+          return response.map(deployment => {
+            deployment.status = (<any>BuildStatus)[deployment['status']];
+            return deployment;
+          });
+        }),
+        catchError(this.api.handleError<Deployment[]>('loadDeploymentHistory', []))
+      );
   }
 
   loadBranch(projId: number, branch: string): Observable<Branch> {
