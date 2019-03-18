@@ -22,8 +22,8 @@ public class EventData {
     private Integer projectgroupId;
     private Integer projectId;
     private String name;
-    private Status status;
-    private String message;
+    private MessageType messageType;
+    private String event;
 
     /**
      * Constructor for EventData.
@@ -32,15 +32,15 @@ public class EventData {
      * @param projectgroupId the if of the projectgoup
      * @param projectId      the id of the project
      * @param name           the branch
-     * @param status         the status
+     * @param messageType    the message type (e.g. error or info)
      */
-    private EventData(String eventId, Integer projectgroupId, Integer projectId, String name, Status status, String message) {
+    private EventData(String eventId, Integer projectgroupId, Integer projectId, String name, MessageType messageType, String event) {
         this.eventId = eventId;
         this.projectgroupId = projectgroupId;
         this.projectId = projectId;
         this.name = name;
-        this.status = status;
-        this.message = message;
+        this.messageType = messageType;
+        this.event = event;
     }
 
     /**
@@ -100,18 +100,18 @@ public class EventData {
         /**
          * Sets the status.
          *
-         * @param status the value of the status field.
+         * @param type the value of the type field.
          * @return this builder
          */
-        Builder status(Status status);
+        Builder type(MessageType type);
 
         /**
          * Sets detailed message (for example for stack traces).
          *
-         * @param message The message.
+         * @param event The message.
          * @return This builder.
          */
-        Builder message(String message);
+        Builder event(String event);
 
         /**
          * Builds the eventdata.
@@ -132,9 +132,9 @@ public class EventData {
 
         private String name;
 
-        private Status status;
+        private MessageType messageType;
 
-        private String message;
+        private String event;
 
         @Override
         public Builder eventId(String id) {
@@ -161,19 +161,20 @@ public class EventData {
         }
 
         @Override
-        public Builder message(String message) {
-            this.message = message;
+        public Builder event(String event) {
+            this.event = event;
             return this;
         }
 
-        public Builder status(Status status) {
-            this.status = status;
+        @Override
+        public Builder type(MessageType type) {
+            this.messageType = type;
             return this;
         }
 
         @Override
         public EventData build() {
-            return new EventData(this.eventId, this.projectgroupId, this.projectId, this.name, this.status, this.message);
+            return new EventData(this.eventId, this.projectgroupId, this.projectId, this.name, this.messageType, this.event);
         }
     }
 }

@@ -1,7 +1,7 @@
 package de.fraunhofer.iosb.maypadbackend.services.reporefresh;
 
 import de.fraunhofer.iosb.maypadbackend.config.project.ProjectConfig;
-import de.fraunhofer.iosb.maypadbackend.exceptions.repomanager.RepositoryException;
+import de.fraunhofer.iosb.maypadbackend.exceptions.repomanager.RepoManagerException;
 import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Commit;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Tag;
@@ -109,8 +109,8 @@ public class SvnRepoManagerTest {
         assertThat(svnRepoManager.switchBranch("trunk")).isTrue();
     }
 
-    @Test(expected = RepositoryException.class)
-    public void testErrorCases() throws RepositoryException {
+    @Test(expected = RepoManagerException.class)
+    public void testErrorCases() throws RepoManagerException {
         assertThat(svnRepoManager.cloneRepository()).isEqualTo(true);
         assertThat(svnRepoManager.switchBranch("fakeBranch")).isEqualTo(false);
         when(project.getRepositoryUrl()).thenReturn("https://fake-svn-repo.com/bla/");

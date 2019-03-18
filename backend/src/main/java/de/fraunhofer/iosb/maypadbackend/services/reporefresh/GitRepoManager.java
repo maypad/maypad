@@ -322,10 +322,10 @@ public class GitRepoManager extends RepoManager {
             } catch (IOException e1) {
                 getLogger().warn("Can't delete folder at " + getProjectRootDir().getAbsolutePath());
             }
-            throw new RepoCloneException(getProject().getId(), e.getMessage());
+            throw new RepoCloneException(getProject().getId(), "clone_failed");
         }
         if (getProjectConfig() == null) {
-            throw new ConfigNotFoundException(getProject().getId(), "Could not find maypad config in project root folder.");
+            throw new ConfigNotFoundException(getProject().getId(), "config_missing");
         }
         return true;
     }

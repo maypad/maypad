@@ -8,7 +8,6 @@ import de.fraunhofer.iosb.maypadbackend.config.server.ServerConfig;
 import de.fraunhofer.iosb.maypadbackend.exceptions.httpexceptions.NotFoundException;
 import de.fraunhofer.iosb.maypadbackend.exceptions.repomanager.ConfigNotFoundException;
 import de.fraunhofer.iosb.maypadbackend.exceptions.repomanager.RepoCloneException;
-import de.fraunhofer.iosb.maypadbackend.exceptions.repomanager.RepositoryException;
 import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.Status;
 import de.fraunhofer.iosb.maypadbackend.model.build.WebhookBuild;
@@ -23,6 +22,7 @@ import de.fraunhofer.iosb.maypadbackend.model.repository.RepositoryType;
 import de.fraunhofer.iosb.maypadbackend.model.webhook.ExternalWebhook;
 import de.fraunhofer.iosb.maypadbackend.services.ProjectService;
 import de.fraunhofer.iosb.maypadbackend.services.sse.EventData;
+import de.fraunhofer.iosb.maypadbackend.services.sse.MessageType;
 import de.fraunhofer.iosb.maypadbackend.services.sse.SseEventType;
 import de.fraunhofer.iosb.maypadbackend.services.sse.SseService;
 import de.fraunhofer.iosb.maypadbackend.services.webhook.WebhookService;
@@ -122,7 +122,12 @@ public class RepoService {
             KeyFileManager.deleteSshFile(new File(serverConfig.getRepositoryStoragePath()), id);
             removeLock(id);
             project = projectService.getProject(id);
-            sseService.push(EventData.builder(SseEventType.PROJECT_REFRESHED).projectId(id).name(project.getName()).build());
+            sseService.push(EventData.builder(SseEventType.PROJECT_REFRESHED)
+                    .type(MessageType.INFO)
+                    .projectId(id)
+                    .name(project.getName())
+                    .event("refresh_successful")
+                    .build());
         }
         return CompletableFuture.completedFuture(null);
     }
@@ -150,7 +155,11 @@ public class RepoService {
         } finally {
             KeyFileManager.deleteSshFile(new File(serverConfig.getRepositoryStoragePath()), id);
             project = projectService.getProject(id);
-            sseService.push(EventData.builder(SseEventType.PROJECT_INIT).projectId(id).name(project.getName()).build());
+            sseService.push(EventData.builder(SseEventType.PROJECT_INIT)
+                    .type(MessageType.INFO)
+                    .projectId(id)
+                    .event("init_successful")
+                    .build());
             removeLock(id);
         }
         return CompletableFuture.completedFuture(null);
@@ -286,16 +295,16 @@ public class RepoService {
                     return;
                 }
             }
-        } catch (RepoCloneException ex) {
-            sendRepoManagerError(SseEventType.CLONE_FAILED, ex);
-            setStatusAndSave(project, Status.ERROR);
-            repoManager.cleanUp();
-        } catch (ConfigNotFoundException ex) {
-            sendRepoManagerError(SseEventType.CONFIG_NOT_FOUND, ex);
+        } catch (RepoCloneException | ConfigNotFoundException ex) {
+            sseService.push(EventData.builder(SseEventType.PROJECT_REFRESHED)
+                    .event(ex.getEvent())
+                    .type(MessageType.ERROR)
+                    .projectId(project.getId())
+                    .name(project.getName())
+                    .build());
             setStatusAndSave(project, Status.ERROR);
             repoManager.cleanUp();
         }
-
         repoManager.switchBranch(repoManager.getMainBranchName());
 
         //compare Maypad config hash
@@ -499,13 +508,13 @@ public class RepoService {
                 repoManager.cleanUp();
                 return;
             }
-        } catch (RepoCloneException ex) {
-            sendRepoManagerError(SseEventType.CLONE_FAILED, ex);
-            setStatusAndSave(project, Status.ERROR);
-            repoManager.cleanUp();
-            return;
-        } catch (ConfigNotFoundException ex) {
-            sendRepoManagerError(SseEventType.CONFIG_NOT_FOUND, ex);
+        } catch (RepoCloneException | ConfigNotFoundException ex) {
+            sseService.push(EventData.builder(SseEventType.PROJECT_REFRESHED)
+                    .event(ex.getEvent())
+                    .type(MessageType.ERROR)
+                    .projectId(project.getId())
+                    .name(project.getName())
+                    .build());
             setStatusAndSave(project, Status.ERROR);
             repoManager.cleanUp();
             return;
@@ -681,13 +690,5 @@ public class RepoService {
         logger.info("Delete all webhooks in branch " + branch.getName());
         webhookService.removeWebhook(branch.getBuildSuccessWebhook());
         webhookService.removeWebhook(branch.getBuildFailureWebhook());
-    }
-
-    private void sendRepoManagerError(SseEventType type, RepositoryException ex) {
-        sseService.push(EventData.builder(type)
-                .projectId(ex.getProjectId())
-                .status(Status.ERROR)
-                .message(ex.getMessage())
-                .build());
     }
 }

@@ -225,13 +225,36 @@ public class SvnRepoManager extends RepoManager {
             if (getProjectConfig() != null) {
                 projConfig = this.getProjectConfig().getKey();
             } else {
-                throw new ConfigNotFoundException(getProject().getId(), "Could not find maypad project configuration!");
+                throw new ConfigNotFoundException(getProject().getId(), "config_missing");
             }
             switchBranch("trunk");
             return true;
         } catch (SVNException ex) {
             logger.error(ex.getMessage());
-            throw new RepoCloneException(getProject().getId(), ex.getMessage());
+            String sseMessage;
+            switch (ex.getErrorMessage().getErrorCode().getCode()) {
+                case 125002: // Malformed bogus url
+                    sseMessage = "bad_url";
+                    break;
+
+                case 175002: // Connection refused (probably wrong url)
+                    sseMessage = "connection_refused";
+                    break;
+
+                case 160013: // 404 not found-response (Maybe wrong/missing service account?)
+                    sseMessage = "404_not_found";
+                    break;
+
+                case 170001: // Authentication failed
+                    sseMessage = "auth_failed";
+                    break;
+
+                default: // Not all error codes are covered obviously
+                    sseMessage = "clone_failed_unknown_reason";
+                    break;
+
+            }
+            throw new RepoCloneException(getProject().getId(), sseMessage);
         }
     }
 
