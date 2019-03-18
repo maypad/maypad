@@ -94,6 +94,7 @@ public class BuildService {
      */
     @Async
     public CompletableFuture<Status> buildBranch(int id, String ref, boolean withDependencies, String buildName) {
+        logger.info("Start build of project {}, branch {}", id, ref);
         Project project = projectService.getProject(id);
         Branch branch = project.getRepository().getBranches().get(ref);
         if (!runningBuilds.containsKey(new Tuple<>(id, ref))) {
@@ -115,10 +116,18 @@ public class BuildService {
             BuildLock lock = new BuildLock(build.getId());
             runningBuilds.put(new Tuple<>(id, ref), lock);
             if (withDependencies) {
-                Tuple<Boolean, String> dependencyBuildStatus = dependencyBuildHelper.runBuildWithDependencies(id, ref);
-                if (!dependencyBuildStatus.getKey()) {
-                    logger.debug("Build of dependencies failed for project %d.", id);
-                    signalStatus(id, ref, Status.FAILED, BuildReason.DEPENDENCY_BUILD_FAILED, dependencyBuildStatus.getValue());
+                logger.info("Build of project {}, branch{} is running with dependencies", id, ref);
+                try {
+                    Tuple<Boolean, String> dependencyBuildStatus = dependencyBuildHelper.runBuildWithDependencies(id, ref);
+                    if (!dependencyBuildStatus.getKey()) {
+                        logger.debug("Build of dependencies failed for project {}.", id);
+                        signalStatus(id, ref, Status.FAILED, BuildReason.DEPENDENCY_BUILD_FAILED, dependencyBuildStatus.getValue());
+                        return CompletableFuture.completedFuture(Status.FAILED);
+                    }
+                } catch (Exception e) {
+                    logger.error("Build of project {}, branch {} failed");
+                    signalStatus(id, ref, Status.FAILED, BuildReason.BUILD_FAILED, null);
+                    Thread.currentThread().interrupt();
                     return CompletableFuture.completedFuture(Status.FAILED);
                 }
             }
@@ -127,12 +136,13 @@ public class BuildService {
             try {
                 lock.acquire();
             } catch (InterruptedException e) {
-                logger.warn("Build of project %d interrupted.", id);
+                logger.warn("Build of project {} interrupted.", id);
                 signalStatus(id, ref, Status.FAILED, BuildReason.BUILD_FAILED, null);
                 Thread.currentThread().interrupt();
                 return CompletableFuture.completedFuture(Status.FAILED);
             }
             branch = projectService.getBranch(id, ref);
+            logger.info("Build of project {}, branch {} done", id, ref);
             return CompletableFuture.completedFuture(getBuild(branch, build.getId()).getStatus());
         } else {
             throw new BuildRunningException("BUILD_RUNNING", String.format("There's already a build running for %s.",

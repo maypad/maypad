@@ -15,7 +15,7 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = {BuildMapper.class})
 public interface DeploymentMapper {
     @Mappings({
-            @Mapping(source = "type.name", target = "type")
+            @Mapping(source = "type.deploymentType", target = "type")
     })
     DeploymentResponse toResponse(Deployment deployment);
 

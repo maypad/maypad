@@ -75,7 +75,7 @@ public class DependencyBuildHelper {
                     }
                 }
             } catch (InterruptedException e) {
-                logger.warn("Build of project %d interrupted.", id);
+                logger.warn("Build of project {} interrupted.", id);
                 Thread.currentThread().interrupt();
                 return new Tuple<>(false, null);
             } catch (ExecutionException e) {
@@ -87,7 +87,7 @@ public class DependencyBuildHelper {
     }
 
     private void setNodeChildren(BuildNode node) {
-        logger.debug("Dependencies of " + node.getProjectId() + ":" + node.getBranchRef() + ": ");
+        logger.debug("Dependencies of {}:{}", node.getProjectId(), node.getBranchRef());
         Project project = projectService.getProject(node.getProjectId());
         Branch branch = project.getRepository().getBranches().get(node.getBranchRef());
         for (DependencyDescriptor desc : branch.getDependencies()) {
@@ -98,7 +98,7 @@ public class DependencyBuildHelper {
             for (BuildNode n : nodes) {
                 if (n.getProjectId() == pro.getId() && n.getBranchRef().equals(dep.getName())) {
                     if (!warned) {
-                        logger.warn("Cycles in dependencies detected for project %d on branch %s.",
+                        logger.warn("Cycles in dependencies detected for project {} on branch {}.",
                                 project.getId(), branch.getName());
                         logger.debug("Not adding already existing dependency...");
                         warned = true;
