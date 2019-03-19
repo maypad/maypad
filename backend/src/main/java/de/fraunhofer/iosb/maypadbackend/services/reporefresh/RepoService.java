@@ -122,12 +122,6 @@ public class RepoService {
             KeyFileManager.deleteSshFile(new File(serverConfig.getRepositoryStoragePath()), id);
             removeLock(id);
             project = projectService.getProject(id);
-            sseService.push(EventData.builder(SseEventType.PROJECT_REFRESHED)
-                    .projectId(id)
-                    .name(project.getName())
-                    .status(Status.SUCCESS)
-                    .message(SseMessages.PROJECT_REFRESH_SUCCESSFUL)
-                    .build());
         }
         return CompletableFuture.completedFuture(null);
     }
@@ -458,8 +452,14 @@ public class RepoService {
         project.setLastUpdate(new Date());
         project.setRepositoryStatus(Status.SUCCESS);
 
-        projectService.saveProject(project);
+        project = projectService.saveProject(project);
         logger.info("Project with id " + project.getId() + " has refreshed.");
+        sseService.push(EventData.builder(SseEventType.PROJECT_REFRESHED)
+                .projectId(project.getId())
+                .name(project.getName())
+                .status(Status.SUCCESS)
+                .message(SseMessages.PROJECT_REFRESH_SUCCESSFUL)
+                .build());
     }
 
     /**
