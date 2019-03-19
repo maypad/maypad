@@ -22,7 +22,9 @@ import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.TransportCommand;
 import org.eclipse.jgit.api.TransportConfigCallback;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
+import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.merge.MergeStrategy;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -323,7 +325,16 @@ public class GitRepoManager extends RepoManager {
             } catch (IOException e1) {
                 getLogger().warn("Can't delete folder at " + getProjectRootDir().getAbsolutePath());
             }
-            throw new RepoCloneException(getProject().getId(), SseMessages.REPO_MANAGER_GIT_CLONE_FAILED);
+
+            //we need the difference between the exception-types only for the sse message
+            String errorMessage = SseMessages.REPO_MANAGER_GIT_CLONE_FAILED;
+            if (e instanceof InvalidRemoteException) {
+                errorMessage = SseMessages.REPO_MANAGER_GIT_NOT_AVAILABLE;
+            } else if (e instanceof TransportException) {
+                errorMessage = SseMessages.REPO_MANAGER_GIT_AUTH_FAILED;
+            }
+
+            throw new RepoCloneException(getProject().getId(), errorMessage);
         }
         if (getProjectConfig() == null) {
             throw new ConfigNotFoundException(getProject().getId(), SseMessages.REPO_MANAGER_MISSING_CONFIG);

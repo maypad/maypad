@@ -20,6 +20,8 @@ public class SseMessages {
 
     //repomanager, git specific
     public static final String REPO_MANAGER_GIT_CLONE_FAILED = "git_clone_failed";
+    public static final String REPO_MANAGER_GIT_NOT_AVAILABLE = "git_not_available";
+    public static final String REPO_MANAGER_GIT_AUTH_FAILED = "git_auth_failed";
 
     //repomanager, svn specific
     public static final String REPO_MANAGER_SVN_BAD_URL = "svn_bad_url";
