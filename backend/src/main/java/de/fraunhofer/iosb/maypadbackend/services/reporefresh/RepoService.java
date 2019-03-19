@@ -6,6 +6,8 @@ import de.fraunhofer.iosb.maypadbackend.config.project.data.BuildProperty;
 import de.fraunhofer.iosb.maypadbackend.config.project.data.DeploymentProperty;
 import de.fraunhofer.iosb.maypadbackend.config.server.ServerConfig;
 import de.fraunhofer.iosb.maypadbackend.exceptions.httpexceptions.NotFoundException;
+import de.fraunhofer.iosb.maypadbackend.exceptions.repomanager.ConfigNotFoundException;
+import de.fraunhofer.iosb.maypadbackend.exceptions.repomanager.RepoCloneException;
 import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.Status;
 import de.fraunhofer.iosb.maypadbackend.model.build.WebhookBuild;
@@ -21,6 +23,7 @@ import de.fraunhofer.iosb.maypadbackend.model.webhook.ExternalWebhook;
 import de.fraunhofer.iosb.maypadbackend.services.ProjectService;
 import de.fraunhofer.iosb.maypadbackend.services.sse.EventData;
 import de.fraunhofer.iosb.maypadbackend.services.sse.SseEventType;
+import de.fraunhofer.iosb.maypadbackend.services.sse.SseMessages;
 import de.fraunhofer.iosb.maypadbackend.services.sse.SseService;
 import de.fraunhofer.iosb.maypadbackend.services.webhook.WebhookService;
 import de.fraunhofer.iosb.maypadbackend.util.FileUtil;
@@ -119,7 +122,6 @@ public class RepoService {
             KeyFileManager.deleteSshFile(new File(serverConfig.getRepositoryStoragePath()), id);
             removeLock(id);
             project = projectService.getProject(id);
-            sseService.push(EventData.builder(SseEventType.PROJECT_REFRESHED).projectId(id).name(project.getName()).build());
         }
         return CompletableFuture.completedFuture(null);
     }
@@ -147,7 +149,11 @@ public class RepoService {
         } finally {
             KeyFileManager.deleteSshFile(new File(serverConfig.getRepositoryStoragePath()), id);
             project = projectService.getProject(id);
-            sseService.push(EventData.builder(SseEventType.PROJECT_INIT).projectId(id).name(project.getName()).build());
+            sseService.push(EventData.builder(SseEventType.PROJECT_INIT)
+                    .projectId(id)
+                    .status(Status.SUCCESS)
+                    .message(SseMessages.PROJECT_INIT_SUCCESSFUL)
+                    .build());
             removeLock(id);
         }
         return CompletableFuture.completedFuture(null);
@@ -275,14 +281,24 @@ public class RepoService {
 
         //clone project, if data were deleted
         File repoDir = projectService.getRepoDir(project.getId());
-        if (!repoDir.exists()) {
-            if (!repoDir.mkdirs() || !repoManager.cloneRepository()) {
-                setStatusAndSave(project, Status.ERROR);
-                repoManager.cleanUp();
-                return;
+        try {
+            if (!repoDir.exists()) {
+                if (!repoDir.mkdirs() || !repoManager.cloneRepository()) {
+                    setStatusAndSave(project, Status.ERROR);
+                    repoManager.cleanUp();
+                    return;
+                }
             }
+        } catch (RepoCloneException | ConfigNotFoundException ex) {
+            sseService.push(EventData.builder(SseEventType.PROJECT_REFRESHED)
+                    .projectId(project.getId())
+                    .name(project.getName())
+                    .status(Status.FAILED)
+                    .message(ex.getEventMessage())
+                    .build());
+            setStatusAndSave(project, Status.ERROR);
+            repoManager.cleanUp();
         }
-
         repoManager.switchBranch(repoManager.getMainBranchName());
 
         //compare Maypad config hash
@@ -436,8 +452,14 @@ public class RepoService {
         project.setLastUpdate(new Date());
         project.setRepositoryStatus(Status.SUCCESS);
 
-        projectService.saveProject(project);
+        project = projectService.saveProject(project);
         logger.info("Project with id " + project.getId() + " has refreshed.");
+        sseService.push(EventData.builder(SseEventType.PROJECT_REFRESHED)
+                .projectId(project.getId())
+                .name(project.getName())
+                .status(Status.SUCCESS)
+                .message(SseMessages.PROJECT_REFRESH_SUCCESSFUL)
+                .build());
     }
 
     /**
@@ -479,16 +501,25 @@ public class RepoService {
         RepoManager repoManager = repositoryType.toRepoManager(project);
         repoManager.initRepoManager(parentDir, projectService.getRepoDir(project.getId()));
 
-        boolean cloneSuccess = (repoManager.cloneRepository() && repositoryType != RepositoryType.NONE);
-        if (!cloneSuccess) {
+        try {
+            boolean cloneSuccess = (repoManager.cloneRepository() && repositoryType != RepositoryType.NONE);
+            if (!cloneSuccess) {
+                setStatusAndSave(project, Status.ERROR);
+                repoManager.cleanUp();
+                return;
+            }
+        } catch (RepoCloneException | ConfigNotFoundException ex) {
+            sseService.push(EventData.builder(SseEventType.PROJECT_REFRESHED)
+                    .projectId(project.getId())
+                    .name(project.getName())
+                    .status(Status.FAILED)
+                    .message(ex.getEventMessage())
+                    .build());
             setStatusAndSave(project, Status.ERROR);
             repoManager.cleanUp();
             return;
         }
-
         project.setRepositoryStatus(Status.INIT);
-
-
         project = projectService.saveProject(project);
         //if repo isn't null, so we can refresh the data. Preventing call this method twice.
         doRefreshProject(project);

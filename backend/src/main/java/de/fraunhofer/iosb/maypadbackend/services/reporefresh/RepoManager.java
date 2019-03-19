@@ -2,6 +2,8 @@ package de.fraunhofer.iosb.maypadbackend.services.reporefresh;
 
 import de.fraunhofer.iosb.maypadbackend.config.project.ProjectConfig;
 import de.fraunhofer.iosb.maypadbackend.config.project.YamlProjectConfig;
+import de.fraunhofer.iosb.maypadbackend.exceptions.repomanager.ConfigNotFoundException;
+import de.fraunhofer.iosb.maypadbackend.exceptions.repomanager.RepoCloneException;
 import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.person.Author;
 import de.fraunhofer.iosb.maypadbackend.model.person.Mail;
@@ -118,7 +120,7 @@ public abstract class RepoManager {
      *
      * @return True in success, else false
      */
-    protected abstract boolean cloneRepository();
+    protected abstract boolean cloneRepository() throws RepoCloneException, ConfigNotFoundException;
 
     /**
      * Get the project of this repomanager.

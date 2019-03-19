@@ -23,6 +23,7 @@ public class EventData {
     private Integer projectId;
     private String name;
     private Status status;
+    private String message;
 
     /**
      * Constructor for EventData.
@@ -32,13 +33,16 @@ public class EventData {
      * @param projectId      the id of the project
      * @param name           the branch
      * @param status         the status
+     * @param message        the message
      */
-    private EventData(String eventId, Integer projectgroupId, Integer projectId, String name, Status status) {
+    private EventData(String eventId, Integer projectgroupId, Integer projectId, String name, Status status,
+                      String message) {
         this.eventId = eventId;
         this.projectgroupId = projectgroupId;
         this.projectId = projectId;
         this.name = name;
         this.status = status;
+        this.message = message;
     }
 
     /**
@@ -104,6 +108,14 @@ public class EventData {
         Builder status(Status status);
 
         /**
+         * Sets the message.
+         *
+         * @param message the message contained in the event
+         * @return this builder
+         */
+        Builder message(String message);
+
+        /**
          * Builds the eventdata.
          *
          * @return the built eventdata object
@@ -123,6 +135,8 @@ public class EventData {
         private String name;
 
         private Status status;
+
+        private String message;
 
         @Override
         public Builder eventId(String id) {
@@ -148,14 +162,22 @@ public class EventData {
             return this;
         }
 
+        @Override
         public Builder status(Status status) {
             this.status = status;
             return this;
         }
 
         @Override
+        public Builder message(String message) {
+            this.message = message;
+            return this;
+        }
+
+        @Override
         public EventData build() {
-            return new EventData(this.eventId, this.projectgroupId, this.projectId, this.name, this.status);
+            return new EventData(this.eventId, this.projectgroupId, this.projectId, this.name, this.status,
+                    this.message);
         }
     }
 }

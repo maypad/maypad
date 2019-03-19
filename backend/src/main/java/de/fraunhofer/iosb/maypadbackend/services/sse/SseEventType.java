@@ -16,9 +16,9 @@ public enum SseEventType {
     PROJECT_REFRESHED("project_refreshed"),
 
     /**
-     * Thrown when the authentication method was updated.
+     * Thrown when a project was updated (e.g. authmethod updated).
      */
-    AUTHMETHOD_UPDATED("auth_updated"),
+    PROJECT_CHANGED("project_changed"),
 
     /**
      * Thrown when a build status was updated.

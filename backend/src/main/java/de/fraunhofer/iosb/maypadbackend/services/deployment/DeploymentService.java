@@ -191,7 +191,11 @@ public class DeploymentService {
         deployment.setStatus(status);
         runningDeployments.remove(branchMapEntry);
         projectService.saveProject(project);
-        sseService.push(EventData.builder(SseEventType.DEPLOYMENT_UPDATE).projectId(id).name(ref).status(status).build());
+        sseService.push(EventData.builder(SseEventType.DEPLOYMENT_UPDATE)
+                .projectId(id)
+                .name(ref)
+                .status(status)
+                .build());
     }
 
 

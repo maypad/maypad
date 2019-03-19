@@ -218,8 +218,14 @@ public class BuildService {
                 status, id, ref));
         projectService.saveProject(project);
         projectService.statusPropagation(project.getId());
-        if (status == Status.FAILED || status == Status.SUCCESS || status == Status.TIMEOUT || status == Status.RUNNING) {
-            sseService.push(EventData.builder(SseEventType.BUILD_UPDATE).projectId(id).name(ref).status(status).build());
+        if (status == Status.FAILED || status == Status.SUCCESS
+                || status == Status.TIMEOUT || status == Status.RUNNING) {
+            sseService.push(EventData.builder(SseEventType.BUILD_UPDATE)
+                    .projectId(id)
+                    .name(ref)
+                    .message(reason != null ? reason.toSseMessage() : null)
+                    .status(status)
+                    .build());
         }
     }
 

@@ -3,6 +3,8 @@ package de.fraunhofer.iosb.maypadbackend.services.reporefresh;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import de.fraunhofer.iosb.maypadbackend.exceptions.repomanager.ConfigNotFoundException;
+import de.fraunhofer.iosb.maypadbackend.exceptions.repomanager.RepoCloneException;
 import de.fraunhofer.iosb.maypadbackend.model.Project;
 import de.fraunhofer.iosb.maypadbackend.model.person.Author;
 import de.fraunhofer.iosb.maypadbackend.model.person.Mail;
@@ -11,6 +13,7 @@ import de.fraunhofer.iosb.maypadbackend.model.repository.Tag;
 import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.KeyServiceAccount;
 import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.ServiceAccount;
 import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.UserServiceAccount;
+import de.fraunhofer.iosb.maypadbackend.services.sse.SseMessages;
 import de.fraunhofer.iosb.maypadbackend.util.FileUtil;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
@@ -19,7 +22,9 @@ import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.TransportCommand;
 import org.eclipse.jgit.api.TransportConfigCallback;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
+import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.merge.MergeStrategy;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -56,7 +61,6 @@ public class GitRepoManager extends RepoManager {
                 localGit = Git.open(getProjectRootDir());
             } catch (IOException e) {
                 getLogger().error("Can't read local repo from " + getProjectRootDir().getAbsolutePath());
-                cloneRepository();
             }
         }
         return localGit;
@@ -302,7 +306,7 @@ public class GitRepoManager extends RepoManager {
      * @return True in success, else false
      */
     @Override
-    protected boolean cloneRepository() {
+    protected boolean cloneRepository() throws RepoCloneException, ConfigNotFoundException {
         if (!FileUtil.isDirectoryEmpty(getProjectRootDir())) {
             getLogger().error("Folder " + getProjectRootDir().getAbsolutePath() + " isn't empty, so can't clone.");
             return false;
@@ -315,14 +319,25 @@ public class GitRepoManager extends RepoManager {
                     .setDirectory(getProjectRootDir())).call();
         } catch (GitAPIException | JGitInternalException e) {
             cleanUp();
-
             getLogger().warn("Can't access to repo " + getProject().getRepositoryUrl() + " or an internal error occurred.");
             try {
                 FileUtils.deleteDirectory(getProjectRootDir());
             } catch (IOException e1) {
                 getLogger().warn("Can't delete folder at " + getProjectRootDir().getAbsolutePath());
             }
-            return false;
+
+            //we need the difference between the exception-types only for the sse message
+            String errorMessage = SseMessages.REPO_MANAGER_GIT_CLONE_FAILED;
+            if (e instanceof InvalidRemoteException) {
+                errorMessage = SseMessages.REPO_MANAGER_GIT_NOT_AVAILABLE;
+            } else if (e instanceof TransportException) {
+                errorMessage = SseMessages.REPO_MANAGER_GIT_AUTH_FAILED;
+            }
+
+            throw new RepoCloneException(getProject().getId(), errorMessage);
+        }
+        if (getProjectConfig() == null) {
+            throw new ConfigNotFoundException(getProject().getId(), SseMessages.REPO_MANAGER_MISSING_CONFIG);
         }
         return true;
     }
