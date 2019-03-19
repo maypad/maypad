@@ -11,6 +11,7 @@ import de.fraunhofer.iosb.maypadbackend.model.repository.Commit;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Tag;
 import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.KeyServiceAccount;
 import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.UserServiceAccount;
+import de.fraunhofer.iosb.maypadbackend.services.sse.SseMessages;
 import de.fraunhofer.iosb.maypadbackend.util.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -225,7 +226,7 @@ public class SvnRepoManager extends RepoManager {
             if (getProjectConfig() != null) {
                 projConfig = this.getProjectConfig().getKey();
             } else {
-                throw new ConfigNotFoundException(getProject().getId(), "config_missing");
+                throw new ConfigNotFoundException(getProject().getId(), SseMessages.REPO_MANAGER_MISSING_CONFIG);
             }
             switchBranch("trunk");
             return true;
@@ -234,23 +235,23 @@ public class SvnRepoManager extends RepoManager {
             String sseMessage;
             switch (ex.getErrorMessage().getErrorCode().getCode()) {
                 case 125002: // Malformed bogus url
-                    sseMessage = "bad_url";
+                    sseMessage = SseMessages.REPO_MANAGER_SVN_BAD_URL;
                     break;
 
                 case 175002: // Connection refused (probably wrong url)
-                    sseMessage = "connection_refused";
+                    sseMessage = SseMessages.REPO_MANAGER_SVN_CONNECTION_REFUSED;
                     break;
 
                 case 160013: // 404 not found-response (Maybe wrong/missing service account?)
-                    sseMessage = "404_not_found";
+                    sseMessage = SseMessages.REPO_MANAGER_SVN_NOT_FOUND;
                     break;
 
                 case 170001: // Authentication failed
-                    sseMessage = "auth_failed";
+                    sseMessage = SseMessages.REPO_MANAGER_SVN_AUTH_FAILED;
                     break;
 
                 default: // Not all error codes are covered obviously
-                    sseMessage = "clone_failed_unknown_reason";
+                    sseMessage = SseMessages.REPO_MANAGER_SVN_UNKNOWN;
                     break;
 
             }

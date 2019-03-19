@@ -15,8 +15,8 @@ import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.UserServiceAccount;
 import de.fraunhofer.iosb.maypadbackend.repositories.ProjectRepository;
 import de.fraunhofer.iosb.maypadbackend.services.scheduler.SchedulerService;
 import de.fraunhofer.iosb.maypadbackend.services.sse.EventData;
-import de.fraunhofer.iosb.maypadbackend.services.sse.MessageType;
 import de.fraunhofer.iosb.maypadbackend.services.sse.SseEventType;
+import de.fraunhofer.iosb.maypadbackend.services.sse.SseMessages;
 import de.fraunhofer.iosb.maypadbackend.services.sse.SseService;
 import de.fraunhofer.iosb.maypadbackend.services.webhook.WebhookService;
 import lombok.NoArgsConstructor;
@@ -196,9 +196,8 @@ public class ProjectService {
         Project project = getProject(id);
         ServiceAccount serviceAccount = getServiceAccount(request.getServiceAccount());
         EventData sseEvent = EventData.builder(SseEventType.PROJECT_CHANGED)
-                .type(MessageType.INFO)
                 .projectId(id)
-                .event("serviceaccount_changed")
+                .message(SseMessages.SERVICEACCOUNT_CHANGED)
                 .build();
         sseService.push(sseEvent);
         project.setServiceAccount(serviceAccount);

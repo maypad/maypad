@@ -12,7 +12,6 @@ import de.fraunhofer.iosb.maypadbackend.model.repository.Branch;
 import de.fraunhofer.iosb.maypadbackend.services.ProjectService;
 import de.fraunhofer.iosb.maypadbackend.services.build.BuildService;
 import de.fraunhofer.iosb.maypadbackend.services.sse.EventData;
-import de.fraunhofer.iosb.maypadbackend.services.sse.MessageType;
 import de.fraunhofer.iosb.maypadbackend.services.sse.SseEventType;
 import de.fraunhofer.iosb.maypadbackend.services.sse.SseService;
 import de.fraunhofer.iosb.maypadbackend.util.Tuple;
@@ -182,39 +181,10 @@ public class DeploymentService {
         deployment.setStatus(status);
         runningDeployments.remove(branchMapEntry);
         projectService.saveProject(project);
-        String sseEventDetail;
-        MessageType sseEventType;
-        switch (status) {
-            case FAILED:
-                sseEventDetail = "deployment_failed";
-                sseEventType = MessageType.ERROR;
-                break;
-
-            case SUCCESS:
-                sseEventDetail = "deployment_success";
-                sseEventType = MessageType.INFO;
-                break;
-
-            case TIMEOUT:
-                sseEventDetail = "deployment_timeout";
-                sseEventType = MessageType.ERROR;
-                break;
-
-            case RUNNING:
-                sseEventDetail = "deployment_running";
-                sseEventType = MessageType.INFO;
-                break;
-
-            default:
-                sseEventDetail = "deployment_unknown";
-                sseEventType = MessageType.WARNING;
-                break;
-        }
         sseService.push(EventData.builder(SseEventType.DEPLOYMENT_UPDATE)
-                .event(sseEventDetail)
-                .type(sseEventType)
                 .projectId(id)
                 .name(ref)
+                .status(status)
                 .build());
     }
 

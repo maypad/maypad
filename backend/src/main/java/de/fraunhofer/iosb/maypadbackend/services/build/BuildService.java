@@ -11,11 +11,9 @@ import de.fraunhofer.iosb.maypadbackend.model.build.BuildType;
 import de.fraunhofer.iosb.maypadbackend.model.repository.Branch;
 import de.fraunhofer.iosb.maypadbackend.services.ProjectService;
 import de.fraunhofer.iosb.maypadbackend.services.sse.EventData;
-import de.fraunhofer.iosb.maypadbackend.services.sse.MessageType;
 import de.fraunhofer.iosb.maypadbackend.services.sse.SseEventType;
 import de.fraunhofer.iosb.maypadbackend.services.sse.SseService;
 import de.fraunhofer.iosb.maypadbackend.util.Tuple;
-import org.aspectj.bridge.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.Advised;
@@ -210,40 +208,15 @@ public class BuildService {
                 status, id, ref));
         projectService.saveProject(project);
         projectService.statusPropagation(project.getId());
-        String sseEventDetail;
-        MessageType sseEventType;
-        switch (status) {
-            case FAILED:
-                sseEventDetail = "build_failed";
-                sseEventType = MessageType.ERROR;
-                break;
-
-            case SUCCESS:
-                sseEventDetail = "build_success";
-                sseEventType = MessageType.INFO;
-                break;
-
-            case TIMEOUT:
-                sseEventDetail = "build_timeout";
-                sseEventType = MessageType.ERROR;
-                break;
-
-            case RUNNING:
-                sseEventDetail = "build_running";
-                sseEventType = MessageType.INFO;
-                break;
-
-            default:
-                sseEventDetail = "build_unknown";
-                sseEventType = MessageType.WARNING;
-                break;
+        if (status == Status.FAILED || status == Status.SUCCESS
+                || status == Status.TIMEOUT || status == Status.RUNNING) {
+            sseService.push(EventData.builder(SseEventType.BUILD_UPDATE)
+                    .projectId(id)
+                    .name(ref)
+                    .message(reason != null ? reason.toSseMessage() : null)
+                    .status(status)
+                    .build());
         }
-        sseService.push(EventData.builder(SseEventType.BUILD_UPDATE)
-                .type(sseEventType)
-                .event(sseEventDetail)
-                .projectId(id)
-                .name(ref)
-                .build());
     }
 
     /**

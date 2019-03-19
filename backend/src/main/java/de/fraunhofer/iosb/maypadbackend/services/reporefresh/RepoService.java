@@ -22,8 +22,8 @@ import de.fraunhofer.iosb.maypadbackend.model.repository.RepositoryType;
 import de.fraunhofer.iosb.maypadbackend.model.webhook.ExternalWebhook;
 import de.fraunhofer.iosb.maypadbackend.services.ProjectService;
 import de.fraunhofer.iosb.maypadbackend.services.sse.EventData;
-import de.fraunhofer.iosb.maypadbackend.services.sse.MessageType;
 import de.fraunhofer.iosb.maypadbackend.services.sse.SseEventType;
+import de.fraunhofer.iosb.maypadbackend.services.sse.SseMessages;
 import de.fraunhofer.iosb.maypadbackend.services.sse.SseService;
 import de.fraunhofer.iosb.maypadbackend.services.webhook.WebhookService;
 import de.fraunhofer.iosb.maypadbackend.util.FileUtil;
@@ -123,10 +123,10 @@ public class RepoService {
             removeLock(id);
             project = projectService.getProject(id);
             sseService.push(EventData.builder(SseEventType.PROJECT_REFRESHED)
-                    .type(MessageType.INFO)
                     .projectId(id)
                     .name(project.getName())
-                    .event("refresh_successful")
+                    .status(Status.SUCCESS)
+                    .message(SseMessages.PROJECT_REFRESH_SUCCESSFUL)
                     .build());
         }
         return CompletableFuture.completedFuture(null);
@@ -156,9 +156,9 @@ public class RepoService {
             KeyFileManager.deleteSshFile(new File(serverConfig.getRepositoryStoragePath()), id);
             project = projectService.getProject(id);
             sseService.push(EventData.builder(SseEventType.PROJECT_INIT)
-                    .type(MessageType.INFO)
                     .projectId(id)
-                    .event("init_successful")
+                    .status(Status.SUCCESS)
+                    .message(SseMessages.PROJECT_INIT_SUCCESSFUL)
                     .build());
             removeLock(id);
         }
@@ -297,10 +297,10 @@ public class RepoService {
             }
         } catch (RepoCloneException | ConfigNotFoundException ex) {
             sseService.push(EventData.builder(SseEventType.PROJECT_REFRESHED)
-                    .event(ex.getEvent())
-                    .type(MessageType.ERROR)
                     .projectId(project.getId())
                     .name(project.getName())
+                    .status(Status.FAILED)
+                    .message(ex.getEventMessage())
                     .build());
             setStatusAndSave(project, Status.ERROR);
             repoManager.cleanUp();
@@ -510,10 +510,10 @@ public class RepoService {
             }
         } catch (RepoCloneException | ConfigNotFoundException ex) {
             sseService.push(EventData.builder(SseEventType.PROJECT_REFRESHED)
-                    .event(ex.getEvent())
-                    .type(MessageType.ERROR)
                     .projectId(project.getId())
                     .name(project.getName())
+                    .status(Status.FAILED)
+                    .message(ex.getEventMessage())
                     .build());
             setStatusAndSave(project, Status.ERROR);
             repoManager.cleanUp();
