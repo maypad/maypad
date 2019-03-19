@@ -13,6 +13,7 @@ import de.fraunhofer.iosb.maypadbackend.model.repository.Tag;
 import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.KeyServiceAccount;
 import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.ServiceAccount;
 import de.fraunhofer.iosb.maypadbackend.model.serviceaccount.UserServiceAccount;
+import de.fraunhofer.iosb.maypadbackend.services.sse.SseMessages;
 import de.fraunhofer.iosb.maypadbackend.util.FileUtil;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
@@ -322,10 +323,10 @@ public class GitRepoManager extends RepoManager {
             } catch (IOException e1) {
                 getLogger().warn("Can't delete folder at " + getProjectRootDir().getAbsolutePath());
             }
-            throw new RepoCloneException(getProject().getId(), "clone_failed");
+            throw new RepoCloneException(getProject().getId(), SseMessages.REPO_MANAGER_GIT_CLONE_FAILED);
         }
         if (getProjectConfig() == null) {
-            throw new ConfigNotFoundException(getProject().getId(), "config_missing");
+            throw new ConfigNotFoundException(getProject().getId(), SseMessages.REPO_MANAGER_MISSING_CONFIG);
         }
         return true;
     }

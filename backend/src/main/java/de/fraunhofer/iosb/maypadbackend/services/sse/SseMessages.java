@@ -18,6 +18,9 @@ public class SseMessages {
     //repomanger
     public static final String REPO_MANAGER_MISSING_CONFIG = "config_missing";
 
+    //repomanager, git specific
+    public static final String REPO_MANAGER_GIT_CLONE_FAILED = "git_clone_failed";
+
     //repomanager, svn specific
     public static final String REPO_MANAGER_SVN_BAD_URL = "svn_bad_url";
     public static final String REPO_MANAGER_SVN_CONNECTION_REFUSED = "svn_connection_refused";
