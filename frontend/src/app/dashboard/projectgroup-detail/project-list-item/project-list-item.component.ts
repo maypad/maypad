@@ -13,8 +13,10 @@ export class ProjectListItemComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    const mom = moment(this.project.lastCommit.timestamp, moment.ISO_8601);
-    this.fmtTimestamp = mom.fromNow();
+    if (this.project.lastCommit && this.project.lastCommit.timestamp) {
+      const mom = moment(this.project.lastCommit.timestamp, moment.ISO_8601);
+      this.fmtTimestamp = mom.fromNow();
+    }
   }
 
 }

@@ -58,28 +58,53 @@ describe('ProjectDetailComponent', () => {
 
   it('should refresh project', () => {
     const notification: NotificationServiceStub = TestBed.get(NotificationService);
-    spyOn(notification, 'send');
+    spyOn(notification, 'sendInfo');
     component.refreshProject();
-    expect(notification.send).toHaveBeenCalledWith('The project is now being refreshed.', 'info');
+    expect(notification.sendInfo).toHaveBeenCalledWith('refreshing', undefined, String(project['id']), undefined);
+  });
+
+  it('should fail to refresh project', () => {
+    const notService: NotificationService = TestBed.get(NotificationService);
+    spyOn(notService, 'sendWarning');
+    const evt = new MessageEvent('project_refreshed', {
+      data: `{ "projectId": ${project['id']}, "message": "git_not_available", "status": "FAILED"}`
+    });
+    component.handleProjectRefreshed(evt);
+    expect(notService.sendWarning).toHaveBeenCalledWith('git_not_available', undefined, project['id'], undefined);
   });
 
   it('should reload project', () => {
     const projService: ProjectService = TestBed.get(ProjectService);
     spyOn(projService, 'loadProject').and.callThrough();
     const notService: NotificationService = TestBed.get(NotificationService);
-    spyOn(notService, 'send');
-    const evt = new MessageEvent('build_updated', {
-      data: `{ "projectId": ${project['id']}}`
+    spyOn(notService, 'sendSuccess');
+    const evt = new MessageEvent('project_refreshed', {
+      data: `{ "projectId": ${project['id']}, "message": "refresh_successful", "status": "SUCCESS"}`
     });
-    component.reloadProject(evt);
-    expect(notService.send).toHaveBeenCalledWith('The project has been refreshed.', 'success');
+    component.handleProjectRefreshed(evt);
+    expect(notService.sendSuccess).toHaveBeenCalledWith('refresh_successful', undefined, project['id'], undefined);
   });
 
   it('should update buildstatus', () => {
+    const notService: NotificationService = TestBed.get(NotificationService);
+    spyOn(notService, 'sendSuccess');
     component.project.branches = branches;
     const evt = new MessageEvent('build_updated', {
       data: `{ "projectId": ${project['id']}, "name": "master", "status": "SUCCESS"}`
     });
-    component.updateBuildStatus(evt);
+    component.handleBuildUpdated(evt);
+    expect(notService.sendSuccess).toHaveBeenCalledWith('build_success', 'master', String(project['id']), undefined);
+  });
+
+  it('should change project', () => {
+    const projService: ProjectService = TestBed.get(ProjectService);
+    spyOn(projService, 'loadProject').and.callThrough();
+    const notService: NotificationService = TestBed.get(NotificationService);
+    spyOn(notService, 'sendSuccess');
+    const evt = new MessageEvent('project_refreshed', {
+      data: `{ "projectId": ${project['id']}, "message": "serviceaccount_changed", "status": "SUCCESS"}`
+    });
+    component.handleProjectChanged(evt);
+    expect(notService.sendSuccess).toHaveBeenCalledWith('serviceaccount_changed', undefined, String(project['id']), undefined);
   });
 });

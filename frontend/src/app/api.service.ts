@@ -31,7 +31,7 @@ export class ApiService {
   }
 
   private errorLog(message: string) {
-    this.notification.send(message, 'danger');
+    this.notification.sendError(message);
   }
 }
 
