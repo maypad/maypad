@@ -57,24 +57,24 @@ describe('BranchDetailComponent', () => {
 
   it('should update success build status', () => {
     const notService: NotificationService = TestBed.get(NotificationService);
-    spyOn(notService, 'send');
+    spyOn(notService, 'sendSuccess');
     const evt = new MessageEvent('build_updated', {
       data: `{ "projectId": ${project['id']},
             "name": "${branch['name']}", "status": "SUCCESS" }`
     });
-    component.updateStatus(evt, 'build');
-    expect(notService.send).toHaveBeenCalledWith('A build for this branch has been successful.', 'success');
+    component.handleBuildUpdated(evt);
+    expect(notService.sendSuccess).toHaveBeenCalledWith('build_success', branch['name'], String(project['id']), undefined);
   });
 
   it('should update failed build status', () => {
     const notService: NotificationService = TestBed.get(NotificationService);
-    spyOn(notService, 'send');
+    spyOn(notService, 'sendWarning');
     const evt = new MessageEvent('build_updated', {
       data: `{ "projectId": ${project['id']},
-            "name": "${branch['name']}", "status": "FAILED" }`
+            "name": "${branch['name']}", "status": "FAILED", "message":"build_failed" }`
     });
-    component.updateStatus(evt, 'build');
-    expect(notService.send).toHaveBeenCalledWith('A build for this branch has failed.', 'danger');
+    component.handleBuildUpdated(evt);
+    expect(notService.sendWarning).toHaveBeenCalledWith('build_failed', branch['name'], String(project['id']), undefined);
   });
 
   it('should update failed build status', () => {
@@ -84,7 +84,28 @@ describe('BranchDetailComponent', () => {
       data: `{ "projectId": ${project['id']},
             "name": "${branch['name']}", "status": "UNKNOWN" }`
     });
-    component.updateStatus(evt, 'build');
+    component.handleBuildUpdated(evt);
     expect(notService.send).toHaveBeenCalledTimes(0);
+  });
+  it('should update success deployment status', () => {
+    const notService: NotificationService = TestBed.get(NotificationService);
+    spyOn(notService, 'sendSuccess');
+    const evt = new MessageEvent('deployment_updated', {
+      data: `{ "projectId": ${project['id']},
+            "name": "${branch['name']}", "status": "SUCCESS" }`
+    });
+    component.handleDeploymentUpdated(evt);
+    expect(notService.sendSuccess).toHaveBeenCalledWith('deployment_success', branch['name'], String(project['id']), undefined);
+  });
+
+  it('should update failed deployment status', () => {
+    const notService: NotificationService = TestBed.get(NotificationService);
+    spyOn(notService, 'sendWarning');
+    const evt = new MessageEvent('deployment_updated', {
+      data: `{ "projectId": ${project['id']},
+            "name": "${branch['name']}", "status": "FAILED", "message":"deployment_failed" }`
+    });
+    component.handleDeploymentUpdated(evt);
+    expect(notService.sendWarning).toHaveBeenCalledWith('deployment_failed', branch['name'], String(project['id']), undefined);
   });
 });

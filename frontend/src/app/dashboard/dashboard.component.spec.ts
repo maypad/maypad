@@ -78,28 +78,60 @@ describe('DashboardComponent', () => {
     expect(nativeElement.querySelector('button').textContent).toBe('Toggle All');
   });
 
-  it('should setProjectInfo', () => {
+  it('should handle project changed', () => {
     const notService: NotificationService = TestBed.get(NotificationService);
-    spyOn(notService, 'send');
+    spyOn(notService, 'sendInfo');
     component.projectGroups[0].projects = [projectResponse['default']];
     const evt = new MessageEvent('init_project', {
       data: `{ "projectId": ${project['id']},
-            "name": "${projectResponse['name']}" }`
+            "name": "${projectResponse['name']}", "message":"serviceaccount_changed" }`
     });
-    component.setProjectInfo(evt);
-    expect(notService.send).toHaveBeenCalled();
+    component.handleProjectChanged(evt);
+    expect(notService.sendInfo).toHaveBeenCalledWith('serviceaccount_changed', undefined, project['id'], undefined);
   });
 
   it('should refresh projects', () => {
-    const projService: ProjectServiceStub = TestBed.get(ProjectService);
-    spyOn(projService, 'loadProject').and.callThrough();
+    const notService: NotificationService = TestBed.get(NotificationService);
+    spyOn(notService, 'sendSuccess');
     component.projectGroups[0].projects = [projectResponse['default']];
     const evt = new MessageEvent('project_refreshed', {
       data: `{ "projectId": ${project['id']},
-            "name": "${project['name']}" }`
+            "name": "${project['name']}", "status":"SUCCESS", "message":"refresh_successful" }`
     });
-    component.refreshProject(evt);
-    expect(projService.loadProject).toHaveBeenCalledWith(project['id']);
+    component.handleProjectRefreshed(evt);
+    expect(notService.sendSuccess).toHaveBeenCalled();
+  });
+
+  it('should fail refresh projects', () => {
+    const notService: NotificationService = TestBed.get(NotificationService);
+    spyOn(notService, 'sendWarning');
+    component.projectGroups[0].projects = [projectResponse['default']];
+    const evt = new MessageEvent('project_refreshed', {
+      data: `{ "projectId": ${project['id']},
+            "name": "${project['name']}", "status":"FAILED", "message":"git_not_available" }`
+    });
+    component.handleProjectRefreshed(evt);
+    expect(notService.sendWarning).toHaveBeenCalled();
+  });
+
+  it('should update buildstatus', () => {
+    const notService: NotificationService = TestBed.get(NotificationService);
+    spyOn(notService, 'sendSuccess');
+    const evt = new MessageEvent('build_updated', {
+      data: `{ "projectId": ${project['id']}, "name":"master", "status": "SUCCESS"}`
+    });
+    component.handleBuildUpdated(evt);
+    expect(notService.sendSuccess).toHaveBeenCalledWith('build_success', 'master', project['id'], undefined);
+  });
+
+  it('should update buildstatus failed', () => {
+    const notService: NotificationService = TestBed.get(NotificationService);
+    spyOn(notService, 'sendWarning');
+    const evt = new MessageEvent('build_updated', {
+      data: `{ "projectId": ${project['id']}, "name":"master", "status": "FAILED", "message":"build_failed"}`
+    });
+    component.handleBuildUpdated(evt);
+    expect(notService.sendWarning).toHaveBeenCalledWith('build_failed', 'master', project['id'], undefined);
   });
 
   it('should toggle true groups', () => {

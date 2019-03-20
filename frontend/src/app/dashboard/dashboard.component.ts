@@ -8,6 +8,7 @@ import { NotificationService } from '../notification.service';
 import { Subscription } from 'rxjs';
 import { ProjectService } from '../project.service';
 import { Project } from '../model/project';
+import { BuildStatus } from '../model/buildStatus';
 
 @Component({
   selector: 'app-dashboard',
@@ -47,48 +48,70 @@ export class DashboardComponent implements OnInit {
     });
 
     this.evtSource = new EventSource('/sse');
-    const initHandler = (e: MessageEvent) => { this.setProjectInfo(e); };
-    const refreshHandler = (e: MessageEvent) => { this.refreshProject(e); };
-    this.evtSource.addEventListener('project_init', initHandler);
+    const refreshHandler = (e: MessageEvent) => { this.handleProjectRefreshed(e); };
+    const changedHandler = (e: MessageEvent) => { this.handleProjectChanged(e); };
+    const buildHandler = (e: MessageEvent) => { this.handleBuildUpdated(e); };
     this.evtSource.addEventListener('project_refreshed', refreshHandler);
-    this.evtSource.addEventListener('build_updated', refreshHandler);
+    this.evtSource.addEventListener('project_changed', changedHandler);
+    this.evtSource.addEventListener('build_updated', buildHandler);
     // Remove event listeners when navigating away
     this.routeSubscription = this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
-        this.evtSource.removeEventListener('project_init', initHandler);
         this.evtSource.removeEventListener('project_refreshed', refreshHandler);
-        this.evtSource.removeEventListener('build_updated', refreshHandler);
+        this.evtSource.removeEventListener('project_changed', changedHandler);
+        this.evtSource.removeEventListener('build_updated', buildHandler);
         this.routeSubscription.unsubscribe();
         this.evtSource.close();
       }
     });
   }
 
-  setProjectInfo(e: MessageEvent) {
-    const data = JSON.parse(e.data);
-    this.projectGroups.forEach((group) => {
-      group.projects.forEach((proj) => {
-        if (proj.id === data['projectId']) {
-          proj.name = data['name'];
-          if (data['name'] === 'ERROR') {
-            this.notificationService.send(`Project(${proj.id}): Error while initializing.`, 'danger');
-          }
-          this.notificationService.send(`Project(${proj.id}): ${proj.name} has been initialized.`, 'success');
-        }
-      });
-    });
-  }
-
-  refreshProject(e: MessageEvent) {
+  handleProjectRefreshed(e: MessageEvent) {
     const data = JSON.parse(e.data);
     this.projService.loadProject(data['projectId']).subscribe((proj: Project) => {
       this.projectGroups.forEach((group) => {
         group.projects.forEach((existingProject) => {
           if (existingProject.id === proj.id) {
+            console.log('found proj' + existingProject.id);
             existingProject.status = proj.status;
             existingProject.name = proj.name;
+            if (data['status'] === 'SUCCESS') {
+              this.notificationService.sendSuccess(data['message'], undefined, data['projectId'], String(group.id));
+            } else {
+              this.notificationService.sendWarning(data['message'], undefined, data['projectId'], String(group.id));
+            }
           }
         });
+      });
+    });
+  }
+
+  handleProjectChanged(e: MessageEvent) {
+    const data = JSON.parse(e.data);
+    this.notificationService.sendInfo(data['message'], undefined, data['projectId'], data['projectgroupId']);
+  }
+
+  handleBuildUpdated(e: MessageEvent) {
+    const data = JSON.parse(e.data);
+    this.projectGroups.forEach((group) => {
+      group.projects.forEach((proj) => {
+        if (proj.id === data['projectId']) {
+          proj.status = (<any>BuildStatus)[data['status']];
+          switch (proj.status) {
+            case BuildStatus.SUCCESS:
+              this.notificationService.sendSuccess('build_success', data['name'], data['projectId'], data['projectgroupId']);
+              break;
+            case BuildStatus.FAILED:
+              this.notificationService.sendWarning(data['message'], data['name'], data['projectId'], data['projectgroupId']);
+              break;
+            case BuildStatus.RUNNING:
+              this.notificationService.sendInfo('build_running', data['name'], data['projectId'], data['projectgroupId']);
+              break;
+            case BuildStatus.UNKNOWN:
+              this.notificationService.sendWarning('build_unknown', data['name'], data['projectId'], data['projectgroupId']);
+              break;
+          }
+        }
       });
     });
   }

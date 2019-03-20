@@ -1,0 +1,29 @@
+<div [ngSwitch]="copiedMessage">
+  <div>
+    <span class="mr-3" *ngIf="copiedProjgroupId">Projectgroup #{{copiedProjgroupId}}</span>
+    <span class="mr-3" *ngIf="copiedProjId">Project #{{copiedProjId}} </span>
+    <span *ngIf="copiedBranch">Branch: {{copiedBranch}} </span>
+  </div>
+  <div *ngSwitchCase="'serviceaccount_changed'" i18n="serviceaccount_changed">The service account has changed</div>
+  <div *ngSwitchCase="'refresh_successful'" i18n="refresh_successful">The project refresh has been successful</div>
+  <div *ngSwitchCase="'refreshing'" i18n="refreshing">The project is now being refreshed</div>
+  <div *ngSwitchCase="'init_successful'" i18n="init_successful">The project has been initialized</div>
+  <div *ngSwitchCase="'config_missing'" i18n="config_missing">The project config is missing</div>
+  <div *ngSwitchCase="'svn_bad_url'" i18n="git_clone_failed">The clone of the git repository has failed</div>
+  <div *ngSwitchCase="'svn_bad_url'" i18n="git_not_available">The git repository is not available</div>
+  <div *ngSwitchCase="'svn_bad_url'" i18n="git_auth_failed">The git authentification has failed</div>
+  <div *ngSwitchCase="'svn_bad_url'" i18n="svn_bad_url">Invalid SVN repository url</div>
+  <div *ngSwitchCase="'svn_connection_refused'" i18n="svn_connection_refused">The SVN repository refused the
+    connection</div>
+  <div *ngSwitchCase="'svn_not_found'" i18n="svn_not_found">The SVN repository has not been found</div>
+  <div *ngSwitchCase="'svn_auth_failed'" i18n="svn_auth_failed">The SVN authentification failed</div>
+  <div *ngSwitchCase="'svn_unknown_reason'" i18n="svn_unknown_reason">The SVN repository could not be loaded</div>
+  <div *ngSwitchCase="'build_not_started'" i18n="build_not_started">The build has not been started</div>
+  <div *ngSwitchCase="'build_failed'" i18n="build_failed">The build has failed</div>
+  <div *ngSwitchCase="'build_success'" i18n="build_success">The build has been successful</div>
+  <div *ngSwitchCase="'build_running'" i18n="build_running">The build is running</div>
+  <div *ngSwitchCase="'build_unknown'" i18n="build_unknown">The status of the build is unknown</div>
+  <div *ngSwitchCase="'dependency_build_failed'" i18n="dependency_build_failed">The build of a dependency has failed.
+  </div>
+  <div *ngSwitchDefault>{{ copiedMessage }}</div>
+</div>

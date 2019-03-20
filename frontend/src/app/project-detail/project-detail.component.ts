@@ -50,40 +50,70 @@ export class ProjectDetailComponent implements OnInit {
     });
 
     this.evtSource = new EventSource('/sse');
-    // Need to be able to remove the event listeners again
-    const refreshHandler = (e: MessageEvent) => { this.reloadProject(e); };
-    const buildUpdateHandler = (e: MessageEvent) => { this.updateBuildStatus(e); };
+    const refreshHandler = (e: MessageEvent) => { this.handleProjectRefreshed(e); };
+    const changedHandler = (e: MessageEvent) => { this.handleProjectChanged(e); };
+    const buildHandler = (e: MessageEvent) => { this.handleBuildUpdated(e); };
     this.evtSource.addEventListener('project_refreshed', refreshHandler);
-    this.evtSource.addEventListener('auth_updated', refreshHandler);
-    this.evtSource.addEventListener('build_updated', buildUpdateHandler);
+    this.evtSource.addEventListener('project_changed', changedHandler);
+    this.evtSource.addEventListener('build_updated', buildHandler);
     // Remove event listeners when navigating away
     this.routeSubscription = this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
         this.evtSource.removeEventListener('project_refreshed', refreshHandler);
-        this.evtSource.removeEventListener('auth_updated', refreshHandler);
-        this.evtSource.removeEventListener('build_updated', buildUpdateHandler);
+        this.evtSource.removeEventListener('project_changed', changedHandler);
+        this.evtSource.removeEventListener('build_updated', buildHandler);
         this.routeSubscription.unsubscribe();
         this.evtSource.close();
       }
     });
   }
 
-  reloadProject(e: MessageEvent) {
+  handleProjectRefreshed(e: MessageEvent) {
     const data = JSON.parse(e.data);
-    if (data['projectId'] === this.project.id) {
-      this.projectService.loadProject(this.project.id).subscribe((proj) => {
-        this.project = proj;
-        this.notificationService.send('The project has been refreshed.', 'success');
-      });
+    if (data['status'] === 'SUCCESS') {
+      if (data['projectId'] === this.project.id) {
+        this.projectService.loadProject(this.project.id).subscribe((proj) => {
+          this.project = proj;
+          this.notificationService.sendSuccess(data['message'], undefined, data['projectId'], data['projectgroupId']);
+        });
+      }
+    } else {
+      this.notificationService.sendWarning(data['message'], undefined, data['projectId'], data['projectgroupId']);
     }
   }
 
-  updateBuildStatus(e: MessageEvent) {
+  handleProjectChanged(e: MessageEvent) {
+    const data = JSON.parse(e.data);
+    if (data['projectId'] === this.project.id) {
+      if (data['message'] === 'serviceaccount_changed') {
+        this.projectService.loadProject(this.project.id).subscribe((proj) => {
+          this.project = proj;
+          this.notificationService.sendSuccess(data['message'], undefined, String(data['projectId']), data['projectgroupId']);
+        });
+      }
+    }
+  }
+
+  handleBuildUpdated(e: MessageEvent) {
     const data = JSON.parse(e.data);
     if (data['projectId'] === this.project.id) {
       this.branches.forEach((branch) => {
         if (branch.name === data['name']) {
           branch.status = (<any>BuildStatus)[data['status']];
+          switch (branch.status) {
+            case BuildStatus.SUCCESS:
+              this.notificationService.sendSuccess('build_success', branch.name, String(this.project.id), undefined);
+              break;
+            case BuildStatus.FAILED:
+              this.notificationService.sendWarning(data['message'], branch.name, String(this.project.id), undefined);
+              break;
+            case BuildStatus.RUNNING:
+              this.notificationService.sendInfo('build_running', branch.name, String(this.project.id), undefined);
+              break;
+            case BuildStatus.UNKNOWN:
+              this.notificationService.sendWarning('build_unknown', branch.name, String(this.project.id), undefined);
+              break;
+          }
         }
       });
     }
@@ -93,7 +123,7 @@ export class ProjectDetailComponent implements OnInit {
     this.projectService.refreshProject(this.project.id).subscribe(
       res => {
         if (res === null) {
-          this.notificationService.send('The project is now being refreshed.', 'info');
+          this.notificationService.sendInfo('refreshing', undefined, String(this.project.id), undefined);
         }
       });
   }
