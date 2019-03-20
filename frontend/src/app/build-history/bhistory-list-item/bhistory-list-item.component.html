@@ -2,7 +2,7 @@
   <div class="row">
     <div class="d-flex flex-row col-2">
       <span>Status:</span>
-      <span class="dot ml-1 mt-1 dot-{{ build.status }}" title="{{ build.status }}"></span>
+      <i class="fas fa-circle ml-1 mt-1 dot-{{ build.status }}" title="{{ build.status }}"></i>
     </div>
     <div class="col-4">
       <span *ngIf="build.reason" [ngClass]="{ 'dot-underline': fmtDependency }" title="{{ fmtDependency }}">Reason:

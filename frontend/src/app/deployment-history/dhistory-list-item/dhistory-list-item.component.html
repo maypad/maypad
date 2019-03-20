@@ -1,7 +1,7 @@
 <div class="container w-50 d-flex flex-row minwidth border-bottom border-dark justify-content-between py-2">
   <div class="d-flex flex-row col-2">
     <span>Status:</span>
-    <span class="dot ml-1 mt-1 dot-{{ deployment.status }}" title="{{ deployment.status }}"></span>
+    <i class="fas fa-circle ml-1 mt-1 dot-{{ deployment.status }}" title="{{ deployment.status }}"></i>
   </div>
   <span>Type: {{ deployment.type ? deployment.type : 'Unknown' }}</span>
   <span>Time: {{ deployment.timestamp | date : 'H:mm:ss, d/M/yy (z)'}}</span>
