@@ -30,8 +30,9 @@ describe('DhistoryListItemComponent', () => {
   it('should list deployment info', () => {
     const nativeElement: HTMLElement = fixture.nativeElement;
     const elements: NodeListOf<Element> = nativeElement.querySelectorAll('span');
+    const imgElements: NodeListOf<Element> = nativeElement.querySelectorAll('i');
 
-    expect(elements[1].getAttribute('title')).toBe('Success');
-    expect(elements[2].textContent).toBe('Type: ' + deployment.type);
+    expect(imgElements[0].getAttribute('title')).toBe('Success');
+    expect(elements[1].textContent).toBe('Type: ' + deployment.type);
   });
 });

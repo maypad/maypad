@@ -21,8 +21,12 @@ export class HeaderComponent implements OnInit {
     ngOnInit() { }
 
     triggerDeploy(build: boolean) {
+        let rebuild = false;
+        if (build && this.rebuild && this.rebuild.nativeElement) {
+            rebuild = this.rebuild.nativeElement.checked;
+        }
         this.branchService.triggerDeployment(
-            this.projId, this.branch.name, build, this.branch.buildWebhook ? this.rebuild.nativeElement.checked : false
+            this.projId, this.branch.name, build, rebuild
         ).subscribe(
             x => { },
             error => {
@@ -33,8 +37,12 @@ export class HeaderComponent implements OnInit {
     }
 
     triggerBuild() {
+        let rebuild = false;
+        if (this.branch.buildWebhook && this.rebuild && this.rebuild.nativeElement) {
+            rebuild = this.rebuild.nativeElement.checked;
+        }
         this.branchService.triggerBuild(
-            this.projId, this.branch.name, this.branch.buildWebhook ? this.rebuild.nativeElement.checked : false
+            this.projId, this.branch.name, rebuild
         ).subscribe(
             x => { },
             error => {

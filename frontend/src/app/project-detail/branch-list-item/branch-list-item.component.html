@@ -1,4 +1,5 @@
-<a class="container d-flex flex-column py-3 nohover border-bottom border-dark" routerLink="branches/{{branch.name}}">
+<a class="container minwidth d-flex flex-column py-3 nohover border-bottom border-dark"
+  routerLink="branches/{{branch.name}}">
   <h5 class="text-black">
     {{branch.name}}
   </h5>
@@ -7,8 +8,9 @@
   </span>
   <div class="container d-flex flex-row">
     <span class="mr-1 text-dark" i18n="Build status">Build Status:</span>
-    <span class="dot dot-{{ branch.status }} mt-1 mr-2" title="{{ branch.status }}"></span>
-    <span class="text-dark" *ngIf="branch.lastCommit" i18n="Last Commit">Last Commit<span *ngIf="branch.lastCommit.identifier">
+    <i class="fas fa-circle dot-{{ branch.status }} mt-1 mr-2" title="{{ branch.status }}"></i>
+    <span class="text-dark" *ngIf="branch.lastCommit" i18n="Last Commit">Last Commit<span
+        *ngIf="branch.lastCommit.identifier">
         ({{
         branch.lastCommit.identifier.includes('Revision') ? branch.lastCommit.identifier :
         branch.lastCommit.identifier.substr(0, 7)

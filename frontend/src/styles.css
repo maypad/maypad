@@ -1,29 +1,19 @@
-/* You can add global styles to this file, and also import other style files */
-
-/* This will render a dot in the current element, e.g. a span. */
-.dot {
-  height: 15px;
-  width: 15px;
-  border-radius: 50%;
-  display: inline-block;
-}
-
 /* Dot 0 corresponds to Buildstatus.SUCCESS */
 /* Dots needed for build status */
 .dot-Success {
-  background-color: green;
+  color: green;
 }
 
 .dot-Failed {
-  background-color: red;
+  color: red;
 }
 
 .dot-Running {
-  background-color: orange;
+  color: orange;
 }
 
 .dot-Unknown {
-  background-color: grey;
+  color: grey;
 }
 
 [data-toggle="collapse"] .fa:before {   
