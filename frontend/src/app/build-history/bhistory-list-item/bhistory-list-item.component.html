@@ -9,9 +9,9 @@
         {{ build.reason }}</span>
     </div>
     <span class="col-3 d-flex justify-content-center">Time: {{ build.timestamp | date : 'H:mm:ss, dd.MM.yy'}}</span>
-    <span class="col-3 d-flex justify-content-end" *ngIf="build.commit.identifier">Identifier: <<span>{{
+    <span class="col-3 d-flex justify-content-end" *ngIf="build.commit.identifier">Identifier: <{{
       build.commit.identifier.includes('Revision') ? build.commit.identifier :
       build.commit.identifier.substr(0, 7)
-      }}</span>></span>
+      }}></span>
   </div>
 </div>
