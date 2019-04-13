@@ -10,7 +10,7 @@
     </parent>
     <groupId>de.fraunhofer.iosb</groupId>
     <artifactId>maypad-backend</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>maypad-backend</name>
     <description>Backend service for MAYPAD - &#39;Manage all your projects and dependencies&#39;</description>
 
