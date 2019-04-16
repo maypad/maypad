@@ -24,7 +24,7 @@ before_script:
  - npm install -g @angular/cli
 
 env:
-  - MAYPAD_HOME=/home/travis/build/juliantodt/maypad/backend
+  - MAYPAD_HOME=/home/travis/build/maypad/maypad/backend
 
 script:
   - cd backend

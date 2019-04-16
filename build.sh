@@ -6,7 +6,9 @@ cd frontend
 ng b $1
 
 cd ../backend
-mvn install $2
+export MAYPAD_HOME=$(pwd)
+mvn install $2 -DskipTests=true
+unset MAYPAD_HOME
 
 cd ..
 docker build --no-cache -t maypad:latest .
