@@ -127,7 +127,7 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-core</artifactId>
-            <version>5.0.9.RELEASE</version>
+            <version>[5.0.12,)</version>
         </dependency>
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
@@ -176,7 +176,7 @@
                         <dependency>
                             <groupId>com.puppycrawl.tools</groupId>
                             <artifactId>checkstyle</artifactId>
-                            <version>8.15</version>
+                            <version>[8.18,)</version>
                         </dependency>
                     </dependencies>
                 </plugin>
