@@ -2,7 +2,7 @@
 Manage all your Projects and Dependencies
 
 [![Build Status](https://travis-ci.org/maypad/maypad.svg?branch=master)](https://travis-ci.org/maypad/maypad)
-[![Docker Build status](https://img.shields.io/docker/automated/juliantodt/maypad.svg)](https://hub.docker.com/r/juliantodt/maypad)
+[![Docker Build status](https://img.shields.io/docker/cloud/automated/juliantodt/maypad.svg)](https://hub.docker.com/r/juliantodt/maypad)
 [![Docker Downloads](https://img.shields.io/docker/pulls/juliantodt/maypad.svg)](https://hub.docker.com/r/juliantodt/maypad)
 
 
