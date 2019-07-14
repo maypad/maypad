@@ -5,7 +5,7 @@ jdk:
   - openjdk11
 node_js:
   - "11.6"
-dist: precise
+dist: trusty
 
 addons:
   chrome: stable
