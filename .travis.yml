@@ -3,14 +3,10 @@ jdk:
   - oraclejdk8
   - oraclejdk9
   - openjdk11
-node_js: "11.5"
+dist: trusty
 
 addons:
-  apt:
-    sources:
-      - google-chrome
-    packages:
-      - google-chrome-stable
+  chrome: stable
 
 cache:
   directories:
@@ -21,6 +17,8 @@ branches:
   - master
 
 before_script:
+ - nvm install 11.6
+ - nvm use 11.6
  - npm install -g @angular/cli
 
 env:
