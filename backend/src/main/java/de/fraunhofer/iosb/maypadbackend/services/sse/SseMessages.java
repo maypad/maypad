@@ -35,5 +35,6 @@ public class SseMessages {
     public static final String BUILD_REASON_BUILD_FAILED = "build_failed";
     public static final String BUILD_REASON_DEPENDENCY_BUILD_FAILED = "dependency_build_failed";
 
-    private SseMessages() {}
+    private SseMessages() {
+    }
 }
