@@ -72,7 +72,6 @@ export class DashboardComponent implements OnInit {
       this.projectGroups.forEach((group) => {
         group.projects.forEach((existingProject) => {
           if (existingProject.id === proj.id) {
-            console.log('found proj' + existingProject.id);
             existingProject.status = proj.status;
             existingProject.name = proj.name;
             if (data['status'] === 'SUCCESS') {

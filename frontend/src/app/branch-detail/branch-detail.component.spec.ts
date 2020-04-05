@@ -4,6 +4,7 @@ import { BranchDetailComponent } from './branch-detail.component';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { HeaderComponent } from './header/header.component';
 import { MarkdownModule, MarkdownService, MarkedOptions } from 'ngx-markdown';
+import { SecurityContext } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import * as branchesResponse from 'sample-requests/get.projects.id.branches.ref.response.json';
 import * as projectResponse from 'sample-requests/get.projects.id.response.json';
@@ -40,7 +41,7 @@ describe('BranchDetailComponent', () => {
           provide: NotificationService, useClass: NotificationServiceStub
         }
       ],
-      imports: [MarkdownModule, HttpClientModule, RouterTestingModule]
+      imports: [MarkdownModule.forRoot({ sanitize: SecurityContext.NONE }), HttpClientModule, RouterTestingModule]
     })
       .compileComponents();
   }));
