@@ -3,7 +3,7 @@ jdk:
   - oraclejdk8
   - oraclejdk9
   - openjdk11
-dist: trusty
+dist: xenial
 
 addons:
   chrome: stable
