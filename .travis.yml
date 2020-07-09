@@ -31,8 +31,8 @@ script:
   - cd ../frontend
   - npm install
   - ng lint
-  - google-chrome --version
-  - chrome --version
+  - 'google-chrome --version'
+  - 'chrome --version'
   - ./node_modules/protractor/bin/webdriver-manager update --versions.chrome=$(chrome --version | grep -iEo "[0-9.]{10,20}")
   - ng test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
   - ng e2e -- --protractor-config=e2e/protractor-ci.conf.js
